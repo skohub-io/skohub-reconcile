@@ -1,0 +1,57 @@
+{
+  "name": "skohub-reconcile",
+  "engines": {
+    "node": ">=10.12.0"
+  },
+  "version": "0.0.1",
+  "description": "Reconciliation API server for skohub",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint src/ && jest --forceExit",
+    "start": "node index.js"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hbz/skohub-reconcile.git"
+  },
+  "author": "Andreas Wagner <wagner@lhlt.mpg.de>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hbz/skohub-reconcile/issues"
+  },
+  "homepage": "https://github.com/hbz/skohub-reconcile#readme",
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-transform-runtime": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/register": "^7.0.0",
+    "@babel/runtime": "^7.3.4",
+    "eslint": "^5.15.1",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "jest": "^24.5.0",
+    "jest-websocket-mock": "^1.1.1",
+    "mock-socket": "^8.0.5",
+    "nock": "^10.0.6",
+    "supertest": "^3.4.2"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^6.8.4",
+    "content-type": "^1.0.4",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "mongodb": "^3.4.1",
+    "morgan": "^1.9.1",
+    "parse-link-header": "^1.0.1",
+    "superagent": "^4.1.0",
+    "ws": "^6.2.0"
+  }
+}

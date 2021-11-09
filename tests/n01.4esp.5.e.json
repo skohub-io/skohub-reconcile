@@ -1,0 +1,268 @@
+{
+  "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e",
+  "type": "Concept",
+  "followers": "https://skohub.io/followers?subject=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.4esp.5.e",
+  "inbox": "https://skohub.io/inbox?actor=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.4esp.5.e",
+  "prefLabel": {
+    "en": "Journeymen",
+    "de": "Gesellen",
+    "nl": "gezellen"
+  },
+  "altLabel": {
+    "en": [
+      "4ESP5E"
+    ]
+  },
+  "notation": [
+    "01.4esp.5.e"
+  ],
+  "narrower": [
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.01",
+      "prefLabel": {
+        "en": "Work on own Account",
+        "de": "Arbeit auf eigene Rechnung",
+        "nl": "Werk voor eigen rekening"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.02",
+      "prefLabel": {
+        "en": "Work Conditions",
+        "de": "Arbeitsbedingungen",
+        "nl": "Arbeidsomstandigheden / arbeidsvoorwaarden"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.03",
+      "prefLabel": {
+        "en": "labor disputs",
+        "de": "Arbeitskonflikte",
+        "nl": "arbeidsconflicten / arbeidsgeschillen"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.04",
+      "prefLabel": {
+        "en": "quantity of labor",
+        "de": "Arbeitsquantum",
+        "nl": "hoeveelheid arbeid"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.05",
+      "prefLabel": {
+        "en": "Working hours",
+        "de": "Arbeitszeit",
+        "nl": "Werkuren"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.06",
+      "prefLabel": {
+        "en": "Begging ban",
+        "de": "Bettelverbot",
+        "nl": "verbod om te bedelen"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.07",
+      "prefLabel": {
+        "en": "Wages / pay",
+        "de": "Entlohnung",
+        "nl": "loon / betalen"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.08",
+      "prefLabel": {
+        "en": "Marriage ban",
+        "de": "Heiratsverbot",
+        "nl": "verbod om te trouwen"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.09",
+      "prefLabel": {
+        "en": "Communication",
+        "de": "Kommunikation",
+        "nl": "Communicatie"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.10",
+      "prefLabel": {
+        "en": "Trainingsyears / courage years / fellowship year",
+        "de": "Mutjahr",
+        "nl": "trainingsjaar /moedjaar"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.11",
+      "prefLabel": {
+        "en": "Qualification",
+        "de": "Qualifikation",
+        "nl": "Kwalificatie"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.12",
+      "prefLabel": {
+        "en": "Strike",
+        "de": "Streik",
+        "nl": "Staking"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.13",
+      "prefLabel": {
+        "en": "Associations",
+        "de": "Vereinigungen",
+        "nl": "verenigingen"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.14",
+      "prefLabel": {
+        "en": "Behaviour",
+        "de": "Verhalten",
+        "nl": "Gedrag"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.15",
+      "prefLabel": {
+        "en": "Roaming the Country",
+        "de": "Wandern",
+        "nl": "rondzwerven"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.16",
+      "prefLabel": {
+        "en": "Duty to testify",
+        "de": "Zeugnispflicht",
+        "nl": "plicht om te getuigen"
+      }
+    },
+    {
+      "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.17",
+      "prefLabel": {
+        "en": "Admission",
+        "de": "Zulassung",
+        "nl": "Toelating"
+      }
+    }
+  ],
+  "broader": {
+    "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5",
+    "prefLabel": {
+      "en": "4.5 Craft and trade",
+      "de": "4.5 Handwerk und Gewerbe",
+      "nl": "4.5 Ambacht en handel"
+    }
+  },
+  "inScheme": {
+    "id": "https://w3id.org/rg-mpg-de/polmat/scheme",
+    "title": {
+      "en": "MPIeR Categories of Matters regulated by Police Ordinances",
+      "de": "MPIeR Materien der Policeyordnungen",
+      "fr": "MPIeR Categorisation des matières d'ordonnances de police",
+      "nl": "MPIeR Politie Ordinanties"
+    }
+  },
+  "@context": {
+    "@version": 1.1,
+    "id": "@id",
+    "type": "@type",
+    "@vocab": "http://www.w3.org/2004/02/skos/core#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dct": "http://purl.org/dc/terms/",
+    "schema": "http://schema.org/",
+    "vann": "http://purl.org/vocab/vann/",
+    "as": "https://www.w3.org/ns/activitystreams#",
+    "ldp": "http://www.w3.org/ns/ldp#",
+    "title": {
+      "@id": "dct:title",
+      "@container": "@language"
+    },
+    "description": {
+      "@id": "dct:description",
+      "@container": "@language"
+    },
+    "issued": {
+      "@id": "dct:issued",
+      "@type": "xsd:date"
+    },
+    "created": {
+      "@id": "dct:created",
+      "@type": "xsd:date"
+    },
+    "modified": {
+      "@id": "dct:modified",
+      "@type": "xsd:date"
+    },
+    "creator": "dct:creator",
+    "publisher": "dct:publisher",
+    "preferredNamespacePrefix": "vann:preferredNamespacePrefix",
+    "preferredNamespaceUri": "vann:preferredNamespaceUri",
+    "isBasedOn": "schema:isBasedOn",
+    "source": "dct:source",
+    "prefLabel": {
+      "@container": "@language"
+    },
+    "altLabel": {
+      "@container": [
+        "@language",
+        "@set"
+      ]
+    },
+    "definition": {
+      "@container": "@language"
+    },
+    "scopeNote": {
+      "@container": "@language"
+    },
+    "note": {
+      "@container": "@language"
+    },
+    "notation": {
+      "@container": "@set"
+    },
+    "example": {
+      "@container": "@language"
+    },
+    "narrower": {
+      "@container": "@set"
+    },
+    "related": {
+      "@container": "@set"
+    },
+    "relatedMatch": {
+      "@container": "@set"
+    },
+    "narrowerTransitive": {
+      "@container": "@set"
+    },
+    "broaderTransitive": {
+      "@container": "@set"
+    },
+    "broadMatch": {
+      "@container": "@set"
+    },
+    "narrowMatch": {
+      "@container": "@set"
+    },
+    "closeMatch": {
+      "@container": "@set"
+    },
+    "exactMatch": {
+      "@container": "@set"
+    },
+    "followers": "as:followers",
+    "inbox": "ldp:inbox",
+    "hasTopConcept": {
+      "@container": "@set"
+    }
+  }
+}
