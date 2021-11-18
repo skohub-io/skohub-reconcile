@@ -32,7 +32,9 @@ appropriate index and takes PUT requests from skohub-vocabs, adding resources to
 
 ## elasticsearch
 You need to run a properly configured `elasticsearch` instance by
-setting `cluster.name: skohub`. See the provided [elasticsearch.yml](scripts/etc/elasticsearch/elasticsearch.yml). Also, in some contexts, it's mandatory to initialize elasticsearch with a proper [index-mapping](scripts/elasticsearch-mappings.json).
+setting `cluster.name: skohub`. See the provided [elasticsearch.yml](scripts/etc/elasticsearch/elasticsearch.yml).
+Also, in some contexts, it's mandatory to initialize elasticsearch with a proper
+[index-mapping](scripts/elasticsearch-mappings.json).
 
 ## start scripts
 You may want to use the start script in `scripts/start.sh`. This script ensures the proper
@@ -41,4 +43,5 @@ further scripts to manage the starting/stopping of the skohub-reconcile via init
 monitor the processes with `monit`.
 
 ## Credits
-The project to add a Reconciliation Service to SkoHub has been initiated by Andreas Wagner and carried out in cooperation with hbz in 2021/2022.
+The project to add a Reconciliation Service to SkoHub has been initiated by Andreas Wagner and
+carried out in cooperation with the [SkoHub.io team](https://github.com/skohub-io) in 2021/2022.
