@@ -14,10 +14,10 @@ Dependencies:
 
 Basic setup:
 
-    Copy `sample.env` to `.env` and adjust values therein
     $ git clone https://github.com/rg-mpg-de/skohub-reconcile.git
     $ cd skohub-reconcile
-    $ npm install
+    # Copy `sample.env` to `.env` and adjust values therein
+    $ npm ci
     $ npm test
     $ npm start
 
