@@ -9,7 +9,7 @@
 ####
 
 # config
-PORT=3000 # the port skohub runs at
+PORT=3004 # the port skohub-reconcile runs at
 ES_NODE=http://localhost:9200 # where your elasticsearch runs
 # end config
 
@@ -35,7 +35,7 @@ cd $HOME/git/$NAME/scripts
 # nothing to change from here
 ###
 # ensure elasticsearch index exists and initialize proper mappings
-curl -XPUT $ES_NODE/skohub -H 'Content-Type: application/json' -d "@elasticsearch-mappings.json"
+# curl -XPUT $ES_NODE/skohub -H 'Content-Type: application/json' -d "@elasticsearch-mappings.json"
 
 npm install
 # start skohub-reconcile

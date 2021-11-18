@@ -1,53 +1,44 @@
 # Build
 
-![https://github.com/hbz/skohub-pubsub/actions?query=workflow%3ABuild](https://github.com/hbz/skohub-pubsub/workflows/Build/badge.svg?branch=master)
+![https://github.com/rg-mpg-de/skohub-reconcile/actions?query=workflow%3ABuild](https://github.com/rg-mpg-de/skohub-reconcile/workflows/Build/badge.svg?branch=main)
 
-# skohub-pubsub
+# skohub-reconcile
 
-This part provides the [SkoHub](http://skohub.io) core infrastructure, setting up basic inboxes for
-subjects plus the ability of subscribing to push notifications for those inboxes. For usage and implementation details see the [blog post](https://blog.lobid.org/2020/06/25/skohub-pubsub.html).
+This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/)
+for the the [SkoHub](http://skohub.io) core infrastructure.
+
 Dependencies:
 
-- elasticsearch 6.8
-- mongodb
+- elasticsearch 7.0
 - node-version >= v12.16.1
 
 Basic setup:
 
-    $ git clone https://github.com/skohub-io/skohub-pubsub.git
-    $ cd skohub-pubsub
+    Copy `sample.env` to `.env` and adjust values therein
+    $ git clone https://github.com/rg-mpg-de/skohub-reconcile.git
+    $ cd skohub-reconcile
     $ npm install
     $ npm test
-    $ PORT=3000 npm start
+    $ npm start
 
-This will start the ActivityPub server on the specified `PORT`. It accepts
-[`FOLLOW`](https://www.w3.org/TR/activitypub/#follow-activity-inbox) messages sent to the `/inbox`.
-All other [activity types](https://www.w3.org/TR/activitystreams-vocabulary/#activity-types) are
-currently ignored.
+This will start the Reconciliation service on the port specified with `APP_PORT` in `.env`. It accepts
+queries according to the [Reconciliation Service specification](https://reconciliation-api.github.io/specs/latest/)
+at endpoints corresponding to all hosted vocabularies, e.g. `/project/vocab`, `/class/esc`, or `/rg-mpg-de/polmat` etc.
 
-Non-activity objects sent to `/inbox?actor=username/repo/some/classification/path`[^1] are
-distributed as `NOTE` objects to the corresponding followers. The original notifications are
-delivered as an [attachment](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-attachment) of
-the note.
+Currently only reconciliation queries are supported. Preview, suggestion and data extensions support is on the roadmap.
 
-Some actions may need certificates. These must reside in the `data` directory
-named as `private.pem` and `public.pem`.
-
-[^1]: Actor names are considered relative to the hostname of the server.
+The elasticsearch server must be populated when a vocabulary is published on skohub. This present service creates an
+appropriate index and takes PUT requests from skohub-vocabs, adding resources to the elasticsearch index.
 
 ## elasticsearch
 You need to run a properly configured `elasticsearch` instance by
-setting `cluster.name: skohub`. See the provided [elasticsearch.yml](scripts/etc/elasticsearch/elasticsearch.yml). Also, in some contexts, it's mandatory to initialize elasticsearch
-with a proper [index-mapping](scripts/elasticsearch-mappings.json).
+setting `cluster.name: skohub`. See the provided [elasticsearch.yml](scripts/etc/elasticsearch/elasticsearch.yml). Also, in some contexts, it's mandatory to initialize elasticsearch with a proper [index-mapping](scripts/elasticsearch-mappings.json).
 
 ## start scripts
 You may want to use the start script in `scripts/start.sh`. This script ensures the proper
-installation of skohub-pubsub and the configuration of elasticsearch. There also reside
-further scripts to manage the starting/stopping of the skohub-pubsub via init and to
+installation of skohub-reconcile and the configuration of elasticsearch. There also reside
+further scripts to manage the starting/stopping of the skohub-reconcile via init and to
 monitor the processes with `monit`.
 
 ## Credits
-
-The project to create a stable beta version of SkoHub has been funded by the North-Rhine Westphalian Library Service Centre (hbz) and carried out in cooperation with [graphthinking GmbH](https://graphthinking.com/) in 2019/2020.
-
-<a target="_blank" href="https://www.hbz-nrw.de"><img src="https://skohub-io.github.io/skohub.io/img/hbz-logo.svg" width="120px"></a>
+The project to add a Reconciliation Service to SkoHub has been initiated by Andreas Wagner and carried out in cooperation with hbz in 2021/2022.
