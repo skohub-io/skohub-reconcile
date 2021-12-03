@@ -1,6 +1,8 @@
 [
 	{
 		"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e",
+		"tenant": "rg-mpg-de",
+		"vocab": "polmat",
 		"type": "Concept",
 		"followers": "https://skohub.io/followers?subject=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.4esp.5.e",
 		"inbox": "https://skohub.io/inbox?actor=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.4esp.5.e",
@@ -269,6 +271,8 @@
 	},
 	{
 		"id": "https://w3id.org/class/esc/n021",
+		"tenant": "class",
+		"vocab": "esc",
 		"type": "Concept",
 		"followers": "https://skohub.io/followers?subject=hbz%2Fvocabs-edu%2Fheads%2Fmaster%2Fw3id.org%2Fclass%2Fesc%2Fn021",
 		"inbox": "https://skohub.io/inbox?actor=hbz%2Fvocabs-edu%2Fheads%2Fmaster%2Fw3id.org%2Fclass%2Fesc%2Fn021",
@@ -427,6 +431,8 @@
 	},
 	{
 		"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1",
+		"tenant": "rg-mpg-de",
+		"vocab": "polmat",
 		"type": "Concept",
 		"followers": "https://skohub.io/followers?subject=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.2pso.1",
 		"inbox": "https://skohub.io/inbox?actor=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.2pso.1",
@@ -681,6 +687,8 @@
 		  "hasTopConcept": { "@container": "@set" }
 		},
 		"id": "https://w3id.org/rg-mpg-de/polmat/scheme",
+		"tenant": "rg-mpg-de",
+		"vocab": "polmat",
 		"type": "ConceptScheme",
 		"title": {
 		  "en": "MPIeR Categories of Matters regulated by Police Ordinances",
@@ -19420,6 +19428,8 @@
 		  "hasTopConcept": { "@container": "@set" }
 		},
 		"id": "https://w3id.org/class/esc/scheme",
+		"tenant": "class",
+		"vocab": "esc",
 		"type": "ConceptScheme",
 		"title": {
 		  "en": "Educational Subjects Classification",
