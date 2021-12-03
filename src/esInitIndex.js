@@ -1,10 +1,10 @@
 import fs from 'fs'
 import path from 'path'
-import { URL } from 'url';
+import { URL } from 'url'
 import config from './config.js'
 import * as esConnect from './esConnect.js'
 
-const __dirname = new URL('.', import.meta.url).pathname;
+const __dirname = new URL('.', import.meta.url).pathname
 
 const esClient = esConnect.esClient
 const streamData = fs.readFileSync(path.resolve(__dirname, 'esSampleData_bulk.ndjson'))

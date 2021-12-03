@@ -7,7 +7,7 @@
   "description": "Reconciliation API server for skohub",
   "main": "src/server.js",
   "scripts": {
-    "test": "eslint src/ && jest --forceExit",
+    "test": "eslint src/",
     "start": "node src/server.js"
   },
   "jest": {
