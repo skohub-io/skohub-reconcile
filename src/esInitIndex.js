@@ -34,8 +34,8 @@ async function resetIndex () {
     await esClient.indices.delete({ index })
   }
   await createIndex(index)
-  writeSampleDataToEs(index, streamData)
-  console.log(`Index ${index} has been reset and repopulated.`)
+  // writeSampleDataToEs(index, streamData)
+  console.log(`Index ${index} has been reset.`)
 };
 
 export { createIndex, resetIndex }
