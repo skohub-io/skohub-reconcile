@@ -10,15 +10,16 @@ for the the [SkoHub](http://skohub.io) core infrastructure.
 Dependencies:
 
 - elasticsearch 7.0
-- node-version >= v12.16.1
+- node-version >= v14.x
 
 Basic setup:
 
     $ git clone https://github.com/rg-mpg-de/skohub-reconcile.git
     $ cd skohub-reconcile
     # Copy `sample.env` to `.env` and adjust values therein
+    # Create the initial skohub-reconcile index:
+    # e.g. curl -X PUT "localhost:9200/skohub-reconcile"
     $ npm ci
-    $ npm test
     $ npm start
 
 This will start the Reconciliation service on the port specified with `APP_PORT` in `.env`. It accepts
@@ -29,6 +30,21 @@ Currently only reconciliation queries are supported. Preview, suggestion and dat
 
 The elasticsearch server must be populated when a vocabulary is published on skohub. This present service creates an
 appropriate index and takes PUT requests from skohub-vocabs, adding resources to the elasticsearch index.
+
+Here are setup instructions for using [vocabs-polmat](https://github.com/rg-mpg-de/vocabs-polmat):
+
+    $ git clone https://github.com/rg-mpg-de/skohub-vocabs.git
+    $ git checkout feature-reconc
+    # Copy `.env.sample` to `.env` and adjust values therein
+    $ cd data
+    $ wget https://raw.githubusercontent.com/rg-mpg-de/vocabs-polmat/main/polmat.ttl
+    $ cd ..
+    $ npm ci
+    $ npm run populate-reconc
+
+You can then POST queries to the server started in `skohub-reconcile`, e.g.
+
+    $ curl --data 'queries={"q1":{"query":"Bank"}}' http://localhost:3000/rg-mpg-de/polmat
 
 ## elasticsearch
 You need to run a properly configured `elasticsearch` instance by
