@@ -22,8 +22,8 @@ function _getLocalizedString ( obj, prefLang ) {
     if (prefLang != "" && obj[prefLang] != "") {
       return obj[prefLang]
     } else {
-      return obj[0]
-    }  
+      return Object.values(obj)[0]
+    }
   } else if (typeof obj === 'string' || obj instanceof String) {
     return obj
   }
