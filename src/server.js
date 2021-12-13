@@ -3,13 +3,13 @@ import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 import * as esConnect from './esConnect.js'
-import * as esInitIndex from './esInitIndex.js'
+// import * as esInitIndex from './esInitIndex.js'
 import * as router from './router.js'
 
 dotenv.config()
 const esClient = esConnect.esClient
 
-await esClient.ping()
+esClient.ping()
   .then(_ => {
     console.log('ElasticSearch server found')
   })
