@@ -1,20 +1,33 @@
 import * as esQueries from './esQueries.js'
 
-function _esToRec (doc) {
+function _esToRec (doc, prefLang) {
   const concept = doc._source
   return {
     'id': concept.id,
-    'name': concept.prefLabel || concept.title,
-    'description': concept.scopeNote || concept.description,
+    'name': _getLocalizedString(concept.prefLabel, prefLang) || _getLocalizedString(concept.title, prefLang),
+    'description': _getLocalizedString(concept.scopeNote, prefLang) || _getLocalizedString(concept.description, prefLang),
     'score': doc._score,
     'match': true,
     'type': [
       {
         'id': concept.type,
-        'name': concept.type
+        'name': _getLocalizedString(concept.type, prefLang)
       }
     ]
   }
+}
+
+function _getLocalizedString ( obj, prefLang ) {
+  if (Object.prototype.toString.call(obj) === '[object Object]') {
+    if (prefLang != "" && obj[prefLang] != "") {
+      return obj[prefLang]
+    } else {
+      return obj[0]
+    }  
+  } else if (typeof obj === 'string' || obj instanceof String) {
+    return obj
+  }
+  return null
 }
 
 async function vocab (req, res) {
@@ -42,6 +55,7 @@ async function manifest (req, res) {
 async function query (req, res) {
   const tenant = req.params.tenant
   const vocab = req.params.vocab
+  const prefLang = req.params.preflang
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
   // TODO: validate input. E.g.: if (!(paramsList instanceof Array)) throw Error('invalid argument: paramsList must be an array');
@@ -52,7 +66,7 @@ async function query (req, res) {
         var qData = []
         if (element.hits.hits) {
           element.hits.hits.forEach(doc => {
-            qData.push(_esToRec(doc))
+            qData.push(_esToRec(doc, prefLang))
           })
         }
         allData[reqQNames[index]] = { 'result': qData }

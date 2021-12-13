@@ -7,6 +7,10 @@ const routes = express.Router()
 routes.route('/:tenant/:vocab').get(controller.vocab) // either do a query (if ?queries parameter given), or return service manifest
 routes.route('/:tenant/:vocab').post(controller.query)
 
+// localized vocab endpoints: add a preferred language to the queries
+routes.route('/:preflang/:tenant/:vocab').get(controller.vocab) // either do a query (if ?queries parameter given), or return service manifest
+routes.route('/:preflang/:tenant/:vocab').post(controller.query)
+
 // routes.route('/:tenant/:vocab/suggest').get(controller.suggest)
 // routes.route('/:tenant/:vocab/extend').post(controller.extend)
 // routes.route('/:tenant/:vocab/preview').get(controller.preview)
