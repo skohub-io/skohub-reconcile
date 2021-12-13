@@ -19,7 +19,7 @@ await esClient.ping()
     process.exit()
   })
 
-esInitIndex.resetIndex()
+// esInitIndex.resetIndex()
 
 const app = express()
 

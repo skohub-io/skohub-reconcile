@@ -19,7 +19,7 @@ function _esToRec (doc, prefLang) {
 
 function _getLocalizedString ( obj, prefLang ) {
   if (Object.prototype.toString.call(obj) === '[object Object]') {
-    if (prefLang != "" && obj[prefLang] != "") {
+    if (prefLang && obj[prefLang] != "") {
       return obj[prefLang]
     } else {
       return Object.values(obj)[0]
