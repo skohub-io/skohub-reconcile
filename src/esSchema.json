@@ -352,6 +352,10 @@
 				"type": "keyword",
 				"index": true
 			},
+			"notation": {
+				"type": "keyword",
+				"index": true
+			},
 			"type" : {
 				"type": "keyword",
 				"index": true
