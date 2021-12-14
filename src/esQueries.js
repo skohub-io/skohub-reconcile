@@ -14,7 +14,7 @@ const esMultiFields = [
 ]
 
 async function query (tenant, vocab, reqQueries) {
-  console.log(`tenant, vocab, reqQueries: ${tenant}, ${vocab}, ${JSON.stringify(reqQueries)}`)
+  // console.log(`tenant, vocab, reqQueries: ${tenant}, ${vocab}, ${JSON.stringify(reqQueries)}`)
   var queries = ''
   for (var key in reqQueries) {
     const reqObject = esb.requestBodySearch()
@@ -28,7 +28,7 @@ async function query (tenant, vocab, reqQueries) {
     queries = queries + `{ "index": "${index}" }` + '\n'
     queries = queries + JSON.stringify(reqObject.toJSON()) + '\n'
   };
-   console.log(queries)
+  // console.log(queries)
 
   return esClient.msearch({
     body: queries
