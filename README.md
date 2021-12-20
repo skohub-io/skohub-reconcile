@@ -34,6 +34,7 @@ appropriate index and takes PUT requests from skohub-vocabs, adding resources to
 Here are setup instructions for using [vocabs-polmat](https://github.com/rg-mpg-de/vocabs-polmat):
 
     $ git clone https://github.com/rg-mpg-de/skohub-vocabs.git
+    $ cd skohub-vocabs
     $ git checkout feature-reconc
     # Copy `.env.sample` to `.env` and adjust values therein
     $ cd data
