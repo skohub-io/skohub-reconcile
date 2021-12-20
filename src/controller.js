@@ -48,7 +48,7 @@ async function manifest (req, res) {
     'identifierSpace': 'http://www.w3.org/2004/02/skos/core#Concept',
     'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
     'defaultTypes': [{ 'id': 'Concept', 'name': 'Concept' }, { 'id': 'ConceptScheme', 'name': 'ConceptScheme' }],
-    'view': { 'url': `https://skohub.io/${req.params.tenant}/${req.params.vocab}/heads/main/w3id.org/${req.params.tenant}/${req.params.vocab}/{{id}}` }
+    'view': { 'url': `{{id}}` }
   })
 }
 
