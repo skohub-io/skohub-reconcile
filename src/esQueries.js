@@ -22,7 +22,7 @@ async function query (tenant, vocab, reqQueries) {
         .must(esb.termQuery('tenant', tenant))
         .must(esb.termQuery('vocab', vocab))
         .must(esb.multiMatchQuery(esMultiFields, reqQueries[key].query))
-        .should( reqQueries[key]['type'] ? esb.queryStringQuery(reqQueries[key]['type']).defaultField('type').boost(2) : esb.queryStringQuery('Concept').defaultField('type') )
+        .should( reqQueries[key]['type'] ? esb.queryStringQuery(reqQueries[key]['type']).defaultField('type').boost(4) : esb.queryStringQuery('Concept').defaultField('type') )
       )
       .size(reqQueries[key].limit || 5)
     queries = queries + `{ "index": "${index}" }` + '\n'
