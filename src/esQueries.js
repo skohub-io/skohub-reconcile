@@ -1,4 +1,4 @@
-import * as esb from 'elastic-builder'
+import esb from 'elastic-builder'
 import config from './config.js'
 import * as esConnect from './esConnect.js'
 
