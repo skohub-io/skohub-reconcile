@@ -9,7 +9,7 @@
 ####
 
 # config
-PORT=3004 # the port skohub-reconcile runs at
+PORT=3004                     # the port skohub-reconcile runs at
 ES_NODE=http://localhost:9200 # where your elasticsearch runs
 # end config
 

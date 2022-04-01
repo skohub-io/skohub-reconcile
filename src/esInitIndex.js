@@ -7,10 +7,9 @@ import * as esConnect from './esConnect.js'
 const __dirname = new URL('.', import.meta.url).pathname
 
 const esClient = esConnect.esClient
-const streamData = fs.readFileSync(path.resolve(__dirname, 'esSampleData_bulk.ndjson'))
-const schema = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'esSchema.json')))
-
 const index = config.es_index
+const schema = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'esSchema.json')))
+const sampleData = fs.readFileSync(path.resolve(__dirname, 'esSampleData_bulk.ndjson'))
 
 async function writeSampleDataToEs (index, streamData) {
   esClient.bulk({
@@ -29,12 +28,13 @@ async function createIndex (name) {
   return esClient.indices.create({ index: name, body: schema })
 };
 
-async function resetIndex () {
+async function resetIndex (writeSampleData) {
   if (esClient.indices.exists({ index })) {
     await esClient.indices.delete({ index })
   }
   await createIndex(index)
-  // writeSampleDataToEs(index, streamData)
+  if (writeSampleData)
+    writeSampleDataToEs(index, sampleData)
   console.log(`Index ${index} has been reset.`)
 };
 

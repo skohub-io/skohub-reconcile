@@ -9,6 +9,7 @@ let config = {
   es_pass: process.env.ES_PASSWORD,
   es_index: process.env.ES_INDEX,
   es_type: process.env.ES_TYPE,
+  es_threshold: process.env.ES_THRESH,
   app_port: process.env.APP_PORT
 }
 

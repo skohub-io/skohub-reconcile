@@ -1,11 +1,9 @@
 [
 	{
-		"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e",
-		"tenant": "rg-mpg-de",
-		"vocab": "polmat",
+		"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e",
 		"type": "Concept",
-		"followers": "https://skohub.io/followers?subject=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.4esp.5.e",
-		"inbox": "https://skohub.io/inbox?actor=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.4esp.5.e",
+		"followers": "https://skohub.io/followers?subject=rhonda%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frhonda%2Fpolmat%2Fn01.4esp.5.e",
+		"inbox": "https://skohub.io/inbox?actor=rhonda%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frhonda%2Fpolmat%2Fn01.4esp.5.e",
 		"prefLabel": {
 		  "en": "Journeymen",
 		  "de": "Gesellen",
@@ -21,7 +19,7 @@
 		],
 		"narrower": [
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.01",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.01",
 			"prefLabel": {
 			  "en": "Work on own Account",
 			  "de": "Arbeit auf eigene Rechnung",
@@ -29,7 +27,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.02",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.02",
 			"prefLabel": {
 			  "en": "Work Conditions",
 			  "de": "Arbeitsbedingungen",
@@ -37,7 +35,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.03",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.03",
 			"prefLabel": {
 			  "en": "labor disputs",
 			  "de": "Arbeitskonflikte",
@@ -45,7 +43,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.04",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.04",
 			"prefLabel": {
 			  "en": "quantity of labor",
 			  "de": "Arbeitsquantum",
@@ -53,7 +51,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.05",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.05",
 			"prefLabel": {
 			  "en": "Working hours",
 			  "de": "Arbeitszeit",
@@ -61,7 +59,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.06",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.06",
 			"prefLabel": {
 			  "en": "Begging ban",
 			  "de": "Bettelverbot",
@@ -69,7 +67,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.07",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.07",
 			"prefLabel": {
 			  "en": "Wages / pay",
 			  "de": "Entlohnung",
@@ -77,7 +75,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.08",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.08",
 			"prefLabel": {
 			  "en": "Marriage ban",
 			  "de": "Heiratsverbot",
@@ -85,7 +83,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.09",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.09",
 			"prefLabel": {
 			  "en": "Communication",
 			  "de": "Kommunikation",
@@ -93,7 +91,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.10",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.10",
 			"prefLabel": {
 			  "en": "Trainingsyears / courage years / fellowship year",
 			  "de": "Mutjahr",
@@ -101,7 +99,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.11",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.11",
 			"prefLabel": {
 			  "en": "Qualification",
 			  "de": "Qualifikation",
@@ -109,7 +107,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.12",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.12",
 			"prefLabel": {
 			  "en": "Strike",
 			  "de": "Streik",
@@ -117,7 +115,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.13",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.13",
 			"prefLabel": {
 			  "en": "Associations",
 			  "de": "Vereinigungen",
@@ -125,7 +123,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.14",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.14",
 			"prefLabel": {
 			  "en": "Behaviour",
 			  "de": "Verhalten",
@@ -133,7 +131,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.15",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.15",
 			"prefLabel": {
 			  "en": "Roaming the Country",
 			  "de": "Wandern",
@@ -141,7 +139,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.16",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.16",
 			"prefLabel": {
 			  "en": "Duty to testify",
 			  "de": "Zeugnispflicht",
@@ -149,7 +147,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5.e.17",
+			"id": "https://w3id.org/rhonda/polmat/n01.4esp.5.e.17",
 			"prefLabel": {
 			  "en": "Admission",
 			  "de": "Zulassung",
@@ -158,7 +156,7 @@
 		  }
 		],
 		"broader": {
-		  "id": "https://w3id.org/rg-mpg-de/polmat/n01.4esp.5",
+		  "id": "https://w3id.org/rhonda/polmat/n01.4esp.5",
 		  "prefLabel": {
 			"en": "4.5 Craft and trade",
 			"de": "4.5 Handwerk und Gewerbe",
@@ -166,7 +164,7 @@
 		  }
 		},
 		"inScheme": {
-		  "id": "https://w3id.org/rg-mpg-de/polmat/scheme",
+		  "id": "https://w3id.org/rhonda/polmat/scheme",
 		  "title": {
 			"en": "MPIeR Categories of Matters regulated by Police Ordinances",
 			"de": "MPIeR Materien der Policeyordnungen",
@@ -271,8 +269,6 @@
 	},
 	{
 		"id": "https://w3id.org/class/esc/n021",
-		"tenant": "class",
-		"vocab": "esc",
 		"type": "Concept",
 		"followers": "https://skohub.io/followers?subject=hbz%2Fvocabs-edu%2Fheads%2Fmaster%2Fw3id.org%2Fclass%2Fesc%2Fn021",
 		"inbox": "https://skohub.io/inbox?actor=hbz%2Fvocabs-edu%2Fheads%2Fmaster%2Fw3id.org%2Fclass%2Fesc%2Fn021",
@@ -428,12 +424,10 @@
 		}
 	},
 	{
-		"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1",
-		"tenant": "rg-mpg-de",
-		"vocab": "polmat",
+		"id": "https://w3id.org/rhonda/polmat/n01.2pso.1",
 		"type": "Concept",
-		"followers": "https://skohub.io/followers?subject=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.2pso.1",
-		"inbox": "https://skohub.io/inbox?actor=rg-mpg-de%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frg-mpg-de%2Fpolmat%2Fn01.2pso.1",
+		"followers": "https://skohub.io/followers?subject=rhonda%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frhonda%2Fpolmat%2Fn01.2pso.1",
+		"inbox": "https://skohub.io/inbox?actor=rhonda%2Fvocabs-polmat%2Fheads%2Fmain%2Fw3id.org%2Frhonda%2Fpolmat%2Fn01.2pso.1",
 		"prefLabel": {
 		  "en": "2.1 Amusement",
 		  "de": "2.1 Vergnügungen & Öffentliche Leichtfertigkeit",
@@ -449,7 +443,7 @@
 		],
 		"narrower": [
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.a",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.a",
 			"prefLabel": {
 			  "en": "Superstition",
 			  "de": "Aberglaube",
@@ -457,7 +451,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.b",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.b",
 			"prefLabel": {
 			  "en": "Gambling",
 			  "de": "Glücksspiel",
@@ -465,7 +459,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.c",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.c",
 			"prefLabel": {
 			  "en": "Gross Mischief",
 			  "de": "Grober Unfug",
@@ -473,7 +467,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.d",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.d",
 			"prefLabel": {
 			  "en": "Idleness",
 			  "de": "Müßiggang/Verschwendung",
@@ -481,7 +475,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.e",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.e",
 			"prefLabel": {
 			  "en": "Public Plays",
 			  "de": "Schauspiel",
@@ -489,7 +483,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.f",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.f",
 			"prefLabel": {
 			  "en": "Opening Hours",
 			  "de": "Sperrstunde",
@@ -497,7 +491,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.g",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.g",
 			"prefLabel": {
 			  "en": "Libel",
 			  "de": "Spottgesang",
@@ -505,7 +499,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.h",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.h",
 			"prefLabel": {
 			  "en": "Dancing",
 			  "de": "Tanzen",
@@ -513,7 +507,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.i",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.i",
 			"prefLabel": {
 			  "en": "Parades",
 			  "de": "Umzüge/Feste",
@@ -521,7 +515,7 @@
 			}
 		  },
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso.1.j",
+			"id": "https://w3id.org/rhonda/polmat/n01.2pso.1.j",
 			"prefLabel": {
 			  "en": "Drunkenness",
 			  "de": "Zutrinken/Trunksucht",
@@ -530,7 +524,7 @@
 		  }
 		],
 		"broader": {
-		  "id": "https://w3id.org/rg-mpg-de/polmat/n01.2pso",
+		  "id": "https://w3id.org/rhonda/polmat/n01.2pso",
 		  "prefLabel": {
 			"en": "2 Public Order and Safety",
 			"de": "2 Öffentliche Sicherheit und Ordnung",
@@ -538,7 +532,7 @@
 		  }
 		},
 		"inScheme": {
-		  "id": "https://w3id.org/rg-mpg-de/polmat/scheme",
+		  "id": "https://w3id.org/rhonda/polmat/scheme",
 		  "title": {
 			"en": "MPIeR Categories of Matters regulated by Police Ordinances",
 			"de": "MPIeR Materien der Policeyordnungen",
@@ -680,9 +674,7 @@
 		  "exactMatch": { "@container": "@set" },
 		  "hasTopConcept": { "@container": "@set" }
 		},
-		"id": "https://w3id.org/rg-mpg-de/polmat/scheme",
-		"tenant": "rg-mpg-de",
-		"vocab": "polmat",
+		"id": "https://w3id.org/rhonda/polmat/scheme",
 		"type": "ConceptScheme",
 		"title": {
 		  "en": "MPIeR Categories of Matters regulated by Police Ordinances",
@@ -695,7 +687,7 @@
 		},
 		"hasTopConcept": [
 		  {
-			"id": "https://w3id.org/rg-mpg-de/polmat/n0",
+			"id": "https://w3id.org/rhonda/polmat/n0",
 			"notation": ["0"],
 			"prefLabel": {
 			  "en": "Regulatory Matter",
@@ -748,8 +740,6 @@
 		  "hasTopConcept": { "@container": "@set" }
 		},
 		"id": "https://w3id.org/class/esc/scheme",
-		"tenant": "class",
-		"vocab": "esc",
 		"type": "ConceptScheme",
 		"title": {
 		  "en": "Educational Subjects Classification",

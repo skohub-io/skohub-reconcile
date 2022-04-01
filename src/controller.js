@@ -1,13 +1,14 @@
+import config from './config.js'
 import * as esQueries from './esQueries.js'
 
-function _esToRec (doc, prefLang) {
+function _esToRec (doc, prefLang, threshold) {
   const concept = doc._source
-  return {
+  let obj = {
     'id': concept.id,
     'name': _getLocalizedString(concept.prefLabel, prefLang) || _getLocalizedString(concept.title, prefLang),
     'description': _getLocalizedString(concept.scopeNote, prefLang) || _getLocalizedString(concept.description, prefLang),
     'score': doc._score,
-    'match': true,
+    'match': ( parseFloat(doc._score) > threshold ? true : false ),
     'type': [
       {
         'id': concept.type,
@@ -15,6 +16,9 @@ function _esToRec (doc, prefLang) {
       }
     ]
   }
+  if (concept.inScheme)
+    obj.inScheme = concept.inScheme
+  return obj
 }
 
 function _getLocalizedString ( obj, prefLang ) {
@@ -40,11 +44,10 @@ async function vocab (req, res) {
 }
 
 async function manifest (req, res) {
-  const tenant = req.params.tenant
   const vocab = req.params.vocab
   res.send({
     'versions': ['0.2'],
-    'name': `SkoHub reconciliation service for ${tenant}/${vocab}`,
+    'name': `SkoHub reconciliation service for ${vocab}`,
     'identifierSpace': 'http://www.w3.org/2004/02/skos/core#Concept',
     'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
     'defaultTypes': [{ 'id': 'Concept', 'name': 'Concept' }, { 'id': 'ConceptScheme', 'name': 'ConceptScheme' }],
@@ -53,20 +56,20 @@ async function manifest (req, res) {
 }
 
 async function query (req, res) {
-  const tenant = req.params.tenant
   const vocab = req.params.vocab
-  const prefLang = req.params.preflang
+  const threshold = (req.params.threshold ? req.params.threshold : config.es_threshold)
+  const prefLang = req.query.lang
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
   // TODO: validate input. E.g.: if (!(paramsList instanceof Array)) throw Error('invalid argument: paramsList must be an array');
-  await esQueries.query(tenant, vocab, reqJSON)
+  await esQueries.query(vocab, reqJSON)
     .then(resp => {
       var allData = {}
       resp.body.responses.forEach((element, index) => {
         var qData = []
         if (element.hits.hits) {
           element.hits.hits.forEach(doc => {
-            qData.push(_esToRec(doc, prefLang))
+            qData.push(_esToRec(doc, prefLang, threshold))
           })
         }
         allData[reqQNames[index]] = { 'result': qData }

@@ -340,14 +340,6 @@
 				"type": "keyword",
 				"index": true
 			},
-			"tenant": {
-				"type": "keyword",
-				"index": true
-			},
-			"vocab": {
-				"type": "keyword",
-				"index": true
-			},
 			"id": {
 				"type": "keyword",
 				"index": true
