@@ -2,7 +2,7 @@
 
 ![https://github.com/rg-mpg-de/skohub-reconcile/actions?query=workflow%3ABuild](https://github.com/rg-mpg-de/skohub-reconcile/workflows/Build/badge.svg?branch=main)
 
-# skohub-reconcile
+## skohub-reconcile
 
 This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/)
 for the the [SkoHub](http://skohub.io) core infrastructure.
@@ -45,7 +45,7 @@ Here are setup instructions for using [vocabs-polmat](https://github.com/rg-mpg-
 
 You can then POST queries to the server started in `skohub-reconcile`, e.g.
 
-    $ curl --data 'queries={"q1":{"query":"Bank"}}' http://localhost:3000/rg-mpg-de/polmat
+    curl --data 'queries={"q1":{"query":"Bank"}}' http://localhost:3000/rg-mpg-de/polmat
 
 ## elasticsearch
 You need to run a properly configured `elasticsearch` instance by
