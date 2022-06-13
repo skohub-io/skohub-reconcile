@@ -16,10 +16,17 @@ Basic setup:
 
     $ git clone https://github.com/rg-mpg-de/skohub-reconcile.git
     $ cd skohub-reconcile
-    # Copy `sample.env` to `.env` and adjust values therein
-    # Create the initial skohub-reconcile index:
-    # e.g. curl -X PUT "localhost:9200/skohub-reconcile"
+    # - Copy `sample.env` to `.env` and adjust values therein
+    # - When you run skohub-reconcile, the necessary elasticsearch
+    #     index should be created automatically. If it isn't, or if
+    #     you want to recreate it later manually, use a PUT request
+    #     to submit the mapping, e.g. with curl:
+    #   > curl -X PUT -H "Content-Type: application/json" \
+    #     --url "localhost:9200/skohub-reconcile" \
+    #     -d @src/esSchema.json
+    # - Configure/install the necessary node.js modules:
     $ npm ci
+    # - Run skohub-reconcile:
     $ npm start
 
 This will start the Reconciliation service on the port specified with `APP_PORT` in `.env`. It accepts
@@ -45,7 +52,17 @@ Here are setup instructions for using [vocabs-polmat](https://github.com/rg-mpg-
 
 You can then POST queries to the server started in `skohub-reconcile`, e.g.
 
-    curl --data 'queries={"q1":{"query":"Bank"}}' http://localhost:3000/rg-mpg-de/polmat
+    curl -X POST --data 'queries={"q1":{"query":"Bank"}}' http://localhost:3000/rg-mpg-de/polmat
+
+Also, GET queries are supported, e.g.
+
+    curl -X GET --url 'https:///w3id.org/mpilhlt/reconcile/worktime_role?queries=%7B%22qPause%22%3A%7B%22query%22%3A%22W%C3%B6chnerin%22%7D%7D'
+
+(This may be handy if your reconciliation service is behind a 302-redirection
+that makes your client translate all POST requests to GET ones. In this case,
+the POST request's body would be lost and it is better to send a GET request
+in the first place. But all the curly crackets, quotation marks etc. have to
+be url-escaped.)
 
 ## elasticsearch
 You need to run a properly configured `elasticsearch` instance by
