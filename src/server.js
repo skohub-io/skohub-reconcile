@@ -3,14 +3,14 @@ import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 import * as esConnect from './esConnect.js'
-// import * as esInitIndex from './esInitIndex.js'
+import * as esInitIndex from './esInitIndex.js'
 import * as router from './router.js'
 
 dotenv.config()
 const esClient = esConnect.esClient
 
 esClient.ping()
-  .then(_ => {
+  .then(async _ => {
     console.log('ElasticSearch server found')
   })
   .catch(error => {
@@ -19,7 +19,23 @@ esClient.ping()
     process.exit()
   })
 
-// esInitIndex.resetIndex()
+if (not(esClient.indices.exists(process.env.ES_INDEX))) {
+  console.log(`Index ${process.env.ES_INDEX} does not exist. Creating index...`)
+  esInitIndex.createIndex()
+  .catch(error => {
+    console.log('Error in creating index! Exiting...')
+    process.exit()
+  })
+}
+
+if (process.argv[2] == 'reset') {
+  console.log(`Resetting index ${process.env.ES_INDEX} ...`)
+  esInitIndex.resetIndex(process.argv[3])
+  .catch(error => {
+    console.log('Error in resetting index! Exiting...')
+    process.exit()
+  })
+}
 
 const app = express()
 

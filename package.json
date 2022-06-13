@@ -8,7 +8,8 @@
   "main": "src/server.js",
   "scripts": {
     "test": "eslint src/",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "start-reset": "node src/server.js reset"
   },
   "jest": {
     "testEnvironment": "node"
