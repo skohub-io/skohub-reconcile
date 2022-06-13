@@ -10,7 +10,8 @@ let config = {
   es_index: process.env.ES_INDEX,
   es_type: process.env.ES_TYPE,
   es_threshold: process.env.ES_THRESH,
-  app_port: process.env.APP_PORT
+  app_port: process.env.APP_PORT,
+  app_view_baseurl: process.env.APP_VIEW_BASEURL
 }
 
 if (result.error) {
