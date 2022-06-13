@@ -41,4 +41,55 @@ async function query (vocab, reqQueries) {
   })
 }
 
-export { query }
+async function exists_vocab (vocab) {
+  esClient.indices.get(vocab)
+}
+
+async function q_vocab (vocab) {
+  const reqObject = esb.requestBodySearch()
+    .query(esb.boolQuery()
+      .must([esb.boolQuery()
+        .should([ esb.termQuery('id', vocab),
+                  esb.termQuery('id', 'http://' + vocab),
+                  esb.termQuery('id', 'https://' + vocab),
+                  esb.termQuery('vocab', vocab)
+                ]),
+        esb.termQuery('type', 'ConceptScheme')
+      ])
+    .size(reqQueries[key].limit || 5))
+  return esClient.msearch({
+    body: JSON.stringify(reqObject.toJSON())
+  })
+}
+
+/*
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match": {
+                        "tenant": "rg-mpg-de"
+					          }
+				        },
+                {
+                    "match": {
+                        "vocab": "work_time_regulation"
+                    }
+                },
+                {
+                  "query_string": {
+                      "query": "ConceptScheme",
+                      "default_field": "type"
+                      }
+                }
+            ]
+		    }
+	  }
+*/
+
+// See https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/suggest_examples.html
+async function get_suggestions (vocab, string) {
+  esClient.termsEnum()
+}
+
+export { query, q_vocab }
