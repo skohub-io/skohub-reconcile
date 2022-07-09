@@ -12,43 +12,42 @@ curl --request POST \
   --data '{
     "from": 0,
     "size": 35,
-        "track_total_hits": true,
+		"track_total_hits": true,
     "query": {
         "bool": {
-                        "must": [
+            "must": [
                 {
-                    "bool": {
-                        "should": [
-                            {
-                                "term": {
-                                    "inScheme.id": "https://w3id.org/rhonda/polmat/scheme"
-                                }
-                            },
-                            {
-                                "term": {
-                                    "id": "https://w3id.org/rhonda/polmat/scheme"
-                                }
-                            }
-                        ]
-                    }
+					"bool": {
+						"should": [
+							{
+								"term": {
+									"inScheme.id": "https://w3id.org/mpilhlt/worktime_role/scheme"
+								}
+							},
+							{
+								"term": {
+									"id": "https://w3id.org/mpilhlt/worktime_role/scheme"
+								}
+							}
+						]
+					}
                 },
                 {
                     "multi_match" : {
-                        "query":    "Gesell",
+                        "query":    "Arbeit",
                         "fields": [ "prefLabel*^4.0", "altLabel*^2.0", "hiddenLabel*^1.5","title*^3.0", "description*^1.0"] 
                     }
                 }
             ],
-            "should": [
-                {
-                    "query_string": {
-                        "query": "Concept",
-                        "default_field": "type"
-                    }
-                }
-            ]
-        }
-    }
+			"should": [
+				{
+    				"query_string": {
+      					"query": "Concept",
+      					"default_field": "type"
+					}
+    			}
+			]
+		}
+	}
 }
 '
-

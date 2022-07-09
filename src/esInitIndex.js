@@ -25,17 +25,18 @@ async function writeSampleDataToEs (index, streamData) {
 };
 
 async function createIndex (name) {
+  console.log(`- (re)creating index '${name}' ...`)
   return esClient.indices.create({ index: name, body: schema })
 };
 
 async function resetIndex (writeSampleData) {
-  if (esClient.indices.exists({ index })) {
-    await esClient.indices.delete({ index })
+  if ((await esClient.indices.exists({ index: index })).body) {
+    await esClient.indices.delete({ index: index })
   }
   await createIndex(index)
   if (writeSampleData)
     writeSampleDataToEs(index, sampleData)
-  console.log(`Index ${index} has been reset.`)
+  console.log(`    index '${index}' has been reset.`)
 };
 
 export { createIndex, resetIndex }

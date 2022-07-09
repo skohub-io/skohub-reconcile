@@ -3,20 +3,59 @@ import * as controller from './controller.js'
 
 const routes = express.Router()
 
-// vocab endpoints: query for concepts inside vocabularies/conceptSchemes
-// routes.route('/:tenant/:vocab').get(controller.vocab) // either do a query (if ?queries parameter given), or return service manifest
-// routes.route('/:tenant/:vocab').post(controller.query)
-routes.route('/:vocab*/reconcile').get(controller.vocab) // either do a query (if ?queries parameter given), or return service manifest
-routes.route('/:vocab*/reconcile').post(controller.query)
+// In the subsequent routes, route parameters (tenant, vocab, language names and ids)
+//   *must not* begin with an underscore ('_').
+// Fixed service endpoints, by contrast, do start with an underscore
+//   ('_preview', '_suggest' etc.)
 
-// routes.route('/:tenant/:vocab/suggest').get(controller.suggest)
-// routes.route('/:tenant/:vocab/extend').post(controller.extend)
-// routes.route('/:tenant/:vocab/preview').get(controller.preview)
-// routes.route('/:tenant/:vocab/flyout').get(controller.flyout)
+// A. vocab endpoints: *inside* vocabularies/conceptSchemes
+// i. either do reconciliation query (if ?queries parameter given), or return service manifest
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})').get(controller.vocab)
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})/:lang([a-zA-Z][a-zA-Z_-]{0,})').get(controller.vocab)
 
-// TODO: root endpoint: query for vocabularies/conceptSchemes
-// routes.route('/').get(controller.root_manifest)
-// routes.route('/').post(controller.root_query)
+// ii. do a reconciliation query for concepts or the vocabulary
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})').post(controller.query)
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})/:lang([a-zA-Z][a-zA-Z_-]{0,})').post(controller.query)
+
+// iii. do a preview for a concept
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})/_preview/:id([a-zA-Z0-9][a-zA-Z0-9._-]{0,})').get(controller.preview)
+
+// iv. give a suggestion for a concept
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})/_suggest/entity').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
+
+// v. other services
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})/_extend').post(controller.extend)
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})/_flyout').get(controller.flyout)
+
+// B. tenant's vocabs endpoint: *among* vocabularies
+// i. either do reconciliation query (if ?queries parameter given), or return service manifest
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.vocab)
+
+// ii. do a reconciliation query for vocabularies
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.query)
+
+// iii. do a preview for a vocabulary
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_preview/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})(/:id([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,}))?').get(controller.preview)
+
+// iv. give a suggestion for a vocabuly
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_suggest/vocab').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
+
+// v. other services
+
+// C. root vocabs endpoint: *among* vocabularies (of all tenants)
+// i. either do reconciliation query (if ?queries parameter given), or return service manifest
+routes.route('/').get(controller.vocab)
+
+// ii. do a reconciliation query for vocabularies
+routes.route('/').post(controller.query)
+
+// iii. do a preview for a vocabulary
+routes.route('/_preview/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,})(/:id([a-zA-Z0-9%.][a-zA-Z0-9%._-]{0,}))?').get(controller.preview)
+
+// iv. give a suggestion for a vocabuly
+routes.route('/_suggest/vocab').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
+
+// v. other services
 
 // TODO: check for undefined tenants/vocabularies and report 404
 

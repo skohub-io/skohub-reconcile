@@ -1,6 +1,6 @@
 # Build
 
-![https://github.com/rg-mpg-de/skohub-reconcile/actions?query=workflow%3ABuild](https://github.com/rg-mpg-de/skohub-reconcile/workflows/Build/badge.svg?branch=main)
+![https://github.com/mpilhlt/skohub-reconcile/actions?query=workflow%3ABuild](https://github.com/mpilhlt/skohub-reconcile/workflows/Build/badge.svg?branch=main)
 
 ## skohub-reconcile
 

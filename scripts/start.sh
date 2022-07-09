@@ -15,8 +15,8 @@ ES_NODE=http://localhost:9200 # where your elasticsearch runs
 
 # NOTHING TO CHANGE BELOW THIS LINE
 
-INDEX_NAME=skohub
 NAME=skohub-reconcile
+INDEX_NAME=skohub-reconcile
 NODE_VERSION="v12.16.1"
 
 if [ -n "$(lsof -i:$PORT)" ]; then

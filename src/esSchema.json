@@ -57,6 +57,21 @@
 							"ascii": {
 								"type": "text",
 								"analyzer": "ascii"
+							},
+							"completion": {
+								"type": "completion",
+								"contexts": [
+									{
+										"name": "tenant",
+										"type": "category",
+										"path": "tenant"
+									},
+									{
+										"name": "vocab",
+										"type": "category",
+										"path": "vocab"
+									}
+								]
 							}
 						},
 						"copy_to": "prefLabel_all",
@@ -81,6 +96,21 @@
 							"ascii": {
 								"type": "text",
 								"analyzer": "ascii"
+							},
+							"completion": {
+								"type": "completion",
+								"contexts": [
+									{
+										"name": "tenant",
+										"type": "category",
+										"path": "tenant"
+									},
+									{
+										"name": "vocab",
+										"type": "category",
+										"path": "vocab"
+									}
+								]
 							}
 						},
 						"copy_to": "altLabel_all",
@@ -105,6 +135,21 @@
 							"ascii": {
 								"type": "text",
 								"analyzer": "ascii"
+							},
+							"completion": {
+								"type": "completion",
+								"contexts": [
+									{
+										"name": "tenant",
+										"type": "category",
+										"path": "tenant"
+									},
+									{
+										"name": "vocab",
+										"type": "category",
+										"path": "vocab"
+									}
+								]
 							}
 						},
 						"copy_to": "hiddenLabel_all",
@@ -112,7 +157,6 @@
 					}
 				}
 			},
-
 			{
 				"title": {
 					"path_match": "title.*",
@@ -130,6 +174,21 @@
 							"ascii": {
 								"type": "text",
 								"analyzer": "ascii"
+							},
+							"completion": {
+								"type": "completion",
+								"contexts": [
+									{
+										"name": "tenant",
+										"type": "category",
+										"path": "tenant"
+									},
+									{
+										"name": "vocab",
+										"type": "category",
+										"path": "vocab"
+									}
+								]
 							}
 						},
 						"copy_to": "title_all",
@@ -137,6 +196,7 @@
 					}
 				}
 			},
+
 			{
 				"description": {
 					"path_match": "description.*",
@@ -161,7 +221,6 @@
 					}
 				}
 			},
-
 			{
 				"note": {
 					"path_match": "note.*",
@@ -337,6 +396,10 @@
 				"enabled": false
 			},
 			"inScheme.id": {
+				"type": "keyword",
+				"index": true
+			},
+			"tenant": {
 				"type": "keyword",
 				"index": true
 			},
