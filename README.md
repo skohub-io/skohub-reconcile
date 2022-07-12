@@ -69,17 +69,18 @@ Currently only reconciliation, preview and suggestion queries are supported. Dat
 
 ## Populating the service with data
 
-The elasticsearch server must be populated by means other than this service itself. One possibility is to use a version of
-skohub-vocabs that integrates the reconciliation population function to publish your vocabulary. 
+The elasticsearch server must be populated by means other than this service itself.
+One possibility is to use a version of skohub-vocabs that integrates the
+reconciliation population function to publish your vocabulary.
 
-Here are setup instructions for using [vocabs-polmat](https://github.com/rg-mpg-de/vocabs-polmat):
+Here are setup instructions for using skohub-vocabs' [reconc feature branch](https://github.com/mpilhlt/skohub-vocabs/tree/feature-reconc) with the [vocabs-polmat](https://github.com/rhonda-org/vocabs-polmat) vocabulary:
 
-    $ git clone https://github.com/rg-mpg-de/skohub-vocabs.git
+    $ git clone https://github.com/mpilhlt/skohub-vocabs.git
     $ cd skohub-vocabs
     $ git checkout feature-reconc
     # Copy `.env.sample` to `.env` and adjust values therein
     $ cd data
-    $ wget https://raw.githubusercontent.com/rg-mpg-de/vocabs-polmat/main/polmat.ttl
+    $ wget https://raw.githubusercontent.com/rhonda-org/vocabs-polmat/main/polmat.ttl
     $ cd ..
     $ npm ci
     $ npm run populate-reconc
