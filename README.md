@@ -52,15 +52,13 @@ Projects are managed based on a "tenant" account and the respective vocabulary's
   - `$APP_BASEURL/jdoe/_preview`: needs to be complemented with a full `/vocab` or `/vocab/conceptid` path (e.g. `$APP_BASEURL/jdoe/_preview/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/concept1`) and responds with a html preview of the vocabulary or concept to `GET` requests.
 
 - `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab`:
-  - `GET` gives a manifest for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries).
-      curl -X GET --url 'https:///w3id.org/jdoe/reconcile/my-vocab?queries=%7B%22q1%22%3A%7B%22query%22%3A%22needle%22%7D%7D'
+  - `GET` gives a manifest for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries). E.g.: `curl -X GET --url 'https:///w3id.org/jdoe/reconcile/my-vocab?queries=%7B%22q1%22%3A%7B%22query%22%3A%22needle%22%7D%7D'`
   (This may be handy if your reconciliation service is behind a 302-redirection that makes
   your client translate all POST requests to GET ones. In this case, the POST request's body
   would be lost and it is better to send a GET request in the first place. But all the curly
   brackets, quotation marks etc. have to be url-escaped.)
 
-  - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for this vocabulary.
-        curl -X POST --data 'queries={"q1":{"query":"needle"}}' http://localhost:3000/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab
+  - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for this vocabulary. E.g.: `curl -X POST --data 'queries={"q1":{"query":"needle"}}' http://localhost:3000/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab`
   - `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_preview`: needs to be complemented with a `/conceptid` path (e.g. `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_preview/concept1`) and responds with a html preview of the vocabulary or concept to `GET` requests.
   - `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_suggest/entity`: needs to be complemented with a `?prefix=nee` query and responds to `GET` requests with a list of autocomplete suggestions for the specified prefix (an array of objects each containing `name` and `id` fields).
 
