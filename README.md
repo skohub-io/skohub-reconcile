@@ -1,8 +1,6 @@
-# Build
+# skohub-reconcile
 
 ![https://github.com/mpilhlt/skohub-reconcile/actions?query=workflow%3ABuild](https://github.com/mpilhlt/skohub-reconcile/workflows/Build/badge.svg?branch=main)
-
-## skohub-reconcile
 
 This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/)
 for the the [SkoHub](http://skohub.io) core infrastructure.
@@ -12,7 +10,13 @@ Dependencies:
 - elasticsearch 7.0
 - node-version >= v14.x
 
-Basic setup:
+## Basic setup
+
+Make sure your elasticsearch server is running and properly configured. (For instance,
+it needs to have `cluster.name: skohub` set. See the provided
+[elasticsearch.yml](scripts/etc/elasticsearch/elasticsearch.yml).)
+
+Then:
 
     $ git clone https://github.com/rg-mpg-de/skohub-reconcile.git
     $ cd skohub-reconcile
@@ -29,14 +33,46 @@ Basic setup:
     # - Run skohub-reconcile:
     $ npm start
 
-This will start the Reconciliation service on the port specified with `APP_PORT` in `.env`. It accepts
-queries according to the [Reconciliation Service specification](https://reconciliation-api.github.io/specs/latest/)
-at endpoints corresponding to all hosted vocabularies, e.g. `/project/vocab`, `/class/esc`, or `/rg-mpg-de/polmat` etc.
+This will start the Reconciliation service on the port specified with `APP_PORT` in `.env`.
 
-Currently only reconciliation queries are supported. Preview, suggestion and data extensions support is on the roadmap.
+## Querying the service
 
-The elasticsearch server must be populated when a vocabulary is published on skohub. This present service creates an
-appropriate index and takes PUT requests from skohub-vocabs, adding resources to the elasticsearch index.
+The skohub reconcile service accepts queries according to the [Reconciliation Service specification](https://reconciliation-api.github.io/specs/latest/) at endpoints created below the url specified in `.env` in `APP_BASEURL`.
+
+Projects are managed based on a "tenant" account and the respective vocabulary's URI (where the latter is [URI-encoded](https://en.wikipedia.org/wiki/Percent-encoding) - if you need a converter, you may want to try [urlencoder.io](https://www.urlencoder.io/) - and taken either from the ConceptScheme's `http://purl.org/vocab/vann/preferredNamespaceUri` property or from the ConceptScheme's `id` value up to and including the last forward slash `/`). For a `tenant` called "jdoe" and a vocabulary "http://w3id.org/jdoe/my-vocab", the following four levels of endpoints are provided:
+
+- `$APP_BASEURL/`:
+  - `GET` gives a manifest for the whole collection of vocabularies hosted by this service. In addition to regular [reconciliation manifest](https://reconciliation-api.github.io/specs/latest/#service-manifest) fields, it features a field `vocabs` that contains an array of vocabulary objects, each of which has `id`, (multilingual) `title`, (multilingual) `description` and `reconciliation` fields - with the latter pointing to the reconciliation endpoint for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries).
+  - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for vocabularies hosted by the service.
+  - `$APP_BASEURL/_preview`: needs to be complemented with a full `/tenant/vocab` or `/tenant/vocab/conceptid` path (e.g. `$APP_BASEURL/_preview/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab`) and responds with a html preview of the vocabulary or concept to `GET` requests.
+
+- `$APP_BASEURL/jdoe`:
+  - `GET` gives a manifest for all vocabularies of this tenant ("jdoe") hosted by this service. In addition to regular [reconciliation manifest](https://reconciliation-api.github.io/specs/latest/#service-manifest) fields, it features a field `vocabs` that contains an array of vocabulary objects, each of which has `id`, (multilingual) `title`, (multilingual) `description` and `reconciliation` fields - with the latter pointing to the reconciliation endpoint for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries).
+  - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for this tenant's vocabularies hosted by the service.
+  - `$APP_BASEURL/jdoe/_preview`: needs to be complemented with a full `/vocab` or `/vocab/conceptid` path (e.g. `$APP_BASEURL/jdoe/_preview/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/concept1`) and responds with a html preview of the vocabulary or concept to `GET` requests.
+
+- `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab`:
+  - `GET` gives a manifest for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries).
+      curl -X GET --url 'https:///w3id.org/jdoe/reconcile/my-vocab?queries=%7B%22q1%22%3A%7B%22query%22%3A%22needle%22%7D%7D'
+  (This may be handy if your reconciliation service is behind a 302-redirection that makes
+  your client translate all POST requests to GET ones. In this case, the POST request's body
+  would be lost and it is better to send a GET request in the first place. But all the curly
+  brackets, quotation marks etc. have to be url-escaped.)
+
+  - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for this vocabulary.
+        curl -X POST --data 'queries={"q1":{"query":"needle"}}' http://localhost:3000/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab
+  - `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_preview`: needs to be complemented with a `/conceptid` path (e.g. `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_preview/concept1`) and responds with a html preview of the vocabulary or concept to `GET` requests.
+  - `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_suggest/entity`: needs to be complemented with a `?prefix=nee` query and responds to `GET` requests with a list of autocomplete suggestions for the specified prefix (an array of objects each containing `name` and `id` fields).
+
+- `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/en`:
+  - behaves exactly like the vocabulary reconciliation endpoint(s) except that the `name` field is localized to the language specified. Note, however, that if the concept has no preferred label in the requested language, the `name` field will be empty.
+
+Currently only reconciliation, preview and suggestion queries are supported. Data extensions support is on the roadmap.
+
+## Populating the service with data
+
+The elasticsearch server must be populated by means other than this service itself. One possibility is to use a version of
+skohub-vocabs that integrates the reconciliation population function to publish your vocabulary. 
 
 Here are setup instructions for using [vocabs-polmat](https://github.com/rg-mpg-de/vocabs-polmat):
 
@@ -50,31 +86,10 @@ Here are setup instructions for using [vocabs-polmat](https://github.com/rg-mpg-
     $ npm ci
     $ npm run populate-reconc
 
-You can then POST queries to the server started in `skohub-reconcile`, e.g.
+## Scripts
 
-    curl -X POST --data 'queries={"q1":{"query":"Bank"}}' http://localhost:3000/rg-mpg-de/polmat
-
-Also, GET queries are supported, e.g.
-
-    curl -X GET --url 'https:///w3id.org/mpilhlt/reconcile/worktime_role?queries=%7B%22qPause%22%3A%7B%22query%22%3A%22W%C3%B6chnerin%22%7D%7D'
-
-(This may be handy if your reconciliation service is behind a 302-redirection
-that makes your client translate all POST requests to GET ones. In this case,
-the POST request's body would be lost and it is better to send a GET request
-in the first place. But all the curly crackets, quotation marks etc. have to
-be url-escaped.)
-
-## elasticsearch
-You need to run a properly configured `elasticsearch` instance by
-setting `cluster.name: skohub`. See the provided [elasticsearch.yml](scripts/etc/elasticsearch/elasticsearch.yml).
-Also, in some contexts, it's mandatory to initialize elasticsearch with a proper
-[index-mapping](scripts/elasticsearch-mappings.json).
-
-## start scripts
-You may want to use the start script in `scripts/start.sh`. This script ensures the proper
-installation of skohub-reconcile and the configuration of elasticsearch. There also reside
-further scripts to manage the starting/stopping of the skohub-reconcile via init and to
-monitor the processes with `monit`.
+In the `scripts` folder, there are some example scripts to manage and interact with your
+elasticsearch instance.
 
 ## Credits
 The project to add a Reconciliation Service to SkoHub has been initiated by Andreas Wagner and
