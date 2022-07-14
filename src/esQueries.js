@@ -42,7 +42,7 @@ async function query (tenant, vocab, reqQueries) {
                     esb.queryStringQuery('Concept').defaultField('type')
                  )
         )
-        .size(reqQueries[key].limit || 5)
+        .size(reqQueries[key].limit || 500)
       queries = queries + `{ "index": "${index}" }` + '\n'
       queries = queries + JSON.stringify(reqObject.toJSON()) + '\n'
     }
@@ -79,7 +79,7 @@ async function queryID (tenant, vocab, id) {
               ...(!id ? [esb.queryStringQuery('ConceptScheme').defaultField('type')] : []), // if there's no id, then search for vocabs
             ])
     )
-    .size(5)
+    .size(100)
   queries = queries + `{ "index": "${index}" }` + '\n' + JSON.stringify(reqObject.toJSON()) + '\n'
   // console.log(queries)
 
