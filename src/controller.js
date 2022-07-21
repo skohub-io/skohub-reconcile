@@ -119,8 +119,8 @@ async function query (req, res) {
 
   // Validate input. E.g.:
   // - if tenant or vocab is nonempty but not in available tenants or vocabs, return 404
-  var tenants = await esQueries.getTenants
-  var vocabs = await esQueries.getVocabs
+  var tenants = await esQueries.getTenants()
+  var vocabs = await esQueries.getVocabs()
   if (tenant && [].slice.call(tenants).indexOf(tenant) == -1) {
     return res.status(404).send('Sorry, nothing at this url. (Nonexistent tenant.)')
   }
@@ -245,8 +245,8 @@ async function suggest (req, res) {
 
   // Validate input. E.g.:
   // - if tenant or vocab is nonempty but not in available tenants or vocabs, return 404
-  var tenants = await esQueries.getTenants
-  var vocabs = await esQueries.getVocabs
+  var tenants = await esQueries.getTenants()
+  var vocabs = await esQueries.getVocabs()
   if (tenant && [].slice.call(tenants).indexOf(tenant) == -1) {
     return res.status(404).send('Sorry, nothing at this url. (Nonexistent tenant.)')
   }
