@@ -99,7 +99,7 @@ async function suggest (tenant, vocab, prefix, cursor) {
   // Define a contexts object having either tenant or vocab or both
   var ctx
   if (!tenant && !vocab) {
-    ctx = { tenant: getTenants() }
+    ctx = { tenant: await getTenants() }
   } else {
     ctx = {
       ...(tenant && { tenant: [ tenant ] }),
