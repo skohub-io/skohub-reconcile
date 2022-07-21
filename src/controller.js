@@ -112,7 +112,7 @@ async function manifest (req, res) {
 async function query (req, res) {
   const tenant = req.params.tenant
   const vocab = req.params.vocab
-  const prefLang = req.params.lang
+  const prefLang = (req.queries.lang ? req.queries.lang : "")
   const threshold = (req.params.threshold ? req.params.threshold : config.es_threshold)
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
