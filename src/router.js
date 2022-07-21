@@ -36,7 +36,7 @@ routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.query)
 routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_preview/:vocab([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))(/:id([a-zA-Z0-9][a-zA-Z0-9%.:/_-]{0,}))?').get(controller.preview)
 
 // iv. give a suggestion for a vocabuly
-routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_suggest/vocab').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_suggest/entity').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
 
 // v. other services
 
@@ -51,7 +51,7 @@ routes.route('/').post(controller.query)
 routes.route('/_preview/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))(/:id([a-zA-Z0-9][a-zA-Z0-9%.:/_-]{0,}))?').get(controller.preview)
 
 // iv. give a suggestion for a vocabuly
-routes.route('/_suggest/vocab').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
+routes.route('/_suggest/entity').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
 
 // v. other services
 
