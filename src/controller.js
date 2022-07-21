@@ -80,7 +80,7 @@ async function manifest (req, res) {
             title: item._source.title,
             description: item._source.description,
             reconciliation: process.env.APP_BASEURL + item._source.tenant + '/' + encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))),
-            prefix: item._source.tenant
+            ...( !tenant ? { prefix: item._source.tenant } : {}) 
           })
         }
       })
