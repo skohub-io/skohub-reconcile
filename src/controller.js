@@ -63,7 +63,12 @@ async function manifest (req, res) {
       }
 
       var endpoint = ""
-      if (tenant) { endpoint = endpoint + tenant + '/' }
+      var extraTenant = ""
+      if (tenant) {
+        endpoint = endpoint + tenant + '/'
+      } else {  // if we are on root level then tenant must be introduced in some places, e.g. after _preview urls
+        extraTenant = tenant + '/'
+      }
       if (vocab) { endpoint = endpoint + encodeURIComponent(vocab) + '/'}
 
       var vocabs
@@ -93,7 +98,7 @@ async function manifest (req, res) {
         ],
         ...vocabs,
         'view': { 'url': `${prefix}{{id}}` },
-        'preview': { 'url': `${process.env.APP_BASEURL}${endpoint}_preview/{{id}}`, 'width': 100, 'height': 320 }
+        'preview': { 'url': `${process.env.APP_BASEURL}${endpoint}_preview/${extraTenant}{{id}}`, 'width': 100, 'height': 320 }
       })
     }
   })
