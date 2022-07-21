@@ -116,7 +116,17 @@ async function query (req, res) {
   const threshold = (req.params.threshold ? req.params.threshold : config.es_threshold)
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
-  // TODO: validate input. E.g.: if (!(paramsList instanceof Array)) throw Error('invalid argument: paramsList must be an array');
+
+  // Validate input. E.g.:
+  // - if tenant or vocab is nonempty but not in available tenants or vocabs, return 404
+  var tenants = await esQueries.getTenants
+  var vocabs = await esQueries.getVocabs
+  if (tenant && tenants.indexOf(tenant) == -1) {
+    return res.status(404).send('Sorry, nothing at this url. (Nonexistent tenant.)')
+  }
+  if (vocab && vocabs.indexOf(vocab) == -1) {
+    return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
+  }
 
   await esQueries.query(tenant, vocab, reqJSON)
   .then(resp => {
@@ -232,6 +242,17 @@ async function suggest (req, res) {
   const vocab = req.params.vocab
   const prefix = req.query.prefix
   const cursor = ( req.query.cursor - 1 || 0 )
+
+  // Validate input. E.g.:
+  // - if tenant or vocab is nonempty but not in available tenants or vocabs, return 404
+  var tenants = await esQueries.getTenants
+  var vocabs = await esQueries.getVocabs
+  if (tenant && tenants.indexOf(tenant) == -1) {
+    return res.status(404).send('Sorry, nothing at this url. (Nonexistent tenant.)')
+  }
+  if (vocab && vocabs.indexOf(vocab) == -1) {
+    return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
+  }
 
   await esQueries.suggest(tenant, vocab, prefix, cursor)
   .then(resp => {
