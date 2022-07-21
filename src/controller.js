@@ -67,7 +67,7 @@ async function manifest (req, res) {
       if (tenant) {
         endpoint = endpoint + tenant + '/'
       } else {  // if we are on root level then tenant must be introduced in some places, e.g. after _preview urls
-        extraTenant = tenant + '/'
+        extraTenant = '{{prefix}}/'
       }
       if (vocab) { endpoint = endpoint + encodeURIComponent(vocab) + '/'}
 
@@ -79,7 +79,8 @@ async function manifest (req, res) {
             id: item._source.id,
             title: item._source.title,
             description: item._source.description,
-            reconciliation: process.env.APP_BASEURL + item._source.tenant + '/' + encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/')))
+            reconciliation: process.env.APP_BASEURL + item._source.tenant + '/' + encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))),
+            prefix: item._source.tenant
           })
         }
       })
