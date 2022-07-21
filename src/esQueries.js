@@ -97,9 +97,14 @@ async function suggest (tenant, vocab, prefix, cursor) {
   const defaultLanguage = 'de'
   // See https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/suggest_examples.html
   // Define a contexts object having either tenant or vocab or both
-  const ctx = {
-    ...(tenant && { tenant: [ tenant ] }),
-    ...(vocab && { vocab: [ vocab ] })
+  var ctx
+  if (!tenant && !vocab) {
+    ctx = { tenant: getTenants() }
+  } else {
+    ctx = {
+      ...(tenant && { tenant: [ tenant ] }),
+      ...(vocab && { vocab: [ vocab ] })
+    }
   }
 
   var suggests
@@ -111,8 +116,7 @@ async function suggest (tenant, vocab, prefix, cursor) {
           field: `${n}.${defaultLanguage}.completion`,
           skip_duplicates: true,
           fuzzy: true,
-          // conditionally add the context object if either tenant or vocab is given
-          ...( (tenant || vocab) && { contexts: ctx } )
+          contexts: ctx
         }
       }
     // console.log(`item: ${JSON.stringify(item)}`)
@@ -130,4 +134,68 @@ async function suggest (tenant, vocab, prefix, cursor) {
   return result
 }
 
-export { query, queryID, suggest }
+// Get all tenant names
+async function getTenants () {
+  var tenants = []
+  var aggs = { from: 0,
+               size: 0,
+               track_total_hits: false,
+               aggs: {
+                  tenants: {
+                      terms: { field: "tenant" }
+                  }
+               }
+             }
+  var queries = `{ "index": "${index}" }` + '\n' + JSON.stringify(aggs) + '\n'
+  // console.log(`queries: ${queries}`)
+
+  // Do the search
+  await esClient.msearch({
+    body: queries
+  })
+  .then(resp => {
+    // console.log(`result:\n${JSON.stringify(resp.body)}`)
+    resp.body.responses[0].aggregations.tenants.buckets.forEach((element, _) => {
+      tenants.push(element.key)
+    })
+  })
+  .catch(err => {
+    console.trace(err.message)
+    return []
+  })
+  return tenants
+}
+
+// Get all vocab names
+async function getVocabs () {
+  var vocabs = []
+  var aggs = { from: 0,
+    size: 0,
+    track_total_hits: false,
+    aggs: {
+       vocabs: {
+           terms: { field: "vocab" }
+       }
+    }
+  }
+  var queries = `{ "index": "${index}" }` + '\n' + JSON.stringify(aggs) + '\n'
+  // console.log(`queries: ${queries}`)
+
+  // Do the search
+  await esClient.msearch({
+    body: queries
+  })
+  .then(resp => {
+    // console.log(`result:\n${JSON.stringify(resp.body)}`)
+    resp.body.responses[0].aggregations.vocabs.buckets.forEach((element, _) => {
+      vocabs.push(element.key)
+    })
+  })
+  .catch(err => {
+    console.trace(err.message)
+    return []
+  })
+  return vocabs
+}
+
+export { query, queryID, suggest, getTenants, getVocabs }
