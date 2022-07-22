@@ -55,7 +55,7 @@ async function query (tenant, vocab, reqQueries) {
               ])
         .should([ ...(vocab ? [esb.termQuery('id', vocab)] : []) ])
       )
-      .size(5)
+      .size(500)
     queries = `{"index":"${index}"}` + '\n' + JSON.stringify(reqObject.toJSON()) + '\n'
   }
   // console.log(`queries: ${queries}`)
