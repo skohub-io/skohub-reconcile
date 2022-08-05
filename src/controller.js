@@ -164,7 +164,7 @@ async function preview (req, res) {
   if (vocab && [].slice.call(vocabs).indexOf(vocab) == -1) {
     var pComponents = vocab.split('/')
     var tId = pComponents.pop()
-    var tVocab = ''.join(pComponents)
+    var tVocab = pComponents.join('')
     if (tVocab && [].slice.call(vocabs).indexOf(tVocab) == -1) {
       return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
     }
