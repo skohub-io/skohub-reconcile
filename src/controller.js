@@ -1,6 +1,8 @@
 import config from './config.js'
 import * as esQueries from './esQueries.js'
 
+const defaultLanguage = 'en'
+
 function _esToRec (doc, prefLang, threshold) {
   const concept = doc._source
   let obj = {
@@ -112,7 +114,7 @@ async function manifest (req, res) {
 async function query (req, res) {
   const tenant = req.params.tenant
   const vocab = req.params.vocab
-  const prefLang = req.query.lang ? req.query.lang : ""
+  const prefLang = req.query.lang ? req.query.lang : defaultLanguage
   const threshold = (req.params.threshold ? req.params.threshold : config.es_threshold)
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
@@ -159,7 +161,7 @@ async function preview (req, res) {
     if (resp.body.responses[0].hits.total.value == 0) {
       res.status(404).send('Sorry, nothing at this url.')
     } else {
-      const defaultLanguage = 'de'
+      const prefLang = req.query.lang ? req.query.lang : defaultLanguage
       const result = resp.body.responses[0].hits.hits[0]._source
 
       const tenant = result.tenant
@@ -169,12 +171,12 @@ async function preview (req, res) {
       } else {
         var url = vocab + result.id
       }
-      const label = _getLocalizedString(result.prefLabel, defaultLanguage)
-      const altLabels = _getLocalizedString(result.altLabel, defaultLanguage)
-      const desc = _getLocalizedString(result.description, defaultLanguage)
-      const examples = _getLocalizedString(result.examples, defaultLanguage)
-      const def = result.definition ? _getLocalizedString(result.definition, defaultLanguage) : ''
-      const scope_note = result.scopeNote ? _getLocalizedString(result.scopeNote, defaultLanguage) : ''
+      const label = _getLocalizedString(result.prefLabel, prefLang)
+      const altLabels = _getLocalizedString(result.altLabel, prefLang)
+      const desc = _getLocalizedString(result.description, prefLang)
+      const examples = _getLocalizedString(result.examples, prefLang)
+      const def = result.definition ? _getLocalizedString(result.definition, prefLang) : ''
+      const scope_note = result.scopeNote ? _getLocalizedString(result.scopeNote, prefLang) : ''
       const scheme = result.inScheme ? result.inScheme[0].id : ''
       const type = result.type
       const img = result.img
