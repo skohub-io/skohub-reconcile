@@ -39,31 +39,31 @@ This will start the Reconciliation service on the port specified with `APP_PORT`
 
 The skohub reconcile service accepts queries according to the [Reconciliation Service specification](https://reconciliation-api.github.io/specs/latest/) at endpoints created below the url specified in `.env` in `APP_BASEURL`.
 
-Projects are managed based on a "tenant" account and the respective vocabulary's URI (where the latter is [URI-encoded](https://en.wikipedia.org/wiki/Percent-encoding) - if you need a converter, you may want to try [urlencoder.io](https://www.urlencoder.io/) - and taken either from the ConceptScheme's `http://purl.org/vocab/vann/preferredNamespaceUri` property or from the ConceptScheme's `id` value up to and including the last forward slash `/`). For a `tenant` called "jdoe" and a vocabulary "http://w3id.org/jdoe/my-vocab", the following four levels of endpoints are provided:
+Projects are managed based on a "tenant" account and the respective vocabulary's URI - taken either from the ConceptScheme's `http://purl.org/vocab/vann/preferredNamespaceUri` property or from the ConceptScheme's `id` value up to and including the last forward slash `/`. For a `tenant` called "jdoe" and a vocabulary "http://w3id.org/jdoe/my-vocab", the following three levels of endpoints are provided:
 
 - `$APP_BASEURL/`:
   - `GET` gives a manifest for the whole collection of vocabularies hosted by this service. In addition to regular [reconciliation manifest](https://reconciliation-api.github.io/specs/latest/#service-manifest) fields, it features a field `vocabs` that contains an array of vocabulary objects, each of which has `id`, (multilingual) `title`, (multilingual) `description` and `reconciliation` fields - with the latter pointing to the reconciliation endpoint for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries).
   - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for vocabularies hosted by the service.
-  - `$APP_BASEURL/_preview`: needs to be complemented with a full `/tenant/vocab` or `/tenant/vocab/conceptid` path (e.g. `$APP_BASEURL/_preview/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab`) and responds with a html preview of the vocabulary or concept to `GET` requests.
+  - `$APP_BASEURL/_preview`: needs to be complemented with a full `/tenant/vocab` path (e.g. `$APP_BASEURL/_preview/jdoe/http://w3id.org/jdoe/my-vocab`) and responds with a html preview of the vocabulary to `GET` requests.
+  - `$APP_BASEURL/_suggest/entity` takes a `prefix` query parameter and provides suggestions for completing the specified prefix with vocabularies from the service.
 
 - `$APP_BASEURL/jdoe`:
   - `GET` gives a manifest for all vocabularies of this tenant ("jdoe") hosted by this service. In addition to regular [reconciliation manifest](https://reconciliation-api.github.io/specs/latest/#service-manifest) fields, it features a field `vocabs` that contains an array of vocabulary objects, each of which has `id`, (multilingual) `title`, (multilingual) `description` and `reconciliation` fields - with the latter pointing to the reconciliation endpoint for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries).
   - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for this tenant's vocabularies hosted by the service.
   - `$APP_BASEURL/jdoe/_preview`: needs to be complemented with a full `/vocab` or `/vocab/conceptid` path (e.g. `$APP_BASEURL/jdoe/_preview/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/concept1`) and responds with a html preview of the vocabulary or concept to `GET` requests.
 
-- `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab`:
+- `$APP_BASEURL/jdoe/http://w3id.org/jdoe/my-vocab`:
   - `GET` gives a manifest for this vocabulary. If you pass a `?queries` query parameter with the url (e.g. `?queries={"q1":{"query":"needle"}}`) then it behaves like the POST request and answers the [reconciliation query](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries). E.g.: `curl -X GET --url 'https:///w3id.org/jdoe/reconcile/my-vocab?queries=%7B%22q1%22%3A%7B%22query%22%3A%22needle%22%7D%7D'`
   (This may be handy if your reconciliation service is behind a 302-redirection that makes
   your client translate all POST requests to GET ones. In this case, the POST request's body
   would be lost and it is better to send a GET request in the first place. But all the curly
   brackets, quotation marks etc. have to be url-escaped.)
 
-  - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for this vocabulary. E.g.: `curl -X POST --data 'queries={"q1":{"query":"needle"}}' http://localhost:3000/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab`
-  - `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_preview`: needs to be complemented with a `/conceptid` path (e.g. `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_preview/concept1`) and responds with a html preview of the vocabulary or concept to `GET` requests.
-  - `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/_suggest/entity`: needs to be complemented with a `?prefix=nee` query and responds to `GET` requests with a list of autocomplete suggestions for the specified prefix (an array of objects each containing `name` and `id` fields).
+  - `POST` accepts [reconciliation queries](https://reconciliation-api.github.io/specs/latest/#reconciliation-queries) for this vocabulary. E.g.: `curl -X POST --data 'queries={"q1":{"query":"needle"}}' http://localhost:3000/jdoe/http://w3id.org/jdoe/my-vocab`
+  - `$APP_BASEURL/jdoe/http://w3id.org/jdoe/my-vocab/_preview`: needs to be complemented with a `/conceptid` path (e.g. `$APP_BASEURL/jdoe/http://w3id.org/jdoe/my-vocab/_preview/concept1`) and responds with a html preview of the vocabulary or concept to `GET` requests.
+  - `$APP_BASEURL/jdoe/http://w3id.org/jdoe/my-vocab/_suggest/entity`: needs to be complemented with a `?prefix=nee` query and responds to `GET` requests with a list of autocomplete suggestions for the specified prefix (an array of objects each containing `name` and `id` fields).
 
-- `$APP_BASEURL/jdoe/http%3A%2F%2Fw3id.org%2Fjdoe%2Fmy-vocab/en`:
-  - behaves exactly like the vocabulary reconciliation endpoint(s) except that the `name` field is localized to the language specified. Note, however, that if the concept has no preferred label in the requested language, the `name` field will be empty.
+In reconciliation query endpoints, a query parameter "lang" is supported that gives descriptions or labels in the language specified - if the vocabulary features information in that language.
 
 Currently only reconciliation, preview and suggestion queries are supported. Data extensions support is on the roadmap.
 
