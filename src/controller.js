@@ -162,17 +162,14 @@ async function preview (req, res) {
     return res.status(404).send('Sorry, nothing at this url. (Nonexistent tenant.)')
   }
   if (vocab && [].slice.call(vocabs).indexOf(vocab) == -1) {
-    console.log(`This is not going to be so easy. We have tenant|vocab|id: ${tenant}|${vocab}|${id} .`)
     var pComponents = vocab.split('/')
     var tId = pComponents.pop()
     var tVocab = pComponents.join('/')
-    console.log(`Check for vocab='${vocab}' failed, check for vocab='${tVocab}'...`)
     if (tVocab && [].slice.call(vocabs).indexOf(tVocab) == -1) {
       return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
     }
     vocab = tVocab
     id = tId
-    console.log(`Redefined tenant|vocab|id to be ${tenant}|${vocab}|${id}. Now query with these...`)
   }
 
   await esQueries.queryID(tenant, vocab, id)
