@@ -165,7 +165,7 @@ async function preview (req, res) {
     console.log(`This is not going to be so easy. We have tenant|vocab|id: ${tenant}|${vocab}|${id} .`)
     var pComponents = vocab.split('/')
     var tId = pComponents.pop()
-    var tVocab = pComponents.join('')
+    var tVocab = pComponents.join('/')
     console.log(`Check for vocab='${vocab}' failed, check for vocab='${tVocab}'...`)
     if (tVocab && [].slice.call(vocabs).indexOf(tVocab) == -1) {
       return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
