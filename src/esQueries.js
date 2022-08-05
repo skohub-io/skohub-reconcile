@@ -1,5 +1,5 @@
 import config from './config.js'
-import esb, { completionSuggester } from 'elastic-builder'
+import esb from 'elastic-builder'
 import * as esConnect from './esConnect.js'
 
 const index = config.es_index
