@@ -165,11 +165,13 @@ async function preview (req, res) {
     var pComponents = vocab.split('/')
     var tId = pComponents.pop()
     var tVocab = pComponents.join('')
+    console.log(`Check for vocab='${vocab}' failed, check for vocab='${tvocab}'...`)
     if (tVocab && [].slice.call(vocabs).indexOf(tVocab) == -1) {
       return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
     }
     vocab = tVocab
     id = tId
+    console.log(`Redefined vocab:id to be ${vocab}:${id}. Now query with these...`)
   }
 
   await esQueries.queryID(tenant, vocab, id)
