@@ -153,8 +153,24 @@ async function query (req, res) {
 
 async function preview (req, res) {
   const tenant = req.params.tenant
-  const vocab = req.params.vocab
-  const id = req.params.id
+  var vocab = req.params.vocab
+  var id = req.params.id
+
+  var tenants = await esQueries.getTenants()
+  var vocabs = await esQueries.getVocabs()
+  if (tenant && [].slice.call(tenants).indexOf(tenant) == -1) {
+    return res.status(404).send('Sorry, nothing at this url. (Nonexistent tenant.)')
+  }
+  if (vocab && [].slice.call(vocabs).indexOf(vocab) == -1) {
+    var pComponents = vocab.split('/')
+    var tId = pComponents.pop()
+    var tVocab = ''.join(pComponents)
+    if (tVocab && [].slice.call(vocabs).indexOf(tVocab) == -1) {
+      return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
+    }
+    vocab = tVocab
+    id = tId
+  }
 
   await esQueries.queryID(tenant, vocab, id)
   .then(resp => {
