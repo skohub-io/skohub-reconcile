@@ -166,7 +166,7 @@ async function preview (req, res) {
     var pComponents = vocab.split('/')
     var tId = pComponents.pop()
     var tVocab = pComponents.join('')
-    console.log(`Check for vocab='${vocab}' failed, check for vocab='${tvocab}'...`)
+    console.log(`Check for vocab='${vocab}' failed, check for vocab='${tVocab}'...`)
     if (tVocab && [].slice.call(vocabs).indexOf(tVocab) == -1) {
       return res.status(404).send('Sorry, nothing at this url. (Nonexistent vocab.)')
     }
