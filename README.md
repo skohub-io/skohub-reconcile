@@ -18,7 +18,7 @@ it needs to have `cluster.name: skohub` set. See the provided
 
 Then:
 
-    $ git clone https://github.com/rg-mpg-de/skohub-reconcile.git
+    $ git clone https://github.com/mpilhlt/skohub-reconcile.git
     $ cd skohub-reconcile
     # - Copy `sample.env` to `.env` and adjust values therein
     # - When you run skohub-reconcile, the necessary elasticsearch
