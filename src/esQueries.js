@@ -69,7 +69,7 @@ async function query (tenant, vocab, reqQueries) {
 
 // Query for a particular object (Concept or ConceptScheme)
 async function queryID (tenant, vocab, id) {
-  // console.log(` queryID(tenant, vocab, id): ${tenant}, ${vocab}, ${id}`)
+  // console.log(`esQueries.queryID: tenant: '${tenant}', vocab: '${vocab}', id: '${id}'.`)
   var queries = ''
   const reqObject = esb.requestBodySearch()
     .query(esb.boolQuery()
@@ -91,10 +91,9 @@ async function queryID (tenant, vocab, id) {
 }
 
 // Query for autocompletion suggestions for a prefix string
-async function suggest (tenant, vocab, prefix, cursor) {
-  // console.log(` suggest(tenant, vocab, prefix, cursor): ${tenant}, ${vocab}, ${prefix}, ${cursor}`)
+async function suggest (tenant, vocab, prefix, cursor, prefLang) {
+  // console.log(` suggest(tenant, vocab, prefix, cursor, language): ${tenant}, ${vocab}, ${prefix}, ${cursor}, ${prefLang}.`)
 
-  const defaultLanguage = 'de'
   // See https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/suggest_examples.html
   // Define a contexts object having either tenant or vocab or both
   var ctx
@@ -113,7 +112,7 @@ async function suggest (tenant, vocab, prefix, cursor) {
     var item = {
       prefix: prefix,
       completion: {
-          field: `${n}.${defaultLanguage}.completion`,
+          field: `${n}.${prefLang}.completion`,
           skip_duplicates: true,
           fuzzy: true,
           contexts: ctx
