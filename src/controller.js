@@ -93,7 +93,7 @@ async function manifest (req, res) {
   .then(resp => { if (!resp.err)
     {
       if (resp.body.responses[0].hits.total.value == 0) {
-        _knownProblemHandler(res, {err: {code: 404, message : 'Sorry, nothing at this url.'}})
+        _knownProblemHandler(res, {code: 404, message : 'Sorry, nothing at this url.'})
       } else {
 
         // for identifierSpace, preferredNamespaceUri takes precedence over our parsing of the schema's id
@@ -187,7 +187,7 @@ async function preview (req, res) {
   .then(resp => { if (!resp.err)
     {
       if (resp.body.responses[0].hits.total.value == 0) {
-        _knownProblemHandler(res, {err: {code: 404, message : 'Sorry, nothing at this url.'}})
+        _knownProblemHandler(res, {code: 404, message : 'Sorry, nothing at this url.'})
       } else {
         const result = resp.body.responses[0].hits.hits[0]._source
 
