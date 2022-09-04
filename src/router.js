@@ -44,13 +44,14 @@ routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_suggest/entity').get(contr
 
 // ==== C. root vocabs endpoint: *among* vocabularies (of all tenants) ====
 // i. either do reconciliation query (if ?queries parameter given), or return service manifest
-routes.route('/').get(controller.vocab)
+routes.route('').get(controller.vocab)
 
 // ii. do a reconciliation query for vocabularies
-routes.route('/').post(controller.query)
+routes.route('').post(controller.query)
 
 // iii. do a preview for a vocabulary
 routes.route('/_preview/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:vocab([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))(/:id([a-zA-Z0-9][a-zA-Z0-9%.:/_-]{0,}))?').get(controller.preview)
+routes.route('/_preview').get(controller.preview)
 
 // iv. give a suggestion for a vocabuly
 routes.route('/_suggest/entity').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
