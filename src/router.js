@@ -35,6 +35,7 @@ routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.query)
 
 // iii. do a preview for a vocabulary
 routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_preview/:vocab([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))(/:id([a-zA-Z0-9][a-zA-Z0-9%.:/_-]{0,}))?').get(controller.preview)
+routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_preview').get(controller.preview)
 
 // iv. give a suggestion for a vocabulary
 routes.route('/:tenant([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/_suggest/entity').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
