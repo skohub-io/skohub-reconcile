@@ -44,7 +44,7 @@ function _getParams (req) {
   return { account, vocab, id, prefLang }
 }
 
-async function _checkTenantVocab(account, vocab, id) {
+async function _checkAccountVocab(account, vocab, id) {
   // if account or vocab is nonempty but not in available accounts or vocabs, return 404
   var allAccounts = await esQueries.getAccounts()
   var allVocabs = await esQueries.getVocabs()
@@ -88,7 +88,7 @@ async function vocab (req, res) {
 async function manifest (req, res) {
   const { account, vocab, prefLang } = _getParams(req)
 
-  await _checkTenantVocab(account, vocab)
+  await _checkAccountVocab(account, vocab)
   .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.vocab) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
@@ -107,11 +107,11 @@ async function manifest (req, res) {
         }
 
         var endpoint = ""
-        var extraTenant = ""
+        var extraAccount = ""
         if (account) {
           endpoint = endpoint + account + '/'
         } else {  // if we are on root level then account must be introduced in some places, e.g. after _preview urls
-          extraTenant = '{{prefix}}/'
+          extraAccount = '{{prefix}}/'
         }
         if (vocab) { endpoint = endpoint + encodeURIComponent(vocab) + '/'}
 
@@ -143,7 +143,7 @@ async function manifest (req, res) {
           ],
           ...vocabs,
           'view': { 'url': `${prefix}{{id}}` },
-          'preview': { 'url': `${process.env.APP_BASEURL}${endpoint}_preview/${extraTenant}{{id}}`, 'width': 100, 'height': 320 }
+          'preview': { 'url': `${process.env.APP_BASEURL}${endpoint}_preview/${extraAccount}{{id}}`, 'width': 100, 'height': 320 }
         })
       }
     }
@@ -157,7 +157,7 @@ async function query (req, res) {
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
 
-  await _checkTenantVocab(account, vocab)
+  await _checkAccountVocab(account, vocab)
   .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.vocab, reqJSON) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
@@ -182,7 +182,7 @@ async function preview (req, res) {
   const { account, vocab, id, prefLang } = _getParams(req)
   // console.log(`account: '${ account }', vocab: '${ vocab }', id: '${ id }'.`)
 
-  await _checkTenantVocab(account, vocab, id)
+  await _checkAccountVocab(account, vocab, id)
   .then(resp => { if (!resp.err) { return esQueries.queryID(resp.account, resp.vocab, resp.id) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
@@ -269,7 +269,7 @@ async function suggest (req, res) {
   const cursor = req.query.cursor ? req.query.cursor - 1 : 0
   // console.log(`account: '${ account }', vocab: '${ vocab }', prefix: '${ prefix }', cursor: '${ cursor }', language: '${ prefLang }'.`)
 
-  await _checkTenantVocab(account, vocab)
+  await _checkAccountVocab(account, vocab)
   .then(resp => { if (!resp.err) { return esQueries.suggest(resp.account, resp.vocab, prefix, cursor, prefLang) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
