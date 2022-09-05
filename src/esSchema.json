@@ -63,9 +63,9 @@
 								"max_input_length": 100,
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -103,9 +103,9 @@
 								"max_input_length": 100,
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -143,9 +143,9 @@
 								"max_input_length": 100,
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -183,9 +183,9 @@
 								"max_input_length": 100,
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -403,7 +403,7 @@
 				"type": "keyword",
 				"index": true
 			},
-			"tenant": {
+			"account": {
 				"type": "keyword",
 				"index": true
 			},

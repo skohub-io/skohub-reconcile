@@ -14,8 +14,8 @@ const esMultiFields = [
 ]
 
 // Query for concepts and/or vocabularies
-async function query (tenant, vocab, reqQueries) {
-  // console.log(`vquery(tenant, vocab, reqQueries): ${tenant}, ${vocab}, ${JSON.stringify(reqQueries)}`)
+async function query (account, vocab, reqQueries) {
+  // console.log(`vquery(account, vocab, reqQueries): ${account}, ${vocab}, ${JSON.stringify(reqQueries)}`)
   var queries = ""
   const reqObject = esb.requestBodySearch()
 
@@ -23,7 +23,7 @@ async function query (tenant, vocab, reqQueries) {
     for (var key in reqQueries) {
        reqObject.query(
         esb.boolQuery()
-          .must([ ...(tenant ? [esb.termQuery('tenant', tenant)] : []), // add tenant condition only if tenant is set
+          .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
                   ...(vocab ? [esb.termQuery('vocab', vocab)] : []),    // add vocab condition only if vocab is set
                   ...(vocab ? [esb.boolQuery()
                                 .should([ esb.termQuery('inScheme.id', vocab),
@@ -49,7 +49,7 @@ async function query (tenant, vocab, reqQueries) {
   } else {
     reqObject.query(
       esb.boolQuery()
-        .must([ ...(tenant ? [esb.termQuery('tenant', tenant)] : []), // add tenant condition only if tenant is set
+        .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
                 ...(vocab ? [esb.termQuery('vocab', vocab)] : []),    // add vocab condition only if vocab is set
                 esb.termQuery('type', 'ConceptScheme')
               ])
@@ -68,12 +68,12 @@ async function query (tenant, vocab, reqQueries) {
 }
 
 // Query for a particular object (Concept or ConceptScheme)
-async function queryID (tenant, vocab, id) {
-  // console.log(`esQueries.queryID: tenant: '${tenant}', vocab: '${vocab}', id: '${id}'.`)
+async function queryID (account, vocab, id) {
+  // console.log(`esQueries.queryID: account: '${account}', vocab: '${vocab}', id: '${id}'.`)
   var queries = ''
   const reqObject = esb.requestBodySearch()
     .query(esb.boolQuery()
-      .must([ ...(tenant ? [esb.termQuery('tenant', tenant)] : []), // add tenant condition only if tenant is set
+      .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
               ...(vocab ? [esb.termQuery('vocab', vocab)] : []),    // add vocab condition only if vocab is set
               ...(id ? [esb.termsQuery('id', [id, vocab + '/' + id])] : []), // add id condition only if id is set
               ...(!id ? [esb.queryStringQuery('ConceptScheme').defaultField('type')] : []), // if there's no id, then search for vocabs
@@ -91,17 +91,17 @@ async function queryID (tenant, vocab, id) {
 }
 
 // Query for autocompletion suggestions for a prefix string
-async function suggest (tenant, vocab, prefix, cursor, prefLang) {
-  // console.log(` suggest(tenant, vocab, prefix, cursor, language): ${tenant}, ${vocab}, ${prefix}, ${cursor}, ${prefLang}.`)
+async function suggest (account, vocab, prefix, cursor, prefLang) {
+  // console.log(` suggest(account, vocab, prefix, cursor, language): ${account}, ${vocab}, ${prefix}, ${cursor}, ${prefLang}.`)
 
   // See https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/suggest_examples.html
-  // Define a contexts object having either tenant or vocab or both
+  // Define a contexts object having either account or vocab or both
   var ctx
-  if (!tenant && !vocab) {
-    ctx = { tenant: await getTenants() }
+  if (!account && !vocab) {
+    ctx = { account: await getAccounts() }
   } else {
     ctx = {
-      ...(tenant && { tenant: [ tenant ] }),
+      ...(account && { account: [ account ] }),
       ...(vocab && { vocab: [ vocab ] })
     }
   }
@@ -133,15 +133,15 @@ async function suggest (tenant, vocab, prefix, cursor, prefLang) {
   return result
 }
 
-// Get all tenant names
-async function getTenants () {
-  var tenants = []
+// Get all account names
+async function getAccounts () {
+  var accounts = []
   var aggs = { from: 0,
                size: 0,
                track_total_hits: false,
                aggs: {
-                  tenants: {
-                      terms: { field: "tenant" }
+                  accounts: {
+                      terms: { field: "account" }
                   }
                }
              }
@@ -154,15 +154,15 @@ async function getTenants () {
   })
   .then(resp => {
     // console.log(`result:\n${JSON.stringify(resp.body)}`)
-    resp.body.responses[0].aggregations.tenants.buckets.forEach((element, _) => {
-      tenants.push(element.key)
+    resp.body.responses[0].aggregations.accounts.buckets.forEach((element, _) => {
+      accounts.push(element.key)
     })
   })
   .catch(err => {
     console.trace(err.message)
     return []
   })
-  return tenants
+  return accounts
 }
 
 // Get all vocab names
@@ -197,4 +197,4 @@ async function getVocabs () {
   return vocabs
 }
 
-export { query, queryID, suggest, getTenants, getVocabs }
+export { query, queryID, suggest, getAccounts, getVocabs }

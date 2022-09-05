@@ -73,9 +73,9 @@ curl --request PUT \
 								"type": "completion",
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -112,9 +112,9 @@ curl --request PUT \
 								"type": "completion",
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -151,9 +151,9 @@ curl --request PUT \
 								"type": "completion",
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -190,9 +190,9 @@ curl --request PUT \
 								"type": "completion",
 								"contexts": [
 									{
-										"name": "tenant",
+										"name": "account",
 										"type": "category",
-										"path": "tenant"
+										"path": "account"
 									},
 									{
 										"name": "vocab",
@@ -410,7 +410,7 @@ curl --request PUT \
 				"type": "keyword",
 				"index": true
 			},
-			"tenant": {
+			"account": {
 				"type": "keyword",
 				"index": true
 			},

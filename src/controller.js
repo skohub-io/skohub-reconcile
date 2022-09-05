@@ -37,19 +37,19 @@ function _getLocalizedString ( obj, prefLang ) {
 }
 
 function _getParams (req) {
-  const tenant = req.params.tenant ? req.params.tenant : ( req.query.tenant ? req.query.tenant : "" )
+  const account = req.params.account ? req.params.account : ( req.query.account ? req.query.account : "" )
   const vocab  = req.params.vocab  ? req.params.vocab  : ( req.query.vocab  ? req.query.vocab  : "" )
   const id     = req.params.id     ? req.params.id     : ( req.query.id     ? req.query.id     : "" )
   const prefLang = req.query.lang  ? req.query.lang : defaultLanguage
-  return { tenant, vocab, id, prefLang }
+  return { account, vocab, id, prefLang }
 }
 
-async function _checkTenantVocab(tenant, vocab, id) {
-  // if tenant or vocab is nonempty but not in available tenants or vocabs, return 404
-  var allTenants = await esQueries.getTenants()
+async function _checkTenantVocab(account, vocab, id) {
+  // if account or vocab is nonempty but not in available accounts or vocabs, return 404
+  var allAccounts = await esQueries.getAccounts()
   var allVocabs = await esQueries.getVocabs()
-  if (tenant && [].slice.call(allTenants).indexOf(tenant) == -1) {
-    return { err: {message: `Sorry, nothing at this url. (Nonexistent tenant '${ tenant }'.)`, code: 404}, tenant, vocab, id }
+  if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
+    return { err: {message: `Sorry, nothing at this url. (Nonexistent account '${ account }'.)`, code: 404}, account, vocab, id }
   }
   if (vocab && [].slice.call(allVocabs).indexOf(vocab) == -1) {
     // if vocab fails, try again with a vocab value without the last path component
@@ -58,10 +58,10 @@ async function _checkTenantVocab(tenant, vocab, id) {
     id = pComponents.pop()
     vocab = pComponents.join('/')
     if (vocab && [].slice.call(allVocabs).indexOf(vocab) == -1) {
-      return { err: {message: `Sorry, nothing at this url. (Nonexistent vocab '${ vocab }'.)`, code: 404}, tenant, vocab, id }
+      return { err: {message: `Sorry, nothing at this url. (Nonexistent vocab '${ vocab }'.)`, code: 404}, account, vocab, id }
     }
   }
-  return { err: null, tenant, vocab, id }
+  return { err: null, account, vocab, id }
 }
 
 function _knownProblemHandler(res, err) {
@@ -86,10 +86,10 @@ async function vocab (req, res) {
 }
 
 async function manifest (req, res) {
-  const { tenant, vocab, prefLang } = _getParams(req)
+  const { account, vocab, prefLang } = _getParams(req)
 
-  await _checkTenantVocab(tenant, vocab)
-  .then(resp => { if (!resp.err) { return esQueries.query(resp.tenant, resp.vocab) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkTenantVocab(account, vocab)
+  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.vocab) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       if (resp.body.responses[0].hits.total.value == 0) {
@@ -108,9 +108,9 @@ async function manifest (req, res) {
 
         var endpoint = ""
         var extraTenant = ""
-        if (tenant) {
-          endpoint = endpoint + tenant + '/'
-        } else {  // if we are on root level then tenant must be introduced in some places, e.g. after _preview urls
+        if (account) {
+          endpoint = endpoint + account + '/'
+        } else {  // if we are on root level then account must be introduced in some places, e.g. after _preview urls
           extraTenant = '{{prefix}}/'
         }
         if (vocab) { endpoint = endpoint + encodeURIComponent(vocab) + '/'}
@@ -123,8 +123,8 @@ async function manifest (req, res) {
               id: item._source.id,
               title: item._source.title,
               description: item._source.description,
-              reconciliation: process.env.APP_BASEURL + item._source.tenant + '/' + encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))),
-              ...( !tenant ? { prefix: item._source.tenant } : {}) 
+              reconciliation: process.env.APP_BASEURL + item._source.account + '/' + encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))),
+              ...( !account ? { prefix: item._source.account } : {}) 
             })
           }
         })
@@ -152,13 +152,13 @@ async function manifest (req, res) {
 }
 
 async function query (req, res) {
-  const { tenant, vocab, prefLang } = _getParams(req)
+  const { account, vocab, prefLang } = _getParams(req)
   const threshold = (req.params.threshold ? req.params.threshold : config.es_threshold)
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
 
-  await _checkTenantVocab(tenant, vocab)
-  .then(resp => { if (!resp.err) { return esQueries.query(resp.tenant, resp.vocab, reqJSON) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkTenantVocab(account, vocab)
+  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.vocab, reqJSON) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       var allData = {}
@@ -179,11 +179,11 @@ async function query (req, res) {
 }
 
 async function preview (req, res) {
-  const { tenant, vocab, id, prefLang } = _getParams(req)
-  // console.log(`tenant: '${ tenant }', vocab: '${ vocab }', id: '${ id }'.`)
+  const { account, vocab, id, prefLang } = _getParams(req)
+  // console.log(`account: '${ account }', vocab: '${ vocab }', id: '${ id }'.`)
 
-  await _checkTenantVocab(tenant, vocab, id)
-  .then(resp => { if (!resp.err) { return esQueries.queryID(resp.tenant, resp.vocab, resp.id) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkTenantVocab(account, vocab, id)
+  .then(resp => { if (!resp.err) { return esQueries.queryID(resp.account, resp.vocab, resp.id) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       if (resp.body.responses[0].hits.total.value == 0) {
@@ -264,13 +264,13 @@ async function preview (req, res) {
 }
 
 async function suggest (req, res) {
-  const { tenant, vocab, prefLang } = _getParams(req)
+  const { account, vocab, prefLang } = _getParams(req)
   const prefix = req.query.prefix
   const cursor = req.query.cursor ? req.query.cursor - 1 : 0
-  // console.log(`tenant: '${ tenant }', vocab: '${ vocab }', prefix: '${ prefix }', cursor: '${ cursor }', language: '${ prefLang }'.`)
+  // console.log(`account: '${ account }', vocab: '${ vocab }', prefix: '${ prefix }', cursor: '${ cursor }', language: '${ prefLang }'.`)
 
-  await _checkTenantVocab(tenant, vocab)
-  .then(resp => { if (!resp.err) { return esQueries.suggest(resp.tenant, resp.vocab, prefix, cursor, prefLang) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkTenantVocab(account, vocab)
+  .then(resp => { if (!resp.err) { return esQueries.suggest(resp.account, resp.vocab, prefix, cursor, prefLang) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       const response = resp.body.responses[0].suggest
