@@ -14,8 +14,8 @@ const esMultiFields = [
 ]
 
 // Query for concepts and/or vocabularies
-async function query (account, vocab, reqQueries) {
-  // console.log(`vquery(account, vocab, reqQueries): ${account}, ${vocab}, ${JSON.stringify(reqQueries)}`)
+async function query (account, dataset, reqQueries) {
+  // console.log(`vquery(account, dataset, reqQueries): ${account}, ${dataset}, ${JSON.stringify(reqQueries)}`)
   var queries = ""
   const reqObject = esb.requestBodySearch()
 
@@ -24,17 +24,17 @@ async function query (account, vocab, reqQueries) {
        reqObject.query(
         esb.boolQuery()
           .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
-                  ...(vocab ? [esb.termQuery('vocab', vocab)] : []),    // add vocab condition only if vocab is set
-                  ...(vocab ? [esb.boolQuery()
-                                .should([ esb.termQuery('inScheme.id', vocab),
-                                          esb.termQuery('inScheme.id', 'http://' + vocab),
-                                          esb.termQuery('inScheme.id', 'https://' + vocab),
-                                          esb.termQuery('id', vocab),
-                                          esb.termQuery('id', 'http://' + vocab),
-                                          esb.termQuery('id', 'https://' + vocab),
-                                          esb.termQuery('vocab', vocab),
+                  ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
+                  ...(dataset ? [esb.boolQuery()
+                                .should([ esb.termQuery('inScheme.id', dataset),
+                                          esb.termQuery('inScheme.id', 'http://' + dataset),
+                                          esb.termQuery('inScheme.id', 'https://' + dataset),
+                                          esb.termQuery('id', dataset),
+                                          esb.termQuery('id', 'http://' + dataset),
+                                          esb.termQuery('id', 'https://' + dataset),
+                                          esb.termQuery('dataset', dataset),
                                         ])] : []),
-                  ...(!vocab ? [esb.boolQuery().must(esb.queryStringQuery('ConceptScheme').defaultField('type'))] : []), // if we don't have a vocab parameter, only search for vocabularies...
+                  ...(!dataset ? [esb.boolQuery().must(esb.queryStringQuery('ConceptScheme').defaultField('type'))] : []), // if we don't have a dataset parameter, only search for vocabularies...
                   esb.multiMatchQuery(esMultiFields, reqQueries[key].query)
                 ])
           .should( reqQueries[key]['type'] ?
@@ -50,10 +50,10 @@ async function query (account, vocab, reqQueries) {
     reqObject.query(
       esb.boolQuery()
         .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
-                ...(vocab ? [esb.termQuery('vocab', vocab)] : []),    // add vocab condition only if vocab is set
+                ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
                 esb.termQuery('type', 'ConceptScheme')
               ])
-        .should([ ...(vocab ? [esb.termQuery('id', vocab)] : []) ])
+        .should([ ...(dataset ? [esb.termQuery('id', dataset)] : []) ])
       )
       .size(500)
     queries = `{"index":"${index}"}` + '\n' + JSON.stringify(reqObject.toJSON()) + '\n'
@@ -68,15 +68,15 @@ async function query (account, vocab, reqQueries) {
 }
 
 // Query for a particular object (Concept or ConceptScheme)
-async function queryID (account, vocab, id) {
-  // console.log(`esQueries.queryID: account: '${account}', vocab: '${vocab}', id: '${id}'.`)
+async function queryID (account, dataset, id) {
+  // console.log(`esQueries.queryID: account: '${account}', dataset: '${dataset}', id: '${id}'.`)
   var queries = ''
   const reqObject = esb.requestBodySearch()
     .query(esb.boolQuery()
       .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
-              ...(vocab ? [esb.termQuery('vocab', vocab)] : []),    // add vocab condition only if vocab is set
-              ...(id ? [esb.termsQuery('id', [id, vocab + '/' + id])] : []), // add id condition only if id is set
-              ...(!id ? [esb.queryStringQuery('ConceptScheme').defaultField('type')] : []), // if there's no id, then search for vocabs
+              ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
+              ...(id ? [esb.termsQuery('id', [id, dataset + '/' + id])] : []), // add id condition only if id is set
+              ...(!id ? [esb.queryStringQuery('ConceptScheme').defaultField('type')] : []), // if there's no id, then search for vocabularies
             ])
     )
     .size(100)
@@ -91,18 +91,18 @@ async function queryID (account, vocab, id) {
 }
 
 // Query for autocompletion suggestions for a prefix string
-async function suggest (account, vocab, prefix, cursor, prefLang) {
-  // console.log(` suggest(account, vocab, prefix, cursor, language): ${account}, ${vocab}, ${prefix}, ${cursor}, ${prefLang}.`)
+async function suggest (account, dataset, prefix, cursor, prefLang) {
+  // console.log(` suggest(account, dataset, prefix, cursor, language): ${account}, ${dataset}, ${prefix}, ${cursor}, ${prefLang}.`)
 
   // See https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/suggest_examples.html
-  // Define a contexts object having either account or vocab or both
+  // Define a contexts object having either account or dataset or both
   var ctx
-  if (!account && !vocab) {
+  if (!account && !dataset) {
     ctx = { account: await getAccounts() }
   } else {
     ctx = {
       ...(account && { account: [ account ] }),
-      ...(vocab && { vocab: [ vocab ] })
+      ...(dataset && { dataset: [ dataset ] })
     }
   }
 
@@ -165,15 +165,15 @@ async function getAccounts () {
   return accounts
 }
 
-// Get all vocab names
-async function getVocabs () {
-  var vocabs = []
+// Get all dataset names
+async function getDatasets () {
+  var datasets = []
   var aggs = { from: 0,
     size: 0,
     track_total_hits: false,
     aggs: {
-       vocabs: {
-           terms: { field: "vocab" }
+       datasets: {
+           terms: { field: "dataset" }
        }
     }
   }
@@ -186,15 +186,15 @@ async function getVocabs () {
   })
   .then(resp => {
     // console.log(`result:\n${JSON.stringify(resp.body)}`)
-    resp.body.responses[0].aggregations.vocabs.buckets.forEach((element, _) => {
-      vocabs.push(element.key)
+    resp.body.responses[0].aggregations.datasets.buckets.forEach((element, _) => {
+      datasets.push(element.key)
     })
   })
   .catch(err => {
     console.trace(err.message)
     return []
   })
-  return vocabs
+  return datasets
 }
 
-export { query, queryID, suggest, getAccounts, getVocabs }
+export { query, queryID, suggest, getAccounts, getDatasets }

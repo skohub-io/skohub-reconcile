@@ -78,9 +78,9 @@ curl --request PUT \
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -117,9 +117,9 @@ curl --request PUT \
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -156,9 +156,9 @@ curl --request PUT \
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -195,9 +195,9 @@ curl --request PUT \
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -414,7 +414,7 @@ curl --request PUT \
 				"type": "keyword",
 				"index": true
 			},
-			"vocab": {
+			"dataset": {
 				"type": "keyword",
 				"index": true
 			},

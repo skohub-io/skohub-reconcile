@@ -1,7 +1,8 @@
 import config from './config.js'
 import * as esQueries from './esQueries.js'
 
-const defaultLanguage = 'en'
+const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : 'en'
+const supportedAPIversions = ['0.2']
 
 function _esToRec (doc, prefLang, threshold) {
   const concept = doc._source
@@ -37,31 +38,32 @@ function _getLocalizedString ( obj, prefLang ) {
 }
 
 function _getParams (req) {
-  const account = req.params.account ? req.params.account : ( req.query.account ? req.query.account : "" )
-  const vocab  = req.params.vocab  ? req.params.vocab  : ( req.query.vocab  ? req.query.vocab  : "" )
-  const id     = req.params.id     ? req.params.id     : ( req.query.id     ? req.query.id     : "" )
-  const prefLang = req.query.lang  ? req.query.lang : defaultLanguage
-  return { account, vocab, id, prefLang }
+  // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
+  const account  = req.params.account    ? req.params.account    : ( req.query.account ? req.query.account : "" )
+  const dataset  = req.params.dataset    ? req.params.dataset    : ( req.query.dataset ? req.query.dataset : "" )
+  const id       = req.params.id         ? req.params.id         : ( req.query.id      ? req.query.id      : "" )
+  const prefLang = req.query.lang ? req.query.lang : defaultLanguage
+  return { account, dataset, id, prefLang }
 }
 
-async function _checkAccountVocab(account, vocab, id) {
-  // if account or vocab is nonempty but not in available accounts or vocabs, return 404
+async function _checkAccountDataset(account, dataset, id) {
+  // if account or dataset is nonempty but not in available accounts or datasets, return 404
   var allAccounts = await esQueries.getAccounts()
-  var allVocabs = await esQueries.getVocabs()
+  var allDatasets = await esQueries.getDatasets()
   if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
-    return { err: {message: `Sorry, nothing at this url. (Nonexistent account '${ account }'.)`, code: 404}, account, vocab, id }
+    return { err: {message: `Sorry, nothing at this url. (Nonexistent account '${ account }'.)`, code: 404}, account, dataset, id }
   }
-  if (vocab && [].slice.call(allVocabs).indexOf(vocab) == -1) {
-    // if vocab fails, try again with a vocab value without the last path component
+  if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
+    // if dataset fails, try again with a dataset value without the last path component
     // (maybe that's an id which express router could not extract)
-    var pComponents = vocab.split('/')
+    var pComponents = dataset.split('/')
     id = pComponents.pop()
-    vocab = pComponents.join('/')
-    if (vocab && [].slice.call(allVocabs).indexOf(vocab) == -1) {
-      return { err: {message: `Sorry, nothing at this url. (Nonexistent vocab '${ vocab }'.)`, code: 404}, account, vocab, id }
+    dataset = pComponents.join('/')
+    if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
+      return { err: {message: `Sorry, nothing at this url. (Nonexistent dataset '${ dataset }'.)`, code: 404}, account, dataset, id }
     }
   }
-  return { err: null, account, vocab, id }
+  return { err: null, account, dataset, id }
 }
 
 function _knownProblemHandler(res, err) {
@@ -76,7 +78,7 @@ function _errorHandler(res, err) {
   res.json({ status_code: 500, success: false, data: [], message: err })
 }
 
-async function vocab (req, res) {
+async function dataset (req, res) {
   if (!req.query.queries) {
     manifest(req, res)
   } else {
@@ -86,10 +88,11 @@ async function vocab (req, res) {
 }
 
 async function manifest (req, res) {
-  const { account, vocab, prefLang } = _getParams(req)
+  const { account, dataset, prefLang } = _getParams(req)
+  // console.log(`account: '${ account }', dataset: '${ dataset }'.`)
 
-  await _checkAccountVocab(account, vocab)
-  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.vocab) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkAccountDataset(account, dataset)
+  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.dataset) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       if (resp.body.responses[0].hits.total.value == 0) {
@@ -98,52 +101,72 @@ async function manifest (req, res) {
 
         // for identifierSpace, preferredNamespaceUri takes precedence over our parsing of the schema's id
         var prefix = ""
-        if (vocab && resp.body.responses[0].hits.hits[0]._source.preferredNamespaceUri) {
+        if (dataset && resp.body.responses[0].hits.hits[0]._source.preferredNamespaceUri) {
           prefix = resp.body.responses[0].hits.hits[0]._source.preferredNamespaceUri.id
-        } else if ( vocab && resp.body.responses[0].hits.hits) {
+        } else if ( dataset && resp.body.responses[0].hits.hits) {
           prefix = resp.body.responses[0].hits.hits[0]._source.id.substring(0, resp.body.responses[0].hits.hits[0]._source.id.lastIndexOf('/') + 1)
         } else {
           prefix = ""
         }
 
-        var endpoint = ""
-        var extraAccount = ""
-        if (account) {
-          endpoint = endpoint + account + '/'
-        } else {  // if we are on root level then account must be introduced in some places, e.g. after _preview urls
-          extraAccount = '{{prefix}}/'
-        }
-        if (vocab) { endpoint = endpoint + encodeURIComponent(vocab) + '/'}
-
-        var vocabs
-        var v = []
+        /*
+          var endpoint = ""
+          var extraAccount = ""
+          if (account) {
+            endpoint = endpoint + account + '/'
+          } else {  // if we are on root level then account must be introduced in some places, e.g. after _preview urls
+            extraAccount = '{{prefix}}/'
+          }
+          if (dataset) { endpoint = endpoint + encodeURIComponent(dataset) + '/'}
+        */
+        var datasets
+        var d = []
         resp.body.responses[0].hits.hits.forEach(item => {
           if (item._source.type == "ConceptScheme" ) {
-            v.push({
+            d.push({
               id: item._source.id,
               title: item._source.title,
               description: item._source.description,
-              reconciliation: process.env.APP_BASEURL + item._source.account + '/' + encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))),
-              ...( !account ? { prefix: item._source.account } : {}) 
+              reconciliation: process.env.APP_BASEURL + `_reconcile?account=${ item._source.account }&dataset=${ encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))) }`,
+              ...( !account ? { account: item._source.account } : {})
             })
           }
         })
-        if (!vocab && v.length > 0) {
-          vocabs = { vocabs: v }
+        if (!dataset && d.length > 0) {
+          datasets = { datasets: d }
         }
 
-        res.send({
-          'versions': ['0.2'],
-          'name': `SkoHub reconciliation service${ (endpoint) && ' for ' + decodeURIComponent(endpoint)}`,
-          'identifierSpace': `${prefix}`,
+        var dsname = ''
+        var dsparam = ''
+        var accparam = ''
+        var idparam = ''
+        if ( account || dataset ) {
+           dsname = ' for ' + ( account ? "account '" + account + "'" + ( dataset ? ", dataset '" + dataset + "'" : '' ): ( dataset ? ", dataset '" + dataset + "'"  : '' ) )
+        }
+        if (dataset) {
+            dsparam = `dataset=${ dataset }`
+            idparam = `&id={{id}}`
+        } else {
+            dsparam = `dataset={{id}}`
+        }
+        if (account) {
+          accparam = `account=${ account }`
+        } else {
+            accparam = `account={{account}}`
+        }
+      res.send({
+          'versions': supportedAPIversions,
+          'name': `SkoHub reconciliation service${ dsname }`,
+          'identifierSpace': `${ prefix }`,
           'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
           'defaultTypes': [
             { 'id': 'ConceptScheme', 'name': 'ConceptScheme' },
-            ...( vocab ? [{ 'id': 'Concept', 'name': 'Concept' }] : [])
+            ...( dataset ? [{ 'id': 'Concept', 'name': 'Concept' }] : [])
           ],
-          ...vocabs,
-          'view': { 'url': `${prefix}{{id}}` },
-          'preview': { 'url': `${process.env.APP_BASEURL}${endpoint}_preview/${extraAccount}{{id}}`, 'width': 100, 'height': 320 }
+          ...datasets,
+          'view': { 'url': `${ prefix }{{id}}` },
+          'preview': { 'url': `${ process.env.APP_BASEURL }_preview?${ accparam }&${ dsparam }${ idparam }`, 'width': 100, 'height': 320 },
+          'suggest': { 'url': `${ process.env.APP_BASEURL }_suggest?${ accparam }&${ dsparam }`}
         })
       }
     }
@@ -152,13 +175,13 @@ async function manifest (req, res) {
 }
 
 async function query (req, res) {
-  const { account, vocab, prefLang } = _getParams(req)
-  const threshold = (req.params.threshold ? req.params.threshold : config.es_threshold)
+  const { account, dataset, prefLang } = _getParams(req)
+  const threshold = (req.query.threshold ? req.query.threshold : config.es_threshold)
   const reqJSON = JSON.parse(req.body.queries)
   let reqQNames = Object.keys(reqJSON)
 
-  await _checkAccountVocab(account, vocab)
-  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.vocab, reqJSON) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkAccountDataset(account, dataset)
+  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.dataset, reqJSON) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       var allData = {}
@@ -179,11 +202,11 @@ async function query (req, res) {
 }
 
 async function preview (req, res) {
-  const { account, vocab, id, prefLang } = _getParams(req)
-  // console.log(`account: '${ account }', vocab: '${ vocab }', id: '${ id }'.`)
+  const { account, dataset, id, prefLang } = _getParams(req)
+  // console.log(`account: '${ account }', dataset: '${ dataset }', id: '${ id }'.`)
 
-  await _checkAccountVocab(account, vocab, id)
-  .then(resp => { if (!resp.err) { return esQueries.queryID(resp.account, resp.vocab, resp.id) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkAccountDataset(account, dataset, id)
+  .then(resp => { if (!resp.err) { return esQueries.queryID(resp.account, resp.dataset, resp.id) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       if (resp.body.responses[0].hits.total.value == 0) {
@@ -191,23 +214,23 @@ async function preview (req, res) {
       } else {
         const result = resp.body.responses[0].hits.hits[0]._source
 
-        let newVocab = result.vocab
+        let newDataset = result.dataset
         if (result.id.substring(0,4) == 'http') {
           var url = result.id
         } else {
-          var url = newVocab + result.id
+          var url = newDataset + result.id
         }
-        const label = _getLocalizedString(result.prefLabel, prefLang)
-        const altLabels = _getLocalizedString(result.altLabel, prefLang)
-        const desc = _getLocalizedString(result.description, prefLang)
-        const examples = _getLocalizedString(result.examples, prefLang)
-        const def = result.definition ? _getLocalizedString(result.definition, prefLang) : ''
-        const scope_note = result.scopeNote ? _getLocalizedString(result.scopeNote, prefLang) : ''
-        const scheme = result.inScheme ? result.inScheme[0].id : ''
-        const type = result.type
-        const img = result.img
-        const img_url = img ? img.url : ''
-        const img_alt = img ? img.alt : ''
+        const label      = _getLocalizedString(result.prefLabel, prefLang)
+        const altLabels  = _getLocalizedString(result.altLabel, prefLang)
+        const desc       = _getLocalizedString(result.description, prefLang)
+        const examples   = _getLocalizedString(result.examples, prefLang)
+        const def        = result.definition ? _getLocalizedString(result.definition, prefLang) : ''
+        const scope_note = result.scopeNote  ? _getLocalizedString(result.scopeNote, prefLang) : ''
+        const scheme     = result.inScheme   ? result.inScheme[0].id : ''
+        const type       = result.type
+        const img        = result.img
+        const img_url    = img ? img.url : ''
+        const img_alt    = img ? img.alt : ''
 
         var img_html = ''
         var desc_html = ''
@@ -264,13 +287,13 @@ async function preview (req, res) {
 }
 
 async function suggest (req, res) {
-  const { account, vocab, prefLang } = _getParams(req)
+  const { account, dataset, prefLang } = _getParams(req)
   const prefix = req.query.prefix
   const cursor = req.query.cursor ? req.query.cursor - 1 : 0
-  // console.log(`account: '${ account }', vocab: '${ vocab }', prefix: '${ prefix }', cursor: '${ cursor }', language: '${ prefLang }'.`)
+  // console.log(`account: '${ account }', dataset: '${ dataset }', prefix: '${ prefix }', cursor: '${ cursor }', language: '${ prefLang }'.`)
 
-  await _checkAccountVocab(account, vocab)
-  .then(resp => { if (!resp.err) { return esQueries.suggest(resp.account, resp.vocab, prefix, cursor, prefLang) } else { return _knownProblemHandler(res, resp.err) } })
+  await _checkAccountDataset(account, dataset)
+  .then(resp => { if (!resp.err) { return esQueries.suggest(resp.account, resp.dataset, prefix, cursor, prefLang) } else { return _knownProblemHandler(res, resp.err) } })
   .then(resp => { if (!resp.err)
     {
       const response = resp.body.responses[0].suggest
@@ -301,4 +324,4 @@ async function flyout (req, res) {
   res.json({ status_code: 501, success: true, message: 'FlyOut has not been implemented yet.' })
 }
 
-export { vocab, query, preview, suggest, extend, flyout }
+export { dataset, query, preview, suggest, extend, flyout }

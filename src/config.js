@@ -11,7 +11,8 @@ let config = {
   es_type: process.env.ES_TYPE,
   es_threshold: process.env.ES_THRESH,
   app_port: process.env.APP_PORT,
-  app_baseurl: process.env.APP_BASEURL
+  app_baseurl: process.env.APP_BASEURL,
+  app_defaultlang: process.env.APP_DEFAULTLANG
 }
 
 if (result.error) {

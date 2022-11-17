@@ -68,9 +68,9 @@
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -108,9 +108,9 @@
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -148,9 +148,9 @@
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -188,9 +188,9 @@
 										"path": "account"
 									},
 									{
-										"name": "vocab",
+										"name": "dataset",
 										"type": "category",
-										"path": "vocab"
+										"path": "dataset"
 									}
 								]
 							}
@@ -407,7 +407,7 @@
 				"type": "keyword",
 				"index": true
 			},
-			"vocab": {
+			"dataset": {
 				"type": "keyword",
 				"index": true
 			},
