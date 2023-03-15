@@ -2,7 +2,6 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
-import URLSearchParams from 'url'
 import * as esConnect from './esConnect.js'
 import * as esInitIndex from './esInitIndex.js'
 import * as router from './router.js'
@@ -18,7 +17,7 @@ esClient.ping()
   })
   .then(async _ => {
     console.log(`- check for index '${process.env.ES_INDEX}' ...`)
-    if ((await esClient.indices.exists({index: process.env.ES_INDEX})).body) {
+    if ((await esClient.indices.exists({index: process.env.ES_INDEX}))) {
       console.log(`    index '${process.env.ES_INDEX}' found.`)
     } else {
       console.log(`    index '${process.env.ES_INDEX}' does not exist.`)
@@ -58,9 +57,9 @@ esClient.ping()
     app.set('port', process.env.APP_PORT || 3000)
     // We use URLSearchParams parsing rather than express's standard qs.
     // For reasons why, see https://evanhahn.com/gotchas-with-express-query-parsing-and-how-to-avoid-them/
-    app.set('query parser', (queryString) => {
-      return new URLSearchParams(queryString)
-    })
+    // app.set('query parser', function (queryString) {
+    //   return URLSearchParams(queryString)
+    // })
 
     app.listen(app.get('port'), () => {
       console.log(`\nskohub-reconcile server up and listening on port ${app.get('port')}.\n`)

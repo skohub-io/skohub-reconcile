@@ -79,126 +79,119 @@ function _errorHandler(res, err) {
 }
 
 async function dataset (req, res) {
-  if (!req.query.queries) {
+  if (!Object.keys(req.query).length) {
     manifest(req, res)
   } else {
-    req.body.queries = req.query.queries
     query(req, res)
   }
 }
 
 async function manifest (req, res) {
   const { account, dataset, prefLang } = _getParams(req)
-  // console.log(`account: '${ account }', dataset: '${ dataset }'.`)
+  console.log(`account: '${ account }', dataset: '${ dataset }'.`)
 
-  await _checkAccountDataset(account, dataset)
-  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.dataset) } else { return _knownProblemHandler(res, resp.err) } })
-  .then(resp => { if (!resp.err)
-    {
-      if (resp.body.responses[0].hits.total.value == 0) {
+  // TODO what is identifier space here?
+  if (!account && !dataset) {
+    res.send({
+      'versions': supportedAPIversions,
+      'name': `SkoHub reconciliation service`,
+      // 'identifierSpace': `${ prefix ?? "i dont know" }`,
+      'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
+    })
+  }
+
+  const accountDataset = await _checkAccountDataset(account, dataset)
+  if (accountDataset.err) { 
+    return _knownProblemHandler(res, accountDataset.err) 
+  }
+  const esQuery = await esQueries.query(accountDataset.account, accountDataset.dataset)
+  if (esQuery.responses[0].hits.total.value == 0) {
         _knownProblemHandler(res, {code: 404, message : 'Sorry, nothing at this url.'})
-      } else {
-
-        // for identifierSpace, preferredNamespaceUri takes precedence over our parsing of the schema's id
-        var prefix = ""
-        if (dataset && resp.body.responses[0].hits.hits[0]._source.preferredNamespaceUri) {
-          prefix = resp.body.responses[0].hits.hits[0]._source.preferredNamespaceUri.id
-        } else if ( dataset && resp.body.responses[0].hits.hits) {
-          prefix = resp.body.responses[0].hits.hits[0]._source.id.substring(0, resp.body.responses[0].hits.hits[0]._source.id.lastIndexOf('/') + 1)
-        } else {
-          prefix = ""
-        }
-
-        /*
-          var endpoint = ""
-          var extraAccount = ""
-          if (account) {
-            endpoint = endpoint + account + '/'
-          } else {  // if we are on root level then account must be introduced in some places, e.g. after _preview urls
-            extraAccount = '{{prefix}}/'
-          }
-          if (dataset) { endpoint = endpoint + encodeURIComponent(dataset) + '/'}
-        */
-        var datasets
-        var d = []
-        resp.body.responses[0].hits.hits.forEach(item => {
-          if (item._source.type == "ConceptScheme" ) {
-            d.push({
-              id: item._source.id,
-              title: item._source.title,
-              description: item._source.description,
-              reconciliation: process.env.APP_BASEURL + `_reconcile?account=${ item._source.account }&dataset=${ encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))) }`,
-              ...( !account ? { account: item._source.account } : {})
-            })
-          }
-        })
-        if (!dataset && d.length > 0) {
-          datasets = { datasets: d }
-        }
-
-        var dsname = ''
-        var dsparam = ''
-        var accparam = ''
-        var idparam = ''
-        if ( account || dataset ) {
-           dsname = ' for ' + ( account ? "account '" + account + "'" + ( dataset ? ", dataset '" + dataset + "'" : '' ): ( dataset ? ", dataset '" + dataset + "'"  : '' ) )
-        }
-        if (dataset) {
-            dsparam = `dataset=${ dataset }`
-            idparam = `&id={{id}}`
-        } else {
-            dsparam = `dataset={{id}}`
-        }
-        if (account) {
-          accparam = `account=${ account }`
-        } else {
-            accparam = `account={{account}}`
-        }
-      res.send({
-          'versions': supportedAPIversions,
-          'name': `SkoHub reconciliation service${ dsname }`,
-          'identifierSpace': `${ prefix }`,
-          'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
-          'defaultTypes': [
-            { 'id': 'ConceptScheme', 'name': 'ConceptScheme' },
-            ...( dataset ? [{ 'id': 'Concept', 'name': 'Concept' }] : [])
-          ],
-          ...datasets,
-          'view': { 'url': `${ prefix }{{id}}` },
-          'preview': { 'url': `${ process.env.APP_BASEURL }_preview?${ accparam }&${ dsparam }${ idparam }`, 'width': 100, 'height': 320 },
-          'suggest': { 'url': `${ process.env.APP_BASEURL }_suggest?${ accparam }&${ dsparam }`}
+  } else {
+    // for identifierSpace, preferredNamespaceUri takes precedence over our parsing of the schema's id
+    let prefix = ""
+    const firstHit = esQuery.responses[0].hits.hits[0]
+    if (firstHit._source.preferredNamespaceUri) {
+      prefix = firstHit._source.preferredNamespaceUri.id
+    } else {
+      prefix = firstHit._source.id.substring(0, firstHit._source.id.lastIndexOf('/') + 1)
+    }
+    var datasets
+    var d = []
+    esQuery.responses[0].hits.hits.forEach(item => {
+      if (item._source.type == "ConceptScheme" ) {
+        d.push({
+          id: item._source.id,
+          title: item._source.title,
+          description: item._source.description,
+          reconciliation: process.env.APP_BASEURL + `_reconcile?account=${ item._source.account }&dataset=${ encodeURIComponent(item._source.id.substring(0, item._source.id.lastIndexOf('/'))) }`,
+          ...( !account ? { account: item._source.account } : {})
         })
       }
+    })
+    if (!dataset && d.length > 0) {
+      datasets = { datasets: d }
     }
-  })
-  .catch(err => _errorHandler(res, err))
+
+    var dsname = ''
+    var dsparam = ''
+    var accparam = ''
+    var idparam = ''
+    if ( account || dataset ) {
+        dsname = ' for ' + ( account ? "account '" + account + "'" + ( dataset ? ", dataset '" + dataset + "'" : '' ): ( dataset ? ", dataset '" + dataset + "'"  : '' ) )
+    }
+    if (dataset) {
+        dsparam = `dataset=${ dataset }`
+        idparam = `&id={{id}}`
+    } else {
+        dsparam = `dataset={{id}}`
+    }
+    if (account) {
+      accparam = `account=${ account }`
+    } else {
+        accparam = `account={{account}}`
+    }
+  res.send({
+      'versions': supportedAPIversions,
+      'name': `SkoHub reconciliation service${ dsname }`,
+      'identifierSpace': `${ prefix }`,
+      'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
+      'defaultTypes': [
+        { 'id': 'ConceptScheme', 'name': 'ConceptScheme' },
+        ...( dataset ? [{ 'id': 'Concept', 'name': 'Concept' }] : [])
+      ],
+      ...datasets,
+      'view': { 'url': `${ prefix }{{id}}` },
+      'preview': { 'url': `${ process.env.APP_BASEURL }_preview?${ accparam }&${ dsparam }${ idparam }`, 'width': 100, 'height': 320 },
+      'suggest': { 'url': `${ process.env.APP_BASEURL }_suggest?${ accparam }&${ dsparam }`}
+    })
+  }
 }
 
 async function query (req, res) {
   const { account, dataset, prefLang } = _getParams(req)
   const threshold = (req.query.threshold ? req.query.threshold : config.es_threshold)
-  const reqJSON = JSON.parse(req.body.queries)
-  let reqQNames = Object.keys(reqJSON)
+  let reqQNames = Object.keys(req.body)
 
-  await _checkAccountDataset(account, dataset)
-  .then(resp => { if (!resp.err) { return esQueries.query(resp.account, resp.dataset, reqJSON) } else { return _knownProblemHandler(res, resp.err) } })
-  .then(resp => { if (!resp.err)
-    {
-      var allData = {}
-      resp.body.responses.forEach((element, index) => {
-        var qData = []
-        if (element.hits.hits) {
-          element.hits.hits.forEach(doc => {
-            qData.push(_esToRec(doc, prefLang, threshold))
-          })
-        }
-        allData[reqQNames[index]] = { 'result': qData }
+  try {
+    const resp = await _checkAccountDataset(account, dataset)
+    const esQuery = await esQueries.query(resp.account, resp.dataset, req.body) 
+    var allData = {}
+    esQuery.responses.forEach((element, index) => {
+      var qData = []
+      if (element.hits.hits) {
+        element.hits.hits.forEach(doc => {
+          qData.push(_esToRec(doc, prefLang, threshold))
       })
-      // res.json({ status_code: 200, success: true, data: allData, message: 'Concepts successfully fetched.' })
-      res.json(allData)
     }
-  })
-  .catch(err => _errorHandler(res, err))
+    allData[reqQNames[index]] = { 'result': qData }
+    })
+    // res.json({ status_code: 200, success: true, data: allData, message: 'Concepts successfully fetched.' })
+    return res.json(allData)
+  } catch (error) { 
+    return _errorHandler(res, error)
+    // return _knownProblemHandler(res, resp.err) 
+  }
 }
 
 async function preview (req, res) {

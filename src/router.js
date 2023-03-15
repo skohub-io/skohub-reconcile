@@ -7,7 +7,7 @@ const routes = express.Router()
 //   *must not* begin with an underscore ('_').
 // Fixed service endpoints, by contrast, do start with an underscore
 //   ('_reconcile', '_preview', '_suggest' etc.)
-
+// routes.route("/").get(controller.dataset)
 
 // 1. GET: either return service manifest or do reconciliation query (if ?queries parameter given)
 routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.dataset)

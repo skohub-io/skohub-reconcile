@@ -16,23 +16,22 @@ const esMultiFields = [
 // Query for concepts and/or vocabularies
 async function query (account, dataset, reqQueries) {
   // console.log(`vquery(account, dataset, reqQueries): ${account}, ${dataset}, ${JSON.stringify(reqQueries)}`)
-  var queries = ""
-  const reqObject = esb.requestBodySearch()
-
+  const requests = []
   if (reqQueries) {
-    for (var key in reqQueries) {
-       reqObject.query(
+    for (let key in reqQueries) {
+      const reqObject = esb.requestBodySearch()
+      reqObject.query(
         esb.boolQuery()
-          .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
-                  ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
+          .must([ ...(account ? [esb.termQuery('account.keyword', account)] : []), // add account condition only if account is set
+                  ...(dataset ? [esb.termQuery('dataset.keyword', dataset)] : []), // add dataset condition only if dataset is set
                   ...(dataset ? [esb.boolQuery()
                                 .should([ esb.termQuery('inScheme.id', dataset),
-                                          esb.termQuery('inScheme.id', 'http://' + dataset),
-                                          esb.termQuery('inScheme.id', 'https://' + dataset),
+                                          // esb.termQuery('inScheme.id', 'http://' + dataset),
+                                          // esb.termQuery('inScheme.id', 'https://' + dataset),
                                           esb.termQuery('id', dataset),
-                                          esb.termQuery('id', 'http://' + dataset),
-                                          esb.termQuery('id', 'https://' + dataset),
-                                          esb.termQuery('dataset', dataset),
+                                          // esb.termQuery('id', 'http://' + dataset),
+                                          // esb.termQuery('id', 'https://' + dataset),
+                                          esb.termQuery('dataset.keyword', dataset),
                                         ])] : []),
                   ...(!dataset ? [esb.boolQuery().must(esb.queryStringQuery('ConceptScheme').defaultField('type'))] : []), // if we don't have a dataset parameter, only search for vocabularies...
                   esb.multiMatchQuery(esMultiFields, reqQueries[key].query)
@@ -43,27 +42,30 @@ async function query (account, dataset, reqQueries) {
                  )
         )
         .size(reqQueries[key].limit || 500)
-      queries = queries + `{ "index": "${index}" }` + '\n'
-      queries = queries + JSON.stringify(reqObject.toJSON()) + '\n'
+    requests.push(reqObject)
     }
   } else {
+    const reqObject = esb.requestBodySearch()
     reqObject.query(
       esb.boolQuery()
-        .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
-                ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
-                esb.termQuery('type', 'ConceptScheme')
+        .must([ ...(account ? [esb.termQuery('account.keyword', account)] : []), // add account condition only if account is set
+                ...(dataset ? [esb.termQuery('dataset.keyword', dataset)] : []), // add dataset condition only if dataset is set
+                esb.termQuery('type.keyword', 'ConceptScheme')
               ])
         .should([ ...(dataset ? [esb.termQuery('id', dataset)] : []) ])
       )
       .size(500)
-    queries = `{"index":"${index}"}` + '\n' + JSON.stringify(reqObject.toJSON()) + '\n'
+    requests.push(reqObject)
   }
-  // console.log(`queries: ${queries}`)
 
-  var result = await esClient.msearch({
-    body: queries
+  const searches = requests.flatMap((doc) => [
+    {index: "skohub-reconcile"},
+    {...doc.toJSON()}
+  ])
+  const result = await esClient.msearch({
+    searches: searches
   })
-  // console.log(`result:\n${JSON.stringify(result)}`)
+  console.log(`result:\n${JSON.stringify(result)}`)
   return result
 }
 
@@ -141,7 +143,7 @@ async function getAccounts () {
                track_total_hits: false,
                aggs: {
                   accounts: {
-                      terms: { field: "account" }
+                      terms: { field: "account.keyword" }
                   }
                }
              }
@@ -149,20 +151,19 @@ async function getAccounts () {
   // console.log(`queries: ${queries}`)
 
   // Do the search
-  await esClient.msearch({
-    body: queries
-  })
-  .then(resp => {
-    // console.log(`result:\n${JSON.stringify(resp.body)}`)
-    resp.body.responses[0].aggregations.accounts.buckets.forEach((element, _) => {
-      accounts.push(element.key)
+  try {
+    const resp = await esClient.search({
+      index: index,
+      ...aggs
     })
-  })
-  .catch(err => {
+    resp.aggregations.accounts.buckets.forEach((element, _) => {
+        accounts.push(element.key)
+      })
+    return accounts 
+  } catch (error) {
     console.trace(err.message)
     return []
-  })
-  return accounts
+  }
 }
 
 // Get all dataset names
@@ -173,7 +174,7 @@ async function getDatasets () {
     track_total_hits: false,
     aggs: {
        datasets: {
-           terms: { field: "dataset" }
+           terms: { field: "dataset.keyword" }
        }
     }
   }
@@ -181,20 +182,19 @@ async function getDatasets () {
   // console.log(`queries: ${queries}`)
 
   // Do the search
-  await esClient.msearch({
-    body: queries
-  })
-  .then(resp => {
-    // console.log(`result:\n${JSON.stringify(resp.body)}`)
-    resp.body.responses[0].aggregations.datasets.buckets.forEach((element, _) => {
-      datasets.push(element.key)
+  try {
+    const resp = await esClient.search({
+      index: index,
+      ...aggs
     })
-  })
-  .catch(err => {
+    resp.aggregations.datasets.buckets.forEach((element, _) => {
+        datasets.push(element.key)
+      })
+    return datasets
+  } catch (error) {
     console.trace(err.message)
     return []
-  })
-  return datasets
+  }
 }
 
 export { query, queryID, suggest, getAccounts, getDatasets }
