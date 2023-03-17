@@ -25,9 +25,9 @@ routes.route('/_preview/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.
 routes.route('/_preview').get(controller.preview)
 
 // 4. GET: give a suggestion
-// routes.route('/_suggest/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))(/:id([a-zA-Z0-9][a-zA-Z0-9%.:/_-]{0,}))?').get(controller.suggest)
-// routes.route('/_suggest/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.suggest)
-routes.route('/_suggest/entity').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
+routes.route('/_suggest/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.suggest)
+routes.route('/_suggest/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.suggest)
+// routes.route('/_suggest/entity').get(controller.suggest)		// query parameters are: "prefix" and "cursor"
 
 // 5. other services, not implemented yet
 routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').post(controller.extend)

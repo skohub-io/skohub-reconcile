@@ -9,7 +9,7 @@ function _esToRec (doc, prefLang, threshold) {
   let obj = {
     'id': concept.id.split('/').pop(),
     'name': _getLocalizedString(concept.prefLabel, prefLang) || _getLocalizedString(concept.title, prefLang),
-    'description': _getLocalizedString(concept.scopeNote, prefLang) || _getLocalizedString(concept.description, prefLang),
+    'description': _getLocalizedString(concept.scopeNote, prefLang) || _getLocalizedString(concept.description, prefLang) || "",
     'score': doc._score,
     'match': ( parseFloat(doc._score) > threshold ? true : false ),
     'type': [
@@ -37,7 +37,7 @@ function _getLocalizedString ( obj, prefLang ) {
   return null
 }
 
-function _getParams (req) {
+function _getURLParameters (req) {
   // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
   const account  = req.params.account    ? req.params.account    : ( req.query.account ? req.query.account : "" )
   const dataset  = req.params.dataset    ? req.params.dataset    : ( req.query.dataset ? req.query.dataset : "" )
@@ -46,7 +46,25 @@ function _getParams (req) {
   return { account, dataset, id, prefLang }
 }
 
-async function _checkAccountDataset(account, dataset, id) {
+/**
+ * 
+ * @param {*} req 
+ * @returns {object} Object containing the query parameters
+ */
+function getQueryParameters(req) {
+  try {
+    if (req.method === "GET") {
+      return JSON.parse(req.query.queries)
+    }
+    else if (req.method === "POST") {
+      return req.body.queries
+    }
+  } catch (error) {
+    throw new Error("Unhandled request method for parsing query parameters: ", error)
+  }
+}
+
+async function _checkAccountDataset(account, dataset) {
   // if account or dataset is nonempty but not in available accounts or datasets, return 404
   var allAccounts = await esQueries.getAccounts()
   var allDatasets = await esQueries.getDatasets()
@@ -57,13 +75,13 @@ async function _checkAccountDataset(account, dataset, id) {
     // if dataset fails, try again with a dataset value without the last path component
     // (maybe that's an id which express router could not extract)
     var pComponents = dataset.split('/')
-    id = pComponents.pop()
+    const id = pComponents.pop()
     dataset = pComponents.join('/')
     if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
       return { err: {message: `Sorry, nothing at this url. (Nonexistent dataset '${ dataset }'.)`, code: 404}, account, dataset, id }
     }
   }
-  return { err: null, account, dataset, id }
+  return { err: null, account, dataset}
 }
 
 function _knownProblemHandler(res, err) {
@@ -87,15 +105,17 @@ async function dataset (req, res) {
 }
 
 async function manifest (req, res) {
-  const { account, dataset, prefLang } = _getParams(req)
+  const { account, dataset, prefLang } = _getURLParameters(req)
   console.log(`account: '${ account }', dataset: '${ dataset }'.`)
 
   // TODO what is identifier space here?
+  // I guess it must be coming from the dataset a generic identifierSpace does not make too much sense
+  // does this make sense at all? I think this is nothing that is covered in the reconciliation spec
   if (!account && !dataset) {
-    res.send({
+    return res.send({
       'versions': supportedAPIversions,
       'name': `SkoHub reconciliation service`,
-      // 'identifierSpace': `${ prefix ?? "i dont know" }`,
+      'identifierSpace': `http://vocab.getty.edu/doc/#GVP_URLs_and_Prefixes`,
       'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
     })
   }
@@ -151,7 +171,8 @@ async function manifest (req, res) {
     } else {
         accparam = `account={{account}}`
     }
-  res.send({
+
+  return res.send({
       'versions': supportedAPIversions,
       'name': `SkoHub reconciliation service${ dsname }`,
       'identifierSpace': `${ prefix }`,
@@ -162,20 +183,28 @@ async function manifest (req, res) {
       ],
       ...datasets,
       'view': { 'url': `${ prefix }{{id}}` },
-      'preview': { 'url': `${ process.env.APP_BASEURL }_preview?${ accparam }&${ dsparam }${ idparam }`, 'width': 100, 'height': 320 },
-      'suggest': { 'url': `${ process.env.APP_BASEURL }_suggest?${ accparam }&${ dsparam }`}
+      'preview': { 
+        'url': `${ process.env.APP_BASEURL }/_preview?${ accparam }&${ dsparam }${ idparam }`, 
+        'width': 100, 
+        'height': 320 
+      },
+      'suggest': { 
+        'service_url': `${ process.env.APP_BASEURL }`,
+        "service_path": `/_suggest?${ accparam }&${ dsparam }`
+      }
     })
   }
 }
 
 async function query (req, res) {
-  const { account, dataset, prefLang } = _getParams(req)
+  const { account, dataset, prefLang } = _getURLParameters(req)
   const threshold = (req.query.threshold ? req.query.threshold : config.es_threshold)
-  let reqQNames = Object.keys(req.body)
+  const queryParameters = getQueryParameters(req)
+  const reqQNames = Object.keys(queryParameters)
 
   try {
     const resp = await _checkAccountDataset(account, dataset)
-    const esQuery = await esQueries.query(resp.account, resp.dataset, req.body) 
+    const esQuery = await esQueries.query(resp.account, resp.dataset, queryParameters) 
     var allData = {}
     esQuery.responses.forEach((element, index) => {
       var qData = []
@@ -186,7 +215,6 @@ async function query (req, res) {
     }
     allData[reqQNames[index]] = { 'result': qData }
     })
-    // res.json({ status_code: 200, success: true, data: allData, message: 'Concepts successfully fetched.' })
     return res.json(allData)
   } catch (error) { 
     return _errorHandler(res, error)
@@ -195,95 +223,93 @@ async function query (req, res) {
 }
 
 async function preview (req, res) {
-  const { account, dataset, id, prefLang } = _getParams(req)
-  // console.log(`account: '${ account }', dataset: '${ dataset }', id: '${ id }'.`)
+  const { account, dataset, id, prefLang } = _getURLParameters(req)
 
-  await _checkAccountDataset(account, dataset, id)
-  .then(resp => { if (!resp.err) { return esQueries.queryID(resp.account, resp.dataset, resp.id) } else { return _knownProblemHandler(res, resp.err) } })
-  .then(resp => { if (!resp.err)
-    {
-      if (resp.body.responses[0].hits.total.value == 0) {
-        _knownProblemHandler(res, {code: 404, message : 'Sorry, nothing at this url.'})
-      } else {
-        const result = resp.body.responses[0].hits.hits[0]._source
-
-        let newDataset = result.dataset
-        if (result.id.substring(0,4) == 'http') {
-          var url = result.id
-        } else {
-          var url = newDataset + result.id
-        }
-        const label      = _getLocalizedString(result.prefLabel, prefLang)
-        const altLabels  = _getLocalizedString(result.altLabel, prefLang)
-        const desc       = _getLocalizedString(result.description, prefLang)
-        const examples   = _getLocalizedString(result.examples, prefLang)
-        const def        = result.definition ? _getLocalizedString(result.definition, prefLang) : ''
-        const scope_note = result.scopeNote  ? _getLocalizedString(result.scopeNote, prefLang) : ''
-        const scheme     = result.inScheme   ? result.inScheme[0].id : ''
-        const type       = result.type
-        const img        = result.img
-        const img_url    = img ? img.url : ''
-        const img_alt    = img ? img.alt : ''
-
-        var img_html = ''
-        var desc_html = ''
-        var scheme_html = ''
-        var def_html = ''
-        var scope_html = ''
-        var altLabels_html = ''
-        var examples_html = ''
-
-        if (img_url) {
-          img_html = `<div style="width: 100px; text-align: center; margin-right: 9px; float: left">
-          <img src="${ img_url }" alt="${ img_alt }" style="height: 100px" />
-        </div>`
-        }
-        if (scheme) { scheme_html = `in ConceptScheme: <b><a href="${ scheme }" target="_blank" style="text-decoration: none;">${ scheme }</a></b>`}
-        if (desc) { desc_html = `<p>${ desc }</p>` }
-        if (def) { def_html = `<p><i>${ def }</i></p>` }
-        if (scope_note) { scope_html = `<p>${ scope_note }</p>` }
-        if (altLabels) { altLabels_html = '<p>alias: ' + altLabels.join(', ') + '</p>'}
-        if (examples) {
-          examples_html = '<div><head>Examples:</head><ul>'
-          for (x in examples) {
-              examples_html = examples_html + `<li>${ x }</li>`
-          }
-          examples_html = examples_html + `</ul></div>`
-        }
-
-        const html = `<html><head><meta charset="utf-8" /></head>
-        <body style="margin: 0px; font-family: Arial; sans-serif">
-        <div style="height: 100px; width: 320px; font-size: 0.7em">
-        
-          <h3 style="margin-left: 5px;"><a href="${ url }">${ label }</a></h3>
-          ${ img_html }
-          <div style="margin-left: 5px;">
-            <p>
-              ${ type } <span style="color: #505050;">(id: ${ id ? id : result.id })</span><br/>
-              ${ scheme_html }
-            </p>
-            ${ desc_html }
-            ${ def_html }
-            ${ scope_html }
-            ${ altLabels_html }
-            ${ examples_html }
-          </div>
-        </div>
-        </body>
-        </html>`
-
-        res.send(html)
-      }
+  try {
+    const resp = await _checkAccountDataset(account, dataset)
+    const esQuery = await esQueries.queryID(resp.account, resp.dataset, id) 
+    if (esQuery.responses[0].hits.total.value == 0) {
+      _knownProblemHandler(res, {code: 404, message : 'Sorry, nothing at this url.'})
+    } 
+    const result = esQuery.responses[0].hits.hits[0]._source
+    let newDataset = result.dataset
+    // TODO what and why is this necessary?
+    if (result.id.substring(0,4) == 'http') {
+      var url = result.id
+    } else {
+      var url = newDataset + result.id
     }
-  })
-  .catch(err => _errorHandler(res, err))
+    const label      = _getLocalizedString(result.prefLabel, prefLang)
+    const altLabels  = _getLocalizedString(result.altLabel, prefLang)
+    const desc       = _getLocalizedString(result.description, prefLang)
+    const examples   = _getLocalizedString(result.examples, prefLang)
+    const def        = result.definition ? _getLocalizedString(result.definition, prefLang) : ''
+    const scope_note = result.scopeNote  ? _getLocalizedString(result.scopeNote, prefLang) : ''
+    const scheme     = result.inScheme   ? result.inScheme[0].id : ''
+    const type       = result.type
+    const img        = result.img
+    const img_url    = img ? img.url : ''
+    const img_alt    = img ? img.alt : ''
+
+    var img_html = ''
+    var desc_html = ''
+    var scheme_html = ''
+    var def_html = ''
+    var scope_html = ''
+    var altLabels_html = ''
+    var examples_html = ''
+
+    if (img_url) {
+      img_html = `<div style="width: 100px; text-align: center; margin-right: 9px; float: left">
+      <img src="${ img_url }" alt="${ img_alt }" style="height: 100px" />
+    </div>`
+    }
+    if (scheme) { scheme_html = `in ConceptScheme: <b><a href="${ scheme }" target="_blank" style="text-decoration: none;">${ scheme }</a></b>`}
+    if (desc) { desc_html = `<p>${ desc }</p>` }
+    if (def) { def_html = `<p><i>${ def }</i></p>` }
+    if (scope_note) { scope_html = `<p>${ scope_note }</p>` }
+    if (altLabels) { altLabels_html = '<p>alias: ' + altLabels.join(', ') + '</p>'}
+    if (examples) {
+      examples_html = '<div><head>Examples:</head><ul>'
+      for (x in examples) {
+          examples_html = examples_html + `<li>${ x }</li>`
+      }
+      examples_html = examples_html + `</ul></div>`
+    }
+
+    const html = `<html><head><meta charset="utf-8" /></head>
+    <body style="margin: 0px; font-family: Arial; sans-serif">
+    <div style="height: 100px; width: 320px; font-size: 0.7em">
+    
+      <h3 style="margin-left: 5px;"><a href="${ url }">${ label }</a></h3>
+      ${ img_html }
+      <div style="margin-left: 5px;">
+        <p>
+          ${ type } <span style="color: #505050;">(id: ${ id ? id : result.id })</span><br/>
+          ${ scheme_html }
+        </p>
+        ${ desc_html }
+        ${ def_html }
+        ${ scope_html }
+        ${ altLabels_html }
+        ${ examples_html }
+      </div>
+    </div>
+    </body>
+    </html>`
+
+    return res.send(html)
+  } catch (error) {
+    return _errorHandler(res, error)
+    // return _knownProblemHandler(res, resp.err) 
+  }
 }
 
+// TODO continue here
 async function suggest (req, res) {
-  const { account, dataset, prefLang } = _getParams(req)
+  const { account, dataset, prefLang } = _getURLParameters(req)
   const prefix = req.query.prefix
   const cursor = req.query.cursor ? req.query.cursor - 1 : 0
-  // console.log(`account: '${ account }', dataset: '${ dataset }', prefix: '${ prefix }', cursor: '${ cursor }', language: '${ prefLang }'.`)
 
   await _checkAccountDataset(account, dataset)
   .then(resp => { if (!resp.err) { return esQueries.suggest(resp.account, resp.dataset, prefix, cursor, prefLang) } else { return _knownProblemHandler(res, resp.err) } })

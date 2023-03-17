@@ -13,9 +13,15 @@ const esMultiFields = [
   'notation*^1.2'
 ]
 
-// Query for concepts and/or vocabularies
+/**
+ * Query for concepts and/or vocabularies
+ * @param {string} account 
+ * @param {string} dataset 
+ * @param {object} reqQueries Query objects according to [reconciliation spec](https://reconciliation-api.github.io/specs/0.2/#structure-of-a-reconciliation-query).
+ * @returns {object} Elasticsearch query result
+ */
+
 async function query (account, dataset, reqQueries) {
-  // console.log(`vquery(account, dataset, reqQueries): ${account}, ${dataset}, ${JSON.stringify(reqQueries)}`)
   const requests = []
   if (reqQueries) {
     for (let key in reqQueries) {
@@ -59,7 +65,7 @@ async function query (account, dataset, reqQueries) {
   }
 
   const searches = requests.flatMap((doc) => [
-    {index: "skohub-reconcile"},
+    {index: index},
     {...doc.toJSON()}
   ])
   const result = await esClient.msearch({
@@ -71,24 +77,22 @@ async function query (account, dataset, reqQueries) {
 
 // Query for a particular object (Concept or ConceptScheme)
 async function queryID (account, dataset, id) {
-  // console.log(`esQueries.queryID: account: '${account}', dataset: '${dataset}', id: '${id}'.`)
-  var queries = ''
   const reqObject = esb.requestBodySearch()
     .query(esb.boolQuery()
-      .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
-              ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
-              ...(id ? [esb.termsQuery('id', [id, dataset + '/' + id])] : []), // add id condition only if id is set
+      .must([ ...(account ? [esb.termQuery('account.keyword', account)] : []), // add account condition only if account is set
+              ...(dataset ? [esb.termQuery('dataset.keyword', dataset)] : []), // add dataset condition only if dataset is set
+              ...(id ? [esb.termsQuery('id.keyword', id)] : []), // add id condition only if id is set
               ...(!id ? [esb.queryStringQuery('ConceptScheme').defaultField('type')] : []), // if there's no id, then search for vocabularies
             ])
     )
     .size(100)
-  queries = queries + `{ "index": "${index}" }` + '\n' + JSON.stringify(reqObject.toJSON()) + '\n'
-  // console.log(queries)
 
-  var result = await esClient.msearch({
-    body: queries
+  const result = await esClient.msearch({
+    searches: [
+      {index: index},
+    {...reqObject.toJSON()}
+    ]
   })
-  // console.log(`result:\n${JSON.stringify(result)}`)
   return result
 }
 
