@@ -108,18 +108,6 @@ async function manifest (req, res) {
   const { account, dataset, prefLang } = _getURLParameters(req)
   console.log(`account: '${ account }', dataset: '${ dataset }'.`)
 
-  // TODO what is identifier space here?
-  // I guess it must be coming from the dataset a generic identifierSpace does not make too much sense
-  // does this make sense at all? I think this is nothing that is covered in the reconciliation spec
-  if (!account && !dataset) {
-    return res.send({
-      'versions': supportedAPIversions,
-      'name': `SkoHub reconciliation service`,
-      'identifierSpace': `http://vocab.getty.edu/doc/#GVP_URLs_and_Prefixes`,
-      'schemaSpace': 'http://www.w3.org/2004/02/skos/core#',
-    })
-  }
-
   const accountDataset = await _checkAccountDataset(account, dataset)
   if (accountDataset.err) { 
     return _knownProblemHandler(res, accountDataset.err) 
@@ -188,9 +176,19 @@ async function manifest (req, res) {
         'width': 100, 
         'height': 320 
       },
-      'suggest': { 
-        'service_url': `${ process.env.APP_BASEURL }`,
-        "service_path": `/_suggest?${ accparam }&${ dsparam }`
+      'suggest': {
+        entity: {
+          service_url: `${ process.env.APP_BASEURL }`,
+          service_path: `/_suggest/entity?${ accparam }&${ dsparam }`
+        },
+        property: {
+          service_url: `${ process.env.APP_BASEURL }`,
+          service_path: `/_suggest/property?${ accparam }&${ dsparam }`
+        },
+        type: {
+          service_url: `${ process.env.APP_BASEURL }`,
+          service_path: `/_suggest/type?${ accparam }&${ dsparam }`
+        }
       }
     })
   }
