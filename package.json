@@ -9,7 +9,8 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "start": "node src/server.js",
-    "start-reset": "node src/server.js reset"
+    "start-reset": "node src/server.js reset",
+    "reset-index": "node src/esInitIndex.js"
   },
   "type": "module",
   "repository": {

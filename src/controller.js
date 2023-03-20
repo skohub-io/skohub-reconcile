@@ -69,7 +69,7 @@ async function _checkAccountDataset(account, dataset) {
   var allAccounts = await esQueries.getAccounts()
   var allDatasets = await esQueries.getDatasets()
   if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
-    return { err: {message: `Sorry, nothing at this url. (Nonexistent account '${ account }'.)`, code: 404}, account, dataset, id }
+    return { err: {message: `Sorry, nothing at this url. (Nonexistent account '${ account }'.)`, code: 404}, account, dataset }
   }
   if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
     // if dataset fails, try again with a dataset value without the last path component
@@ -178,15 +178,15 @@ async function manifest (req, res) {
       'suggest': {
         entity: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest/?service=entity?${ accparam }&${ dsparam }`
+          service_path: `/_suggest?service=entity&${ accparam }&${ dsparam }`
         },
         property: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest/?service=property?${ accparam }&${ dsparam }`
+          service_path: `/_suggest?service=property&${ accparam }&${ dsparam }`
         },
         type: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest/?service=type?${ accparam }&${ dsparam }`
+          service_path: `/_suggest?service=type&${ accparam }&${ dsparam }`
         }
       }
     })
@@ -302,35 +302,34 @@ async function preview (req, res) {
   }
 }
 
-// TODO continue here
+// TODO how to handle curosr?
 async function suggest (req, res) {
   console.log("suggest")
   const { account, dataset, prefLang } = _getURLParameters(req)
+  const service =  req.query.service || ""
   const prefix = req.query.prefix
   const cursor = req.query.cursor ? req.query.cursor - 1 : 0
 
-  await _checkAccountDataset(account, dataset)
-  .then(resp => { if (!resp.err) { return esQueries.suggest(resp.account, resp.dataset, prefix, cursor, prefLang) } else { return _knownProblemHandler(res, resp.err) } })
-  .then(resp => { if (!resp.err)
-    {
-      const response = resp.body.responses[0].suggest
-      const options = [...response.prefLabelSuggest[0].options, ...response.altLabelSuggest[0].options, ...response.titleSuggest[0].options].slice(cursor)
-      var result = []
-      options.forEach((element, _) => {
-          result.push({
-            'name': element.text,
-            'id': element._source.id,
-            ...( element._source.description && { 'description': element._source.description }),
-            ...( element._source.type && { 'notable': {
-                'id': element._source.type,
-                'name': element._source.type
-              }})
-          })
-      })
-      res.json(result)
-    }
-  })
-  .catch(err => _errorHandler(res, err))
+  try {
+    const qRes = await esQueries.suggest(account, dataset, prefix, cursor, prefLang)
+    const options = qRes.responses.flatMap(r => {
+      return r.suggest["rec-suggest"][0].options
+    })
+    const result = options.map((element, _) => {
+        return {
+          'name': element.text,
+          'id': element._source.id,
+           ...( element._source.description && { 'description': element._source.description }),
+           ...( element._source.type && { 'notable': {
+              'id': element._source.type,
+              'name': element._source.type
+            }})
+        }
+    })
+    return res.json({"result": result})
+  } catch (error) {
+    return _errorHandler(res, error)
+  }
 }
 
 async function extend (req, res) {

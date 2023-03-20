@@ -28,8 +28,8 @@ async function query (account, dataset, reqQueries) {
       const reqObject = esb.requestBodySearch()
       reqObject.query(
         esb.boolQuery()
-          .must([ ...(account ? [esb.termQuery('account.keyword', account)] : []), // add account condition only if account is set
-                  ...(dataset ? [esb.termQuery('dataset.keyword', dataset)] : []), // add dataset condition only if dataset is set
+          .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
+                  ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
                   ...(dataset ? [esb.boolQuery()
                                 .should([ esb.termQuery('inScheme.id', dataset),
                                           // esb.termQuery('inScheme.id', 'http://' + dataset),
@@ -37,7 +37,7 @@ async function query (account, dataset, reqQueries) {
                                           esb.termQuery('id', dataset),
                                           // esb.termQuery('id', 'http://' + dataset),
                                           // esb.termQuery('id', 'https://' + dataset),
-                                          esb.termQuery('dataset.keyword', dataset),
+                                          esb.termQuery('dataset', dataset),
                                         ])] : []),
                   ...(!dataset ? [esb.boolQuery().must(esb.queryStringQuery('ConceptScheme').defaultField('type'))] : []), // if we don't have a dataset parameter, only search for vocabularies...
                   esb.multiMatchQuery(esMultiFields, reqQueries[key].query)
@@ -54,9 +54,9 @@ async function query (account, dataset, reqQueries) {
     const reqObject = esb.requestBodySearch()
     reqObject.query(
       esb.boolQuery()
-        .must([ ...(account ? [esb.termQuery('account.keyword', account)] : []), // add account condition only if account is set
-                ...(dataset ? [esb.termQuery('dataset.keyword', dataset)] : []), // add dataset condition only if dataset is set
-                esb.termQuery('type.keyword', 'ConceptScheme')
+        .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
+                ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
+                esb.termQuery('type', 'ConceptScheme')
               ])
         .should([ ...(dataset ? [esb.termQuery('id', dataset)] : []) ])
       )
@@ -101,7 +101,7 @@ async function suggest (account, dataset, prefix, cursor, prefLang) {
 
   // See https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/suggest_examples.html
   // Define a contexts object having either account or dataset or both
-  var ctx
+  let ctx
   if (!account && !dataset) {
     ctx = { account: await getAccounts() }
   } else {
@@ -111,30 +111,32 @@ async function suggest (account, dataset, prefix, cursor, prefLang) {
     }
   }
 
-  var suggests
   // For each of the fields, define a completion search
-  (['prefLabel', 'altLabel', 'title']).forEach(n => {
-    var item = {
-      prefix: prefix,
-      completion: {
-          field: `${n}.${prefLang}.completion`,
-          skip_duplicates: true,
-          fuzzy: true,
-          contexts: ctx
+  const suggests = (['prefLabel', 'altLabel', 'title']).map(n => {
+    return {
+      suggest: {
+        "rec-suggest": {
+          prefix: prefix,
+          completion: {
+              field: `${n}.${prefLang}.completion`,
+              skip_duplicates: true,
+              fuzzy: true,
+              contexts: ctx
+            }
+          }
         }
       }
-    // console.log(`item: ${JSON.stringify(item)}`)
-    suggests = { [`${n}Suggest`]: item, ...suggests }
   })
-
-  var queries = `{ "index": "${index}" }` + '\n' + JSON.stringify({ suggest: suggests }) + '\n'
-  // console.log(`queries: ${queries}`)
 
   // Do the search
-  var result = await esClient.msearch({
-    body: queries
+  const searches = suggests.flatMap((suggest) => [
+    {index: index},
+    {...suggest}
+  ])
+  const result = await esClient.msearch({
+    searches: searches
   })
-  // console.log(`result:\n${JSON.stringify(result)}`)
+  console.log(`result:\n${JSON.stringify(result)}`)
   return result
 }
 
@@ -146,7 +148,7 @@ async function getAccounts () {
                track_total_hits: false,
                aggs: {
                   accounts: {
-                      terms: { field: "account.keyword" }
+                      terms: { field: "account" }
                   }
                }
              }
@@ -177,7 +179,7 @@ async function getDatasets () {
     track_total_hits: false,
     aggs: {
        datasets: {
-           terms: { field: "dataset.keyword" }
+           terms: { field: "dataset" }
        }
     }
   }

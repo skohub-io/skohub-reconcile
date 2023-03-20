@@ -30,12 +30,14 @@ async function createIndex (name) {
 };
 
 async function resetIndex (writeSampleData) {
-  if ((await esClient.indices.exists({ index: index })).body) {
+  console.log("Write sample data: ", writeSampleData);
+  if (await esClient.indices.exists({ index: index })) {
     await esClient.indices.delete({ index: index })
   }
   await createIndex(index)
-  if (writeSampleData)
-    writeSampleDataToEs(index, sampleData)
+  if (writeSampleData) {
+    await writeSampleDataToEs(index, sampleData)
+  }
   console.log(`    index '${index}' has been reset.`)
 };
 
