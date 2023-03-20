@@ -7,15 +7,9 @@
   "description": "Reconciliation API server for skohub",
   "main": "src/server.js",
   "scripts": {
-    "test": "eslint src/",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "start": "node src/server.js",
     "start-reset": "node src/server.js reset"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
   },
   "type": "module",
   "repository": {

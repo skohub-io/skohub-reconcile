@@ -71,7 +71,6 @@ async function query (account, dataset, reqQueries) {
   const result = await esClient.msearch({
     searches: searches
   })
-  console.log(`result:\n${JSON.stringify(result)}`)
   return result
 }
 

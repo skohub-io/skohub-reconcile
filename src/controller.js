@@ -57,7 +57,7 @@ function getQueryParameters(req) {
       return JSON.parse(req.query.queries)
     }
     else if (req.method === "POST") {
-      return req.body.queries
+      return req.body
     }
   } catch (error) {
     throw new Error("Unhandled request method for parsing query parameters: ", error)
@@ -106,7 +106,6 @@ async function dataset (req, res) {
 
 async function manifest (req, res) {
   const { account, dataset, prefLang } = _getURLParameters(req)
-  console.log(`account: '${ account }', dataset: '${ dataset }'.`)
 
   const accountDataset = await _checkAccountDataset(account, dataset)
   if (accountDataset.err) { 
@@ -179,15 +178,15 @@ async function manifest (req, res) {
       'suggest': {
         entity: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest/entity?${ accparam }&${ dsparam }`
+          service_path: `/_suggest/?service=entity?${ accparam }&${ dsparam }`
         },
         property: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest/property?${ accparam }&${ dsparam }`
+          service_path: `/_suggest/?service=property?${ accparam }&${ dsparam }`
         },
         type: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest/type?${ accparam }&${ dsparam }`
+          service_path: `/_suggest/?service=type?${ accparam }&${ dsparam }`
         }
       }
     })
@@ -305,6 +304,7 @@ async function preview (req, res) {
 
 // TODO continue here
 async function suggest (req, res) {
+  console.log("suggest")
   const { account, dataset, prefLang } = _getURLParameters(req)
   const prefix = req.query.prefix
   const cursor = req.query.cursor ? req.query.cursor - 1 : 0
