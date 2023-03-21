@@ -9,4 +9,4 @@ if (config.es_user && config.es_pass) {
   esClient = new elasticsearch.Client({ node: `${config.es_proto}://${config.es_host}:${config.es_port}` })
 }
 
-export { esClient }
+export default { esClient }

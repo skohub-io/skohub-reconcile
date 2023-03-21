@@ -1,5 +1,5 @@
 import config from './config.js'
-import * as esQueries from './esQueries.js'
+import esQueries from './esQueries.js'
 
 const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : 'en'
 const supportedAPIversions = ['0.2']
@@ -179,17 +179,17 @@ async function manifest (req, res) {
         entity: {
           service_url: `${ process.env.APP_BASEURL }`,
           service_path: `/_suggest/${ account }&${ dataset }?service=entity`,
-          flyout_service_path: `/_suggest/_flyout/${ account }/${ dataset }/\${id}`
+          flyout_service_path: `/_suggest/_flyout/${ account }/${ dataset }?id={{id}}}`
         },
         property: {
           service_url: `${ process.env.APP_BASEURL }`,
           service_path: `/_suggest/${ account }&${ dataset }?service=property`,
-          flyout_service_path: `/_suggest/_flyout/${ account }&${ dataset }/\${id}`
+          flyout_service_path: `/_suggest/_flyout/${ account }&${ dataset }?id={{id}}`
         },
         type: {
           service_url: `${ process.env.APP_BASEURL }`,
           service_path: `/_suggest?service=type&${ account }&${ dataset }`,
-          flyout_service_path: `/_suggest/_flyout/${ account }&${ dataset }/\${id}`
+          flyout_service_path: `/_suggest/_flyout/${ account }&${ dataset }?id={{id}}`
         }
       }
     })
@@ -226,8 +226,8 @@ async function preview (req, res) {
   const { account, dataset, id, prefLang } = _getURLParameters(req)
 
   try {
-    const resp = await _checkAccountDataset(account, dataset)
-    const esQuery = await esQueries.queryID(resp.account, resp.dataset, id) 
+    // const resp = await _checkAccountDataset(account, dataset)
+    const esQuery = await esQueries.queryID(account, dataset, id) 
     if (esQuery.responses[0].hits.total.value == 0) {
       _knownProblemHandler(res, {code: 404, message : 'Sorry, nothing at this url.'})
     } 
@@ -301,7 +301,6 @@ async function preview (req, res) {
     return res.send(html)
   } catch (error) {
     return _errorHandler(res, error)
-    // return _knownProblemHandler(res, resp.err) 
   }
 }
 

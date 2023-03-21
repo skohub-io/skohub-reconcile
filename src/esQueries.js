@@ -1,6 +1,6 @@
 import config from './config.js'
 import esb from 'elastic-builder'
-import * as esConnect from './esConnect.js'
+import esConnect from './esConnect.js'
 
 const index = config.es_index
 const esClient = esConnect.esClient
@@ -152,7 +152,6 @@ async function getAccounts () {
                }
              }
   var queries = `{ "index": "${index}" }` + '\n' + JSON.stringify(aggs) + '\n'
-  // console.log(`queries: ${queries}`)
 
   // Do the search
   try {
@@ -201,4 +200,4 @@ async function getDatasets () {
   }
 }
 
-export { query, queryID, suggest, getAccounts, getDatasets }
+export default { query, queryID, suggest, getAccounts, getDatasets }
