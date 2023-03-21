@@ -11,15 +11,15 @@ const esClient = esConnect.esClient
 
 console.log(`skohub-reconcile server starting ...`)
 
-function checkElastic() {
+async function checkElastic() {
   try {
-    if (esClient.ping()) {
+    if (await esClient.ping()) {
       console.log('  elasticsearch server found.')
     }
     
     console.log(`- check for index '${process.env.ES_INDEX}' ...`)
     
-    if (esClient.indices.exists({index: process.env.ES_INDEX})) {
+    if (await esClient.indices.exists({index: process.env.ES_INDEX})) {
       console.log(`    index '${process.env.ES_INDEX}' found.`)
     } else {
       console.log(`    index '${process.env.ES_INDEX}' does not exist.`)

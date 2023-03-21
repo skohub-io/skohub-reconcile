@@ -24,16 +24,18 @@ routes.route('/_preview/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0
 routes.route('/_preview/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.preview)
 routes.route('/_preview').get(controller.preview)
 
+
 // 4. GET: give a suggestion
-routes.route('/_suggest/:service([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.suggest)
+routes.route('/_suggest/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.suggest)
 routes.route('/_suggest').get(controller.suggest)
 
+// GET: flyout
+routes.route('/_suggest/_flyout/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))/:id([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.flyout)
+routes.route('/_suggest/_flyout').get(controller.flyout)
 // 5. other services, not implemented yet
 routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').post(controller.extend)
 routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.extend)
 routes.route('/_extend').post(controller.extend)
-routes.route('/_flyout/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.flyout)
 routes.route('/_flyout/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.flyout)
-routes.route('/_flyout').get(controller.flyout)
 
 export { routes }

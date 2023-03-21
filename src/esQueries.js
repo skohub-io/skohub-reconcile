@@ -78,9 +78,9 @@ async function query (account, dataset, reqQueries) {
 async function queryID (account, dataset, id) {
   const reqObject = esb.requestBodySearch()
     .query(esb.boolQuery()
-      .must([ ...(account ? [esb.termQuery('account.keyword', account)] : []), // add account condition only if account is set
-              ...(dataset ? [esb.termQuery('dataset.keyword', dataset)] : []), // add dataset condition only if dataset is set
-              ...(id ? [esb.termsQuery('id.keyword', id)] : []), // add id condition only if id is set
+      .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
+              ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
+              ...(id ? [esb.termsQuery('id', id)] : []), // add id condition only if id is set
               ...(!id ? [esb.queryStringQuery('ConceptScheme').defaultField('type')] : []), // if there's no id, then search for vocabularies
             ])
     )
@@ -97,9 +97,7 @@ async function queryID (account, dataset, id) {
 
 // Query for autocompletion suggestions for a prefix string
 async function suggest (account, dataset, prefix, cursor, prefLang) {
-  // console.log(` suggest(account, dataset, prefix, cursor, language): ${account}, ${dataset}, ${prefix}, ${cursor}, ${prefLang}.`)
-
-  // See https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/suggest_examples.html
+  // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters.html#context-suggester
   // Define a contexts object having either account or dataset or both
   let ctx
   if (!account && !dataset) {
@@ -110,9 +108,10 @@ async function suggest (account, dataset, prefix, cursor, prefLang) {
       ...(dataset && { dataset: [ dataset ] })
     }
   }
-
+  console.log(10+cursor)
+  console.log(cursor)
   // For each of the fields, define a completion search
-  const suggests = (['prefLabel', 'altLabel', 'title']).map(n => {
+  const suggests = (['prefLabel', 'altLabel', "hiddenLabel", 'title']).map(n => {
     return {
       suggest: {
         "rec-suggest": {
@@ -121,7 +120,8 @@ async function suggest (account, dataset, prefix, cursor, prefLang) {
               field: `${n}.${prefLang}.completion`,
               skip_duplicates: true,
               fuzzy: true,
-              contexts: ctx
+              contexts: ctx,
+              size: 10 + cursor
             }
           }
         }
@@ -136,7 +136,6 @@ async function suggest (account, dataset, prefix, cursor, prefLang) {
   const result = await esClient.msearch({
     searches: searches
   })
-  console.log(`result:\n${JSON.stringify(result)}`)
   return result
 }
 

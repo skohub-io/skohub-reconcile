@@ -178,15 +178,18 @@ async function manifest (req, res) {
       'suggest': {
         entity: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest?service=entity&${ accparam }&${ dsparam }`
+          service_path: `/_suggest/${ account }&${ dataset }?service=entity`,
+          flyout_service_path: `/_suggest/_flyout/${ account }/${ dataset }/\${id}`
         },
         property: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest?service=property&${ accparam }&${ dsparam }`
+          service_path: `/_suggest/${ account }&${ dataset }?service=property`,
+          flyout_service_path: `/_suggest/_flyout/${ account }&${ dataset }/\${id}`
         },
         type: {
           service_url: `${ process.env.APP_BASEURL }`,
-          service_path: `/_suggest?service=type&${ accparam }&${ dsparam }`
+          service_path: `/_suggest?service=type&${ account }&${ dataset }`,
+          flyout_service_path: `/_suggest/_flyout/${ account }&${ dataset }/\${id}`
         }
       }
     })
@@ -302,18 +305,20 @@ async function preview (req, res) {
   }
 }
 
-// TODO how to handle curosr?
 async function suggest (req, res) {
-  console.log("suggest")
+  function parseCursor(cursor) {
+    if (cursor < 0) return 0
+    return parseInt(cursor)
+  }
   const { account, dataset, prefLang } = _getURLParameters(req)
   const service =  req.query.service || ""
   const prefix = req.query.prefix
-  const cursor = req.query.cursor ? req.query.cursor - 1 : 0
+  const cursor = parseCursor(req.query.cursor || 0)
 
   try {
     const qRes = await esQueries.suggest(account, dataset, prefix, cursor, prefLang)
     const options = qRes.responses.flatMap(r => {
-      return r.suggest["rec-suggest"][0].options
+      return r?.suggest?.["rec-suggest"][0].options ?? []
     })
     const result = options.map((element, _) => {
         return {
@@ -326,18 +331,31 @@ async function suggest (req, res) {
             }})
         }
     })
-    return res.json({"result": result})
+    return res.json({"result": result.length > cursor ? result.slice(cursor): result})
   } catch (error) {
     return _errorHandler(res, error)
   }
 }
 
+async function flyout (req, res) {
+  const { account, dataset, prefLang } = _getURLParameters(req)
+  const id = req.query.id
+  if (!id) {
+    return res.json({status_code: 400, success: false, message: "Please provide an id as query parameter"})
+  }
+
+  const qRes = await esQueries.queryID(account, dataset, id)
+  const result = qRes.responses[0].hits.hits[0]._source
+  const html = `<p style=\"font-size: 0.8em; color: black;\">${result.prefLabel[prefLang]}</p>`
+
+  return res.json({
+    id: id,
+    html: html
+  })
+}
 async function extend (req, res) {
   res.json({ status_code: 501, success: true, message: 'Extend function(s) have not been implemented yet.' })
 }
 
-async function flyout (req, res) {
-  res.json({ status_code: 501, success: true, message: 'FlyOut has not been implemented yet.' })
-}
 
 export { dataset, query, preview, suggest, extend, flyout }
