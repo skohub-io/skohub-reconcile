@@ -2,8 +2,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
-import * as esConnect from './esConnect.js'
-import * as esInitIndex from './esInitIndex.js'
+import esConnect from './esConnect.js'
 import * as router from './router.js'
 
 dotenv.config()
@@ -22,8 +21,8 @@ async function checkElastic() {
     if (await esClient.indices.exists({index: process.env.ES_INDEX})) {
       console.log(`    index '${process.env.ES_INDEX}' found.`)
     } else {
-      console.log(`    index '${process.env.ES_INDEX}' does not exist.`)
-      esInitIndex.createIndex(process.env.ES_INDEX)
+      throw new Error(`index '${process.env.ES_INDEX}' does not exist.`)
+
     }
     console.log(`  index '${process.env.ES_INDEX}' ready.`)
   } catch (error) {
