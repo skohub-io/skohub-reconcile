@@ -1,5 +1,5 @@
 import express from 'express'
-import * as controller from './controller.js'
+import controller from './controller/index.js'
 
 const routes = express.Router()
 
@@ -30,7 +30,7 @@ routes.route('/_suggest/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0
 routes.route('/_suggest').get(controller.suggest)
 
 // GET: flyout
-routes.route('/_suggest/_flyout/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))/:id([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.flyout)
+routes.route('/_suggest/_flyout/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))?').get(controller.flyout)
 routes.route('/_suggest/_flyout').get(controller.flyout)
 // 5. other services, not implemented yet
 routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').post(controller.extend)

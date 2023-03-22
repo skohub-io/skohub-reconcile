@@ -1,6 +1,7 @@
-import config from './config.js'
+import config from '../config.js'
 import esb from 'elastic-builder'
-import esConnect from './esConnect.js'
+import esConnect from '../esConnect.js'
+import {queryID} from "./queryID.js"
 
 const index = config.es_index
 const esClient = esConnect.esClient
@@ -21,7 +22,7 @@ const esMultiFields = [
  * @returns {object} Elasticsearch query result
  */
 
-async function query (account, dataset, reqQueries) {
+async function query (account, dataset, reqQueries = null) {
   const requests = []
   if (reqQueries) {
     for (let key in reqQueries) {
@@ -74,26 +75,7 @@ async function query (account, dataset, reqQueries) {
   return result
 }
 
-// Query for a particular object (Concept or ConceptScheme)
-async function queryID (account, dataset, id) {
-  const reqObject = esb.requestBodySearch()
-    .query(esb.boolQuery()
-      .must([ ...(account ? [esb.termQuery('account', account)] : []), // add account condition only if account is set
-              ...(dataset ? [esb.termQuery('dataset', dataset)] : []), // add dataset condition only if dataset is set
-              ...(id ? [esb.termsQuery('id', id)] : []), // add id condition only if id is set
-              ...(!id ? [esb.queryStringQuery('ConceptScheme').defaultField('type')] : []), // if there's no id, then search for vocabularies
-            ])
-    )
-    .size(100)
 
-  const result = await esClient.msearch({
-    searches: [
-      {index: index},
-    {...reqObject.toJSON()}
-    ]
-  })
-  return result
-}
 
 // Query for autocompletion suggestions for a prefix string
 async function suggest (account, dataset, prefix, cursor, prefLang) {
@@ -164,7 +146,7 @@ async function getAccounts () {
       })
     return accounts 
   } catch (error) {
-    console.trace(err.message)
+    console.trace(error)
     return []
   }
 }
@@ -195,7 +177,7 @@ async function getDatasets () {
       })
     return datasets
   } catch (error) {
-    console.trace(err.message)
+    console.trace(error)
     return []
   }
 }

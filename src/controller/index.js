@@ -1,88 +1,11 @@
-import config from './config.js'
-import esQueries from './esQueries.js'
+import config from '../config.js'
+import esQueries from "../esQueries/index.js"
+import {flyout} from "./flyout.js"
+import { getURLParameters, esToRec, getQueryParameters, checkAccountDataset, getLocalizedString } from './utils.js'
 
 const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : 'en'
 const supportedAPIversions = ['0.2']
 
-function _esToRec (doc, prefLang, threshold) {
-  const concept = doc._source
-  let obj = {
-    'id': concept.id.split('/').pop(),
-    'name': _getLocalizedString(concept.prefLabel, prefLang) || _getLocalizedString(concept.title, prefLang),
-    'description': _getLocalizedString(concept.scopeNote, prefLang) || _getLocalizedString(concept.description, prefLang) || "",
-    'score': doc._score,
-    'match': ( parseFloat(doc._score) > threshold ? true : false ),
-    'type': [
-      {
-        'id': concept.type,
-        'name': _getLocalizedString(concept.type, prefLang)
-      }
-    ]
-  }
-  if (concept.inScheme)
-    obj.inScheme = concept.inScheme
-  return obj
-}
-
-function _getLocalizedString ( obj, prefLang ) {
-  if (Object.prototype.toString.call(obj) === '[object Object]') {
-    if (prefLang && obj[prefLang] != "") {
-      return obj[prefLang]
-    } else {
-      return Object.values(obj)[0]
-    }
-  } else if (typeof obj === 'string' || obj instanceof String) {
-    return obj
-  }
-  return null
-}
-
-function _getURLParameters (req) {
-  // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
-  const account  = req.params.account    ? req.params.account    : ( req.query.account ? req.query.account : "" )
-  const dataset  = req.params.dataset    ? req.params.dataset    : ( req.query.dataset ? req.query.dataset : "" )
-  const id       = req.params.id         ? req.params.id         : ( req.query.id      ? req.query.id      : "" )
-  const prefLang = req.query.lang ? req.query.lang : defaultLanguage
-  return { account, dataset, id, prefLang }
-}
-
-/**
- * 
- * @param {*} req 
- * @returns {object} Object containing the query parameters
- */
-function getQueryParameters(req) {
-  try {
-    if (req.method === "GET") {
-      return JSON.parse(req.query.queries)
-    }
-    else if (req.method === "POST") {
-      return req.body
-    }
-  } catch (error) {
-    throw new Error("Unhandled request method for parsing query parameters: ", error)
-  }
-}
-
-async function _checkAccountDataset(account, dataset) {
-  // if account or dataset is nonempty but not in available accounts or datasets, return 404
-  var allAccounts = await esQueries.getAccounts()
-  var allDatasets = await esQueries.getDatasets()
-  if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
-    return { err: {message: `Sorry, nothing at this url. (Nonexistent account '${ account }'.)`, code: 404}, account, dataset }
-  }
-  if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
-    // if dataset fails, try again with a dataset value without the last path component
-    // (maybe that's an id which express router could not extract)
-    var pComponents = dataset.split('/')
-    const id = pComponents.pop()
-    dataset = pComponents.join('/')
-    if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
-      return { err: {message: `Sorry, nothing at this url. (Nonexistent dataset '${ dataset }'.)`, code: 404}, account, dataset, id }
-    }
-  }
-  return { err: null, account, dataset}
-}
 
 function _knownProblemHandler(res, err) {
   // console.log(err.message)
@@ -105,13 +28,13 @@ async function dataset (req, res) {
 }
 
 async function manifest (req, res) {
-  const { account, dataset, prefLang } = _getURLParameters(req)
+  const { account, dataset, prefLang } = getURLParameters(req, defaultLanguage)
 
-  const accountDataset = await _checkAccountDataset(account, dataset)
+  const accountDataset = await checkAccountDataset(account, dataset)
   if (accountDataset.err) { 
     return _knownProblemHandler(res, accountDataset.err) 
   }
-  const esQuery = await esQueries.query(accountDataset.account, accountDataset.dataset)
+  const esQuery = await esQueries.query(account, dataset)
   if (esQuery.responses[0].hits.total.value == 0) {
         _knownProblemHandler(res, {code: 404, message : 'Sorry, nothing at this url.'})
   } else {
@@ -197,20 +120,20 @@ async function manifest (req, res) {
 }
 
 async function query (req, res) {
-  const { account, dataset, prefLang } = _getURLParameters(req)
+  const { account, dataset, prefLang } = getURLParameters(req,defaultLanguage)
   const threshold = (req.query.threshold ? req.query.threshold : config.es_threshold)
   const queryParameters = getQueryParameters(req)
   const reqQNames = Object.keys(queryParameters)
 
   try {
-    const resp = await _checkAccountDataset(account, dataset)
+    const resp = await checkAccountDataset(account, dataset)
     const esQuery = await esQueries.query(resp.account, resp.dataset, queryParameters) 
     var allData = {}
     esQuery.responses.forEach((element, index) => {
       var qData = []
       if (element.hits.hits) {
         element.hits.hits.forEach(doc => {
-          qData.push(_esToRec(doc, prefLang, threshold))
+          qData.push(esToRec(doc, prefLang, threshold))
       })
     }
     allData[reqQNames[index]] = { 'result': qData }
@@ -223,7 +146,7 @@ async function query (req, res) {
 }
 
 async function preview (req, res) {
-  const { account, dataset, id, prefLang } = _getURLParameters(req)
+  const { account, dataset, id, prefLang } = getURLParameters(req, defaultLanguage)
 
   try {
     // const resp = await _checkAccountDataset(account, dataset)
@@ -239,12 +162,12 @@ async function preview (req, res) {
     } else {
       var url = newDataset + result.id
     }
-    const label      = _getLocalizedString(result.prefLabel, prefLang)
-    const altLabels  = _getLocalizedString(result.altLabel, prefLang)
-    const desc       = _getLocalizedString(result.description, prefLang)
-    const examples   = _getLocalizedString(result.examples, prefLang)
-    const def        = result.definition ? _getLocalizedString(result.definition, prefLang) : ''
-    const scope_note = result.scopeNote  ? _getLocalizedString(result.scopeNote, prefLang) : ''
+    const label      = getLocalizedString(result.prefLabel, prefLang)
+    const altLabels  = getLocalizedString(result.altLabel, prefLang)
+    const desc       = getLocalizedString(result.description, prefLang)
+    const examples   = getLocalizedString(result.examples, prefLang)
+    const def        = result.definition ? getLocalizedString(result.definition, prefLang) : ''
+    const scope_note = result.scopeNote  ? getLocalizedString(result.scopeNote, prefLang) : ''
     const scheme     = result.inScheme   ? result.inScheme[0].id : ''
     const type       = result.type
     const img        = result.img
@@ -309,7 +232,7 @@ async function suggest (req, res) {
     if (cursor < 0) return 0
     return parseInt(cursor)
   }
-  const { account, dataset, prefLang } = _getURLParameters(req)
+  const { account, dataset, prefLang } = getURLParameters(req, defaultLanguage)
   const service =  req.query.service || ""
   const prefix = req.query.prefix
   const cursor = parseCursor(req.query.cursor || 0)
@@ -336,25 +259,10 @@ async function suggest (req, res) {
   }
 }
 
-async function flyout (req, res) {
-  const { account, dataset, prefLang } = _getURLParameters(req)
-  const id = req.query.id
-  if (!id) {
-    return res.json({status_code: 400, success: false, message: "Please provide an id as query parameter"})
-  }
 
-  const qRes = await esQueries.queryID(account, dataset, id)
-  const result = qRes.responses[0].hits.hits[0]._source
-  const html = `<p style=\"font-size: 0.8em; color: black;\">${result.prefLabel[prefLang]}</p>`
-
-  return res.json({
-    id: id,
-    html: html
-  })
-}
 async function extend (req, res) {
   res.json({ status_code: 501, success: true, message: 'Extend function(s) have not been implemented yet.' })
 }
 
 
-export { dataset, query, preview, suggest, extend, flyout }
+export default { dataset, query, preview, suggest, extend, flyout }

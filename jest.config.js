@@ -1,7 +1,7 @@
 export default {
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/node_modules/'],
-  testMatch: ['<rootDir>/tests/*.test.js'],
+  testMatch: ['<rootDir>/**/*.test.js'],
   coverageDirectory: './coverage',
   reporters: ['default'],
   transform: {},
