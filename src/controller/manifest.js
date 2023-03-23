@@ -12,7 +12,7 @@ const supportedAPIversions = ["0.2"];
 export default async function manifest(req, res) {
   const { account, dataset, prefLang } = getURLParameters(req, defaultLanguage);
 
-  const accountDataset = await checkAccountDataset(account, dataset);
+  const accountDataset = await checkAccountDataset(account, dataset, prefLang);
   if (accountDataset.err) {
     return knownProblemHandler(res, accountDataset.err);
   }

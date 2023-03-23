@@ -10,7 +10,7 @@ const routes = express.Router()
 // routes.route("/").get(controller.dataset)
 
 // 1. GET: either return service manifest or do reconciliation query (if ?queries parameter given)
-routes.route('/_reconcile').get(controller.reconcile)
+routes.route('/_reconcile/:language').get(controller.reconcile)
 
 // 2. POST: do a reconciliation query
 routes.route('/_reconcile').post(controller.query)

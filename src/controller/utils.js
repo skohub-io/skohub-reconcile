@@ -30,7 +30,7 @@ export function getURLParameters(req, defaultLanguage) {
     ? req.query.dataset
     : "";
   const id = req.params.id ? req.params.id : req.query.id ? req.query.id : "";
-  const prefLang = req.query.lang ? req.query.lang : defaultLanguage;
+  const prefLang = req.params.language;
   return { account, dataset, id, prefLang };
 }
 
@@ -88,10 +88,12 @@ export function getQueryParameters(req) {
   }
 }
 
-export async function checkAccountDataset(account, dataset) {
+export async function checkAccountDataset(account, dataset, prefLang) {
   // if account or dataset is nonempty but not in available accounts or datasets, return 404
-  var allAccounts = await esQueries.getAccounts();
-  var allDatasets = await esQueries.getDatasets();
+  const allAccounts = await esQueries.getAccounts();
+  const allDatasets = await esQueries.getDatasets();
+  const languages = await esQueries.getLanguages();
+
   if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
     return {
       err: {

@@ -6,6 +6,10 @@ import suggest from "./suggest.js"
 
 export const index = config.es_index
 export const esClient = esConnect.esClient
+
+
+
+
 // Get all account names
 export async function getAccounts () {
   var accounts = []
