@@ -10,13 +10,13 @@ const routes = express.Router()
 // routes.route("/").get(controller.dataset)
 
 // 1. GET: either return service manifest or do reconciliation query (if ?queries parameter given)
-routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.dataset)
-routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.dataset)
-routes.route('/_reconcile').get(controller.dataset)
+// routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.reconcile)
+// routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.reconcile)
+routes.route('/_reconcile').get(controller.reconcile)
 
 // 2. POST: do a reconciliation query
-routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').post(controller.query)
-routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.query)
+// routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').post(controller.query)
+// routes.route('/_reconcile/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.query)
 routes.route('/_reconcile').post(controller.query)
 
 // 3. GET: do a preview

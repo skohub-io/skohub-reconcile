@@ -9,8 +9,8 @@ export const defaultLanguage = config.app_defaultlang
   ? config.app_defaultlang
   : "en";
 
-async function dataset(req, res) {
-  if (!Object.keys(req.query).length) {
+async function reconcile(req, res) {
+  if (!Object.keys(req.query).includes("queries")) {
     manifest(req, res);
   } else {
     query(req, res);
@@ -25,4 +25,4 @@ async function extend(req, res) {
   });
 }
 
-export default { dataset, query, preview, suggest, extend, flyout };
+export default { reconcile, query, preview, suggest, extend, flyout, manifest };
