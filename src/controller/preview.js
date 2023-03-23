@@ -16,15 +16,13 @@ export default async function preview(req, res) {
   try {
     // const resp = await _checkAccountDataset(account, dataset)
     const esQuery = await esQueries.queryID(account, dataset, id);
-    // @ts-ignore
-    if (esQuery.responses[0].hits.total.value == 0) {
+    if (esQuery.hits.total.value == 0) {
       knownProblemHandler(res, {
         code: 404,
         message: "Sorry, nothing at this url.",
       });
     }
-    // @ts-ignore
-    const result = esQuery.responses[0].hits.hits[0]._source;
+    const result = esQuery.hits.hits[0]._source;
     let newDataset = result.dataset;
     // TODO what and why is this necessary?
     if (result.id.substring(0, 4) == "http") {
