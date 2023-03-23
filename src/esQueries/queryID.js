@@ -5,12 +5,19 @@ import esConnect from "../esConnect.js";
 const index = config.es_index;
 
 // Query for a particular object (Concept or ConceptScheme)
-export const queryID = async (
+/**
+ * Query for concepts and/or vocabularies
+ * @param {string} account
+ * @param {string} dataset
+ * @param {string} id 
+ * @returns {Promise} Elasticsearch query result
+ */
+export default async function (
   account,
   dataset,
   id,
   esClient = esConnect.esClient
-) => {
+) {
   const reqObject = esb
     .requestBodySearch()
     .query(
@@ -26,22 +33,8 @@ export const queryID = async (
     .size(100);
 
   const result = await esClient.search({
-    index: index, 
-    ...reqObject.toJSON()
+    index: index,
+    ...reqObject.toJSON(),
   });
   return result;
 }
-//  qRes.responses[0].hits.hits[0]._source;
-export function funcB() {
-  return {responses: [{
-    hits: {
-      hits: [{
-        "_source": {
-          "prefLabel": {
-            "en": "Hello World"
-          }
-        }
-      }]
-    }
-  }]};
-};

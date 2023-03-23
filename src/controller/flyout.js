@@ -1,7 +1,10 @@
 import { getURLParameters } from "./utils.js";
-import {queryID, funcB} from "../esQueries/queryID.js";
+import queryID from "../esQueries/queryID.js";
+import config from "../config.js";
 
-export const flyout = async (req, res) => {
+const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : 'en'
+
+export default async function flyout(req, res) {
   const { account, dataset, prefLang } = getURLParameters(req);
   const id = req.query.id;
   if (!id) {
@@ -12,15 +15,12 @@ export const flyout = async (req, res) => {
     });
   }
 
-  // const qRes = await queryID(account, dataset, id);
-  const qRes = funcB()
-  const result = qRes.responses[0].hits.hits[0]._source;
-  const html = `<p style=\"font-size: 0.8em; color: black;\">${result.prefLabel[prefLang]}</p>`;
+  const qRes = await queryID(account, dataset, id);
+  const result = qRes.hits.hits[0]._source;
+  const html = `<p style=\"font-size: 0.8em; color: black;\">${result.prefLabel[prefLang || defaultLanguage]}</p>`;
 
   return res.json({
     id: id,
     html: html,
   });
 }
-
-// export default {flyout}

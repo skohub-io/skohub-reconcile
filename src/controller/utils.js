@@ -1,5 +1,17 @@
 import esQueries from "../esQueries/index.js";
 
+export function knownProblemHandler(res, err) {
+  // console.log(err.message)
+  const error = { status_code: err.code, success: false, data: [], message: err.message }
+  res.status(err.code).json(error)
+  return {err: error}
+}
+
+export function errorHandler(res, err) {
+  console.trace(err)
+  res.json({ status_code: 500, success: false, data: [], message: err })
+}
+
 export function getURLParameters(req, defaultLanguage) {
   // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
   const account = req.params.account ? req.params.account : (req.query.account ? req.query.account : "");
