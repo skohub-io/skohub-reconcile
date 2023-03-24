@@ -1,7 +1,7 @@
 import { getAccounts, index, esClient } from './index.js';
 
 // Query for autocompletion suggestions for a prefix string
-export default async function suggest(account, dataset, prefix, cursor, prefLang) {
+export default async function suggest(account, dataset, prefix, cursor, language) {
   // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters.html#context-suggester
   // Define a contexts object having either account or dataset or both
   let ctx;
@@ -13,8 +13,6 @@ export default async function suggest(account, dataset, prefix, cursor, prefLang
       ...(dataset && { dataset: [dataset] })
     };
   }
-  console.log(10 + cursor);
-  console.log(cursor);
   // For each of the fields, define a completion search
   const suggests = (['prefLabel', 'altLabel', "hiddenLabel", 'title']).map(n => {
     return {
@@ -22,7 +20,7 @@ export default async function suggest(account, dataset, prefix, cursor, prefLang
         "rec-suggest": {
           prefix: prefix,
           completion: {
-            field: `${n}.${prefLang}.completion`,
+            field: `${n}.${language}.completion`,
             skip_duplicates: true,
             fuzzy: true,
             contexts: ctx,

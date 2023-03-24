@@ -21,8 +21,8 @@ export function getParameters(req) {
   // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
   const account = req.query.account || "";
   const dataset = req.query.dataset || "";
+  const language = req.query.language;
   const id = req.params.id ? req.params.id : req.query.id ? req.query.id : "";
-  const language = req.params.language;
   return { account, dataset, id, language };
 }
 

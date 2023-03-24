@@ -5,7 +5,7 @@ import config from "../config.js";
 const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : 'en'
 
 export default async function flyout(req, res) {
-  const { account, dataset, prefLang } = getParameters(req);
+  const { account, dataset, language } = getParameters(req);
   const id = req.query.id;
   if (!id) {
     return res.json({
@@ -17,7 +17,7 @@ export default async function flyout(req, res) {
 
   const qRes = await queryID(account, dataset, id);
   const result = qRes.hits.hits[0]._source;
-  const html = `<p style=\"font-size: 0.8em; color: black;\">${result.prefLabel[prefLang || defaultLanguage]}</p>`;
+  const html = `<p style=\"font-size: 0.8em; color: black;\">${result.prefLabel[language || defaultLanguage]}</p>`;
 
   return res.json({
     id: id,

@@ -1,13 +1,12 @@
 import esQueries from "../esQueries/index.js";
 import { getParameters, errorHandler } from "./utils.js";
-import { defaultLanguage } from "./index.js";
 
 export default async function suggest(req, res) {
   function parseCursor(cursor) {
     if (cursor < 0) return 0;
     return parseInt(cursor);
   }
-  const { account, dataset, prefLang } = getParameters(req, defaultLanguage);
+  const { account, dataset, language } = getParameters(req);
   const service = req.query.service || "";
   const prefix = req.query.prefix;
   const cursor = parseCursor(req.query.cursor || 0);
@@ -18,7 +17,7 @@ export default async function suggest(req, res) {
       dataset,
       prefix,
       cursor,
-      prefLang
+      language
     );
     const options = qRes.responses.flatMap((r) => {
       // @ts-ignore
