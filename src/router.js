@@ -9,26 +9,24 @@ const routes = express.Router()
 //   ('_reconcile', '_preview', '_suggest' etc.)
 // routes.route("/").get(controller.dataset)
 
-// 1. GET: either return service manifest or do reconciliation query (if ?queries parameter given)
+// GET: either return service manifest or do reconciliation query (if ?queries parameter given)
 routes.route('/_reconcile').get(controller.reconcile)
 
-// 2. POST: do a reconciliation query
+// POST: do a reconciliation query
 routes.route('/_reconcile').post(controller.query)
 
-// 3. GET: do a preview
+// GET: do a preview
 routes.route('/_preview').get(controller.preview)
 
-// 4. GET: give a suggestion
-routes.route('/_suggest/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').get(controller.suggest)
+// GET: give a suggestion
 routes.route('/_suggest').get(controller.suggest)
 
 // GET: flyout
-routes.route('/_suggest/_flyout/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))?').get(controller.flyout)
 routes.route('/_suggest/_flyout').get(controller.flyout)
-// 5. other services, not implemented yet
+
+// other services, not implemented yet
 routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').post(controller.extend)
 routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.extend)
 routes.route('/_extend').post(controller.extend)
-routes.route('/_flyout/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').get(controller.flyout)
 
 export { routes }
