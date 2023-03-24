@@ -1,5 +1,5 @@
 import esQueries from "../esQueries/index.js";
-import { getURLParameters, errorHandler } from "./utils.js";
+import { getParameters, errorHandler } from "./utils.js";
 import { defaultLanguage } from "./index.js";
 
 export default async function suggest(req, res) {
@@ -7,7 +7,7 @@ export default async function suggest(req, res) {
     if (cursor < 0) return 0;
     return parseInt(cursor);
   }
-  const { account, dataset, prefLang } = getURLParameters(req, defaultLanguage);
+  const { account, dataset, prefLang } = getParameters(req, defaultLanguage);
   const service = req.query.service || "";
   const prefix = req.query.prefix;
   const cursor = parseCursor(req.query.cursor || 0);

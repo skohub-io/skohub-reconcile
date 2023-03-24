@@ -1,11 +1,11 @@
-import { getURLParameters } from "./utils.js";
+import { getParameters } from "./utils.js";
 import queryID from "../esQueries/queryID.js";
 import config from "../config.js";
 
 const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : 'en'
 
 export default async function flyout(req, res) {
-  const { account, dataset, prefLang } = getURLParameters(req);
+  const { account, dataset, prefLang } = getParameters(req);
   const id = req.query.id;
   if (!id) {
     return res.json({

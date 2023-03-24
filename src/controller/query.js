@@ -1,7 +1,7 @@
 import config from "../config.js";
 import esQueries from "../esQueries/index.js";
 import {
-  getURLParameters,
+  getParameters,
   esToRec,
   getQueryParameters,
   checkAccountDataset,
@@ -10,7 +10,7 @@ import {
 import { defaultLanguage } from "./index.js";
 
 export default async function query(req, res) {
-  const { account, dataset, prefLang } = getURLParameters(req, defaultLanguage);
+  const { account, dataset, prefLang } = getParameters(req, defaultLanguage);
   const threshold = req.query.threshold
     ? req.query.threshold
     : config.es_threshold;

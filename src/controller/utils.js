@@ -17,21 +17,13 @@ export function errorHandler(res, err) {
   res.json({ status_code: 500, success: false, data: [], message: err });
 }
 
-export function getURLParameters(req, defaultLanguage) {
+export function getParameters(req) {
   // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
-  const account = req.params.account
-    ? req.params.account
-    : req.query.account
-    ? req.query.account
-    : "";
-  const dataset = req.params.dataset
-    ? req.params.dataset
-    : req.query.dataset
-    ? req.query.dataset
-    : "";
+  const account = req.query.account || "";
+  const dataset = req.query.dataset || "";
   const id = req.params.id ? req.params.id : req.query.id ? req.query.id : "";
-  const prefLang = req.params.language;
-  return { account, dataset, id, prefLang };
+  const language = req.params.language;
+  return { account, dataset, id, language };
 }
 
 export function esToRec(doc, prefLang, threshold) {
@@ -92,7 +84,6 @@ export async function checkAccountDataset(account, dataset, prefLang) {
   // if account or dataset is nonempty but not in available accounts or datasets, return 404
   const allAccounts = await esQueries.getAccounts();
   const allDatasets = await esQueries.getDatasets();
-  const languages = await esQueries.getLanguages();
 
   if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
     return {

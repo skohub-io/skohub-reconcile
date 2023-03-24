@@ -1,6 +1,6 @@
 import esQueries from "../esQueries/index.js";
 import {
-  getURLParameters,
+  getParameters,
   getLocalizedString,
   knownProblemHandler,
   errorHandler,
@@ -8,7 +8,7 @@ import {
 import { defaultLanguage } from "./index.js";
 
 export default async function preview(req, res) {
-  const { account, dataset, id, prefLang } = getURLParameters(
+  const { account, dataset, id, prefLang } = getParameters(
     req,
     defaultLanguage
   );
