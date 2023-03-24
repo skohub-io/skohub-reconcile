@@ -11,7 +11,7 @@
     "start": "node src/server.js",
     "start-reset": "node src/server.js reset",
     "reset-index": "node src/esInitIndex.js",
-    "dev": "nodemon ./src/server.js localhost 3000"
+    "dev": "nodemon --delay 500ms ./src/server.js localhost 3000"
   },
   "type": "module",
   "repository": {

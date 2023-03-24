@@ -40,25 +40,25 @@ function buildManifest(qRes, account, dataset, language) {
     ],
     view: { url: `${prefix}{{id}}` },
     preview: {
-      url: `${process.env.APP_BASEURL}/_preview/${language}?${accparam}&${dsparam}${idparam}`,
+      url: `${process.env.APP_BASEURL}/_preview?language=${language}&${accparam}&${dsparam}${idparam}`,
       width: 100,
       height: 320,
     },
     suggest: {
       entity: {
         service_url: `${process.env.APP_BASEURL}`,
-        service_path: `/_suggest?language=${language}?account=${account}?dataset=${dataset}?service=entity`,
-        flyout_service_path: `/_suggest/_flyout?language=${language}?account=${account}?dataset=${dataset}?id={{id}}}`,
+        service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=entity`,
+        flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}}&id=$\{id\}`,
       },
       property: {
         service_url: `${process.env.APP_BASEURL}`,
-        service_path: `/_suggest?language=${language}?account=${account}?dataset=${dataset}?service=property`,
-        flyout_service_path: `/_suggest/_flyout?language=${language}?account=${account}?dataset=${dataset}?id={{id}}`,
+        service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
+        flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
       type: {
         service_url: `${process.env.APP_BASEURL}`,
-        service_path: `/_suggest?language=${language}?account=${account}?dataset=${dataset}?service=property`,
-        flyout_service_path: `/_suggest/_flyout?language=${language}?account=${account}?dataset=${dataset}?id={{id}}`,
+        service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
+        flyout_service_path: `/_suggest/_flyout&language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
     },
   }

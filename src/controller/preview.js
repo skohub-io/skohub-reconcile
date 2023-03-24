@@ -5,13 +5,9 @@ import {
   knownProblemHandler,
   errorHandler,
 } from "./utils.js";
-import { defaultLanguage } from "./index.js";
 
 export default async function preview(req, res) {
-  const { account, dataset, id, prefLang } = getParameters(
-    req,
-    defaultLanguage
-  );
+  const { account, dataset, id, prefLang } = getParameters(req);
 
   try {
     const queryResult = await esQueries.queryID(account, dataset, id);

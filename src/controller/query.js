@@ -7,10 +7,9 @@ import {
   checkAccountDataset,
   errorHandler,
 } from "./utils.js";
-import { defaultLanguage } from "./index.js";
 
 export default async function query(req, res) {
-  const { account, dataset, prefLang } = getParameters(req, defaultLanguage);
+  const { account, dataset, prefLang } = getParameters(req);
   const threshold = req.query.threshold
     ? req.query.threshold
     : config.es_threshold;
