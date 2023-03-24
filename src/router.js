@@ -22,11 +22,6 @@ routes.route('/_preview').get(controller.preview)
 routes.route('/_suggest').get(controller.suggest)
 
 // GET: flyout
-routes.route('/_suggest/_flyout').get(controller.flyout)
-
-// other services, not implemented yet
-routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})/:dataset([a-zA-Z0-9](([a-zA-Z0-9%.:_-]|\/[^_]){0,}))').post(controller.extend)
-routes.route('/_extend/:account([a-zA-Z0-9][a-zA-Z0-9_-]{0,})').post(controller.extend)
-routes.route('/_extend').post(controller.extend)
+routes.route('/_suggest/_flyout/:id').get(controller.flyout)
 
 export { routes }
