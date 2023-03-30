@@ -22,7 +22,7 @@ const esMultiFields = [
 
 export default async function query(account, dataset, reqQueries = null) {
   const requests = [];
-  if (reqQueries) {
+  if (Object.keys(reqQueries).length) {
     for (let key in reqQueries) {
       const reqObject = esb.requestBodySearch();
       reqObject.query(

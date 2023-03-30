@@ -73,7 +73,7 @@ export function getQueryParameters(req) {
     if (req.method === "GET") {
       return JSON.parse(req.query.queries);
     } else if (req.method === "POST") {
-      return req.body;
+      return JSON.parse(req.body.queries);
     }
   } catch (error) {
     throw new Error("Unhandled request method for parsing query parameters.");
