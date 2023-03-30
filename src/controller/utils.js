@@ -29,7 +29,7 @@ export function getParameters(req) {
 export function esToRec(doc, prefLang, threshold) {
   const concept = doc._source;
   let obj = {
-    id: concept.id.split("/").pop(),
+    id: concept.id,
     name:
       getLocalizedString(concept.prefLabel, prefLang) ||
       getLocalizedString(concept.title, prefLang),
