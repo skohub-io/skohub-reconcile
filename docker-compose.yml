@@ -54,6 +54,18 @@ services:
       timeout: 10s
       retries: 120
 
+  reconcile:
+    depends_on:
+      es01:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - ${APP_PORT}:3000
+    volumes:
+      - .env:/app/.env
+
 volumes:
   certs:
     driver: local
