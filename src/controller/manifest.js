@@ -48,7 +48,7 @@ function buildManifest(qRes, account, dataset, language) {
       entity: {
         service_url: `${process.env.APP_BASEURL}`,
         service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=entity`,
-        flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}}&id=$\{id\}`,
+        flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
       property: {
         service_url: `${process.env.APP_BASEURL}`,

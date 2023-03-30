@@ -22,6 +22,6 @@ routes.route('/_preview').get(controller.preview)
 routes.route('/_suggest').get(controller.suggest)
 
 // GET: flyout
-routes.route('/_suggest/_flyout/:id').get(controller.flyout)
+routes.route('/_suggest/_flyout').get(controller.flyout)
 
 export { routes }
