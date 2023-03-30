@@ -20,7 +20,7 @@ const esMultiFields = [
  * @returns {Promise} Elasticsearch query result
  */
 
-export default async function query(account, dataset, reqQueries = null) {
+export default async function query(account, dataset, reqQueries = {}) {
   const requests = [];
   if (Object.keys(reqQueries).length) {
     for (let key in reqQueries) {
