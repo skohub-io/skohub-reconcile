@@ -33,7 +33,7 @@ async function checkElastic() {
   }
 }
 
-checkElastic()
+await checkElastic()
 
 const app = express()
 
