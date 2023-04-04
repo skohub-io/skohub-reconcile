@@ -4,6 +4,13 @@ import config from "../config.js";
 
 const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : 'en'
 
+const buildHtml = (result, language) => {
+  const prefLabel = result?.prefLabel[language || defaultLanguage] || "ID not found";
+  const html = `<p style=\"font-size: 0.8em; color: black;\">${prefLabel}</p>`;
+  return html;
+};
+
+
 export default async function flyout(req, res) {
   const { account, dataset, language } = getParameters(req);
   const id = req.query.id;
@@ -16,8 +23,8 @@ export default async function flyout(req, res) {
   }
 
   const qRes = await queryID(account, dataset, id);
-  const result = qRes.hits.hits[0]._source;
-  const html = `<p style=\"font-size: 0.8em; color: black;\">${result.prefLabel[language || defaultLanguage]}</p>`;
+  const result = qRes.hits.hits[0]?._source;
+  const html = buildHtml(result, language);
 
   return res.json({
     id: id,
