@@ -20,12 +20,11 @@ export default async function suggest(req, res) {
       language
     );
     const options = qRes.responses.flatMap((r) => {
-      // @ts-ignore
-      return r?.suggest?.["rec-suggest"][0].options ?? [];
+      return r?.hits?.hits ?? [];
     });
     const result = options.map((element, _) => {
       return {
-        name: element.text,
+        name: element._source.prefLabel[language],
         id: element._source.id,
         ...(element._source.description && {
           description: element._source.description,
