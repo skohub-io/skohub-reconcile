@@ -19,14 +19,13 @@ export default async function preview(req, res) {
     }
 
     const item = queryResult.hits.hits[0]._source;
-    const html = parseItemToHTML(item, prefLang)
+    const html = parseItemToHTML(item, prefLang);
 
     return res.send(html);
   } catch (error) {
     return errorHandler(res, error);
   }
 }
-
 
 function parseItemToHTML(item, prefLang) {
   const label = getLocalizedString(item.prefLabel, prefLang);
@@ -103,5 +102,5 @@ function parseItemToHTML(item, prefLang) {
   </body>
   </html>`;
 
-  return html
+  return html;
 }
