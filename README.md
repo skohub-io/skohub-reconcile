@@ -1,14 +1,8 @@
-# skohub-reconcile
+# SkoHub Reconcile
 
-![https://github.com/mpilhlt/skohub-reconcile/actions?query=workflow%3ABuild](https://github.com/mpilhlt/skohub-reconcile/workflows/Build/badge.svg?branch=main)
+This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/) for the the [SkoHub](http://skohub.io) core infrastructure.
 
-This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/)
-for the the [SkoHub](http://skohub.io) core infrastructure.
-
-Dependencies:
-
-- elasticsearch 7.0
-- node-version >= v14.x
+**THIS README IS CURRENTLY OUTDATED AND WILL BE UPDATED SOON.**
 
 ## Basic setup
 
