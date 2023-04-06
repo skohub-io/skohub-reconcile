@@ -11,8 +11,8 @@ export default async function preview(req, res) {
 
   try {
     const queryResult = await esQueries.queryID(account, dataset, id);
-    if (queryResult.hits.total.value == 0) {
-      knownProblemHandler(res, {
+    if (queryResult.hits.total.value === 0) {
+      return knownProblemHandler(res, {
         code: 404,
         message: "Sorry, nothing at this url.",
       });
