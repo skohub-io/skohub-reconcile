@@ -3,12 +3,6 @@ import controller from './controller/index.js'
 
 const routes = express.Router()
 
-// In the subsequent routes, route parameters (account, dataset and ids)
-//   *must not* begin with an underscore ('_').
-// Fixed service endpoints, by contrast, do start with an underscore
-//   ('_reconcile', '_preview', '_suggest' etc.)
-// routes.route("/").get(controller.dataset)
-
 // GET: either return service manifest or do reconciliation query (if ?queries parameter given)
 routes.route('/_reconcile').get(controller.reconcile)
 
