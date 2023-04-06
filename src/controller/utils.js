@@ -1,4 +1,4 @@
-import esQueries from "../esQueries/index.js";
+import esQueries from "../queries/index.js";
 
 export function knownProblemHandler(res, err) {
   // console.log(err.message)

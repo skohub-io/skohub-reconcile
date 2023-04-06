@@ -4,7 +4,7 @@ import {
   checkAccountDataset,
   knownProblemHandler,
 } from "./utils.js";
-import esQueries from "../esQueries/index.js";
+import esQueries from "../queries/index.js";
 
 const supportedAPIversions = config.supported_api_versions
 

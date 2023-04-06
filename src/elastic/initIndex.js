@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { URL } from "url";
-import { esClient } from "./esConnect.js";
+import { esClient } from "./connect.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 

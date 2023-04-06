@@ -1,5 +1,5 @@
 import { getAccounts, index } from "./index.js";
-import { esClient } from "../elastic/esConnect.js";
+import { esClient } from "../elastic/connect.js";
 
 
 // Query for autocompletion suggestions for a prefix string

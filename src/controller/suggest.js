@@ -1,4 +1,4 @@
-import esQueries from "../esQueries/index.js";
+import esQueries from "../queries/index.js";
 import { getParameters, errorHandler } from "./utils.js";
 
 export default async function suggest(req, res) {

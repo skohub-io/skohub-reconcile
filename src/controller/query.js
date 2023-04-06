@@ -1,5 +1,5 @@
 import { config } from "../config.js";
-import esQueries from "../esQueries/index.js";
+import esQueries from "../queries/index.js";
 import {
   getParameters,
   esToRec,

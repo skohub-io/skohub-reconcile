@@ -1,5 +1,5 @@
 import { config } from "../config.js";
-import { esClient } from "../elastic/esConnect.js";
+import { esClient } from "../elastic/connect.js";
 import queryID from "./queryID.js";
 import query from "./query.js";
 import suggest from "./suggest.js";

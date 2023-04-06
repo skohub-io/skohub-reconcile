@@ -1,5 +1,5 @@
 import { esClient } from "./esConnect.js";
-import { createIndex } from "./esInitIndex.js";
+import { createIndex } from "./initIndex.js/index.js";
 import { config } from "../config.js";
 
 const index = config.es_index;

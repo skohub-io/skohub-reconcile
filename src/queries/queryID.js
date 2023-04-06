@@ -1,6 +1,6 @@
 import { config } from "../config.js";
 import esb from "elastic-builder";
-import {esClient} from "../elastic/esConnect.js";
+import {esClient} from "../elastic/connect.js";
 
 const index = config.es_index;
 
