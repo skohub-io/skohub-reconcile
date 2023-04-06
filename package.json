@@ -1,28 +1,27 @@
 {
   "name": "skohub-reconcile",
   "engines": {
-    "node": ">=10.12.0"
+    "node": ">=18.0.0"
   },
   "version": "0.0.1",
-  "description": "Reconciliation API server for skohub",
+  "description": "Reconciliation API server for SKOS Vocabularies",
   "main": "src/server.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --watchAll",
     "start": "node src/server.js",
-    "reset-index": "node src/elastic/resetIndex.js",
-    "dev": "nodemon --delay 500ms ./src/server.js localhost 3000"
+    "dev": "nodemon --delay 500ms ./src/server.js localhost 3000",
+    "reset-index": "node src/elastic/resetIndex.js"
   },
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rg-mpg-de/skohub-reconcile.git"
+    "url": "git+https://github.com/skohub-io/skohub-reconcile.git"
   },
   "author": "Andreas Wagner <wagner@lhlt.mpg.de>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/rg-mpg-de/skohub-reconcile/issues"
+    "url": "https://github.com/skohub-io/skohub-reconcile/issues"
   },
-  "homepage": "https://github.com/rg-mpg-de/skohub-reconcile#readme",
+  "homepage": "https://github.com/skohub-io/skohub-reconcile#readme",
   "devDependencies": {
     "@babel/core": "^7.21.3",
     "@babel/preset-env": "^7.20.2",
