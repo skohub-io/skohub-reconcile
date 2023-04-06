@@ -1,6 +1,6 @@
 import { getParameters } from "./utils.js";
 import queryID from "../esQueries/queryID.js";
-import config from "../config.js";
+import { config } from "../config.js";
 
 const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : "en";
 

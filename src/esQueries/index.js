@@ -1,4 +1,4 @@
-import config from "../config.js";
+import { config } from "../config.js";
 import { esClient } from "../elastic/esConnect.js";
 import queryID from "./queryID.js";
 import query from "./query.js";

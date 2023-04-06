@@ -1,3 +1,4 @@
+import { config } from "../config.js";
 import { esClient } from "./esConnect.js";
 import { createIndex } from "./esInitIndex.js";
 
@@ -8,7 +9,7 @@ function NoIndexError(message) {
   this.stack = new Error().stack;
 }
 
-const recIndex = process.env.ES_INDEX;
+const recIndex = config.es_index;
 
 export async function checkElastic() {
   await esClient.ping()

@@ -1,4 +1,4 @@
-import config from "../config.js";
+import { config } from "../config.js";
 import esb from "elastic-builder";
 import {esClient} from "../elastic/esConnect.js";
 

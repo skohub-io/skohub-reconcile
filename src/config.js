@@ -12,7 +12,7 @@ export const config = {
   es_threshold: process.env.ES_THRESH,
   app_port: process.env.APP_PORT,
   app_baseurl: process.env.APP_BASEURL,
-  app_defaultlang: process.env.APP_DEFAULTLANG
+  supported_api_versions: JSON.parse(process.env.SUPPORTED_API_VERSIONS)
 }
 
 if (result.error) {

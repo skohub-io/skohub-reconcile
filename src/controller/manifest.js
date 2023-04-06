@@ -1,4 +1,4 @@
-import config from "../config.js";
+import { config } from "../config.js";
 import {
   getParameters,
   checkAccountDataset,
@@ -6,7 +6,7 @@ import {
 } from "./utils.js";
 import esQueries from "../esQueries/index.js";
 
-const supportedAPIversions = ["0.2"];
+const supportedAPIversions = config.supported_api_versions
 
 export default async function manifest(req, res) {
   const {account, dataset, language } = getParameters(req);
@@ -40,23 +40,23 @@ function buildManifest(qRes, account, dataset, language) {
     ],
     view: { url: `${prefix}{{id}}` },
     preview: {
-      url: `${process.env.APP_BASEURL}/_preview?language=${language}&${accparam}&${dsparam}${idparam}`,
+      url: `${config.app_baseurl}/_preview?language=${language}&${accparam}&${dsparam}${idparam}`,
       width: 100,
       height: 320,
     },
     suggest: {
       entity: {
-        service_url: `${process.env.APP_BASEURL}`,
+        service_url: `${config.app_baseurl}`,
         service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=entity`,
         flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
       property: {
-        service_url: `${process.env.APP_BASEURL}`,
+        service_url: `${config.app_baseurl}`,
         service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
         flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
       type: {
-        service_url: `${process.env.APP_BASEURL}`,
+        service_url: `${config.app_baseurl}`,
         service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
         flyout_service_path: `/_suggest/_flyout&language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },

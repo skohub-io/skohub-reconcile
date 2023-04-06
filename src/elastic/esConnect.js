@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch'
-import config from '../config.js'
+import { config } from '../config.js'
 
 let esClient
 
