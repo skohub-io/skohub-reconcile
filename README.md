@@ -22,7 +22,8 @@ To run it, you need to have docker and docker-compose installed.
 Please see the [docker installation guide](https://docs.docker.com/install/) and the [docker-compose installation guide](https://docs.docker.com/compose/install/) for more information.
 
 To run the service, you need to have a `.env` file in the root directory of the project.
-You can use the provided `sample.env` as a template.
+You can use the provided `.sample.env` as a template.
+Run `cp .sample.env .env` to create the environment file.
 
 Then, you can run the service with:
 
