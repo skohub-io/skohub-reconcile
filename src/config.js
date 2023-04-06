@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 
 const result = dotenv.config()
-let config = {
+export const config = {
   es_proto: process.env.ES_PROTO,
   es_host: process.env.ES_HOST,
   es_port: process.env.ES_PORT,
@@ -19,5 +19,3 @@ if (result.error) {
   console.log(result.error, '[Error Parsing env variables!]')
   throw result.error
 };
-
-export { config as default }

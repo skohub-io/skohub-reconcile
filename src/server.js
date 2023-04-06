@@ -1,11 +1,9 @@
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
 import * as router from "./router.js";
 import { checkElastic } from "./elastic/checkElastic.js";
-
-dotenv.config();
+import { config } from "./config.js";
 
 console.log(`skohub-reconcile server starting...`);
 await checkElastic();
@@ -32,17 +30,18 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/", router.routes);
-app.set("port", process.env.APP_PORT || 3000);
+app.set("port", config.app_port || 3000);
+
 // We use URLSearchParams parsing rather than express's standard qs.
 // For reasons why, see https://evanhahn.com/gotchas-with-express-query-parsing-and-how-to-avoid-them/
 app.set("query parser", function (queryString) {
-  return URLSearchParams(queryString);
+  return new URLSearchParams(queryString);
 });
 
 app.listen(app.get("port"), () => {
   console.log(
-    `\nskohub-reconcile server up and listening on port ${app.get("port")}.\n`
+    `SkoHub Reconcile server up and listening on port ${app.get("port")}.`
   );
 });
 
-export { app }
+export { app };
