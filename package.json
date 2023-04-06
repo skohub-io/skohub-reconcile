@@ -9,8 +9,7 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest --watchAll",
     "start": "node src/server.js",
-    "start-reset": "node src/server.js reset",
-    "reset-index": "node src/esInitIndex.js",
+    "reset-index": "node src/elastic/resetIndex.js",
     "dev": "nodemon --delay 500ms ./src/server.js localhost 3000"
   },
   "type": "module",
