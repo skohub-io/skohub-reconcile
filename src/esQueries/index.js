@@ -1,11 +1,10 @@
 import config from "../config.js";
-import esConnect from "../esConnect.js";
+import { esClient } from "../elastic/esConnect.js";
 import queryID from "./queryID.js";
 import query from "./query.js";
 import suggest from "./suggest.js";
 
 export const index = config.es_index;
-export const esClient = esConnect.esClient;
 
 // add jsdoc for this function
 export async function getAccounts() {

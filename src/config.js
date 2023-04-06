@@ -19,6 +19,5 @@ if (result.error) {
   console.log(result.error, '[Error Parsing env variables!]')
   throw result.error
 };
-// console.log(result.parsed, '[Parsed env variables!]');
 
 export { config as default }

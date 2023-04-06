@@ -67,10 +67,7 @@ services:
       - .env:/app/.env
 
 volumes:
-  certs:
-    driver: local
   esdata01:
     driver: local
   kibanadata:
     driver: local
-

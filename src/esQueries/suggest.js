@@ -1,4 +1,6 @@
-import { getAccounts, index, esClient } from "./index.js";
+import { getAccounts, index } from "./index.js";
+import { esClient } from "../elastic/esConnect.js";
+
 
 // Query for autocompletion suggestions for a prefix string
 export default async function suggest(

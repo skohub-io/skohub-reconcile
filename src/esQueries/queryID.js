@@ -1,6 +1,6 @@
 import config from "../config.js";
 import esb from "elastic-builder";
-import esConnect from "../esConnect.js";
+import {esClient} from "../elastic/esConnect.js";
 
 const index = config.es_index;
 
@@ -15,8 +15,7 @@ const index = config.es_index;
 export default async function (
   account,
   dataset,
-  id,
-  esClient = esConnect.esClient
+  id
 ) {
   const reqObject = esb
     .requestBodySearch()

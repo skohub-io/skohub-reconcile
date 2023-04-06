@@ -1,0 +1,168 @@
+{
+	"settings": {
+		"number_of_shards": 1,
+		"max_result_window": "25000"
+	},
+	"mappings": {
+		"dynamic_templates": [
+			{
+				"prefLabel": {
+					"path_match": "prefLabel.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "altLabel_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"altLabel": {
+					"path_match": "altLabel.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "altLabel_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"hiddenLabel": {
+					"path_match": "hiddenLabel.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "hiddenLabel_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"title": {
+					"path_match": "title.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "title_all",
+						"index": true
+					}
+				}
+			},
+
+			{
+				"description": {
+					"path_match": "description.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "description_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"note": {
+					"path_match": "note.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "note_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"scopeNote": {
+					"path_match": "scopeNote.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "scopeNote_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"editorialNote": {
+					"path_match": "editorialNote.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "editorialNote_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"historyNote": {
+					"path_match": "historyNote.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "historyNote_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"changeNote": {
+					"path_match": "changeNote.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "changeNote_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"definition": {
+					"path_match": "definition.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "definition_all",
+						"index": true
+					}
+				}
+			},
+			{
+				"example": {
+					"path_match": "example.*",
+					"mapping": {
+						"type": "text",
+						"copy_to": "example_all",
+						"index": true
+					}
+				}
+			}
+		],
+
+		"properties": {
+			"@context": {
+				"enabled": false
+			},
+			"inScheme.id": {
+				"type": "keyword",
+				"index": true
+			},
+			"account": {
+				"type": "keyword",
+				"index": true
+			},
+			"dataset": {
+				"type": "keyword",
+				"index": true
+			},
+			"id": {
+				"type": "keyword",
+				"index": true
+			},
+			"notation": {
+				"type": "keyword",
+				"index": true
+			},
+			"type" : {
+				"type": "keyword",
+				"index": true
+			},
+
+			"broader": {
+				"enabled": false
+			},
+			"narrower": {
+				"enabled": false
+			}
+		}
+	}
+}

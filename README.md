@@ -2,6 +2,18 @@
 
 This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/) for the the [SkoHub](http://skohub.io) core infrastructure.
 
+The module is designed to serve SKOS Vocabularies according to the [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/) specification.
+To insert vocabularies to the service, you can use the [SkoHub Reconcile Publish](https://github.com/skohub-io/skohub-reconcile-publish) module.
+
+Be aware that this is still in proof-of-concept phase.
+
+## Setup
+
+This service uses docker and docker-compose to run. To run it, you need to have docker and docker-compose installed.
+Please see the [docker installation guide](https://docs.docker.com/install/) and the [docker-compose installation guide](https://docs.docker.com/compose/install/) for more information.
+
+To run the service, you need to have a `.env` file in the root directory of the project. You can use the provided `sample.env` as a template.
+
 **THIS README IS CURRENTLY OUTDATED AND WILL BE UPDATED SOON.**
 
 ## Basic setup
