@@ -44,5 +44,8 @@ For development you might want to start the service with `npm run dev`.
 In order to find the elasticsearch, you have to change the `ES_HOST` in the `.env` file to `localhost`.
 
 ## Credits
+
 The project to add a Reconciliation Service to SkoHub has been initiated by Andreas Wagner and
-carried out in cooperation with the [SkoHub.io team](https://github.com/skohub-io) in 2021/2022.
+carried out in cooperation with the [SkoHub.io team](https://github.com/skohub-io).
+
+<a target="_blank" href="https://www.hbz-nrw.de"><img src="https://raw.githubusercontent.com/skohub-io/skohub.io/main/img/logo-hbz-color.svg" width="120px"></a>
