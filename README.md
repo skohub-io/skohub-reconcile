@@ -17,9 +17,9 @@ Be aware that this is still in proof-of-concept phase.
 
 ## Setup
 
-This service uses docker and docker-compose to run. 
-To run it, you need to have docker and docker-compose installed.
-Please see the [docker installation guide](https://docs.docker.com/install/) and the [docker-compose installation guide](https://docs.docker.com/compose/install/) for more information.
+This service uses docker and docker compose to run. 
+To run it, you need to have docker and docker compose installed.
+Please see the [docker installation guide](https://docs.docker.com/install/).
 
 To run the service, you need to have a `.env` file in the root directory of the project.
 You can use the provided `.sample.env` as a template.
