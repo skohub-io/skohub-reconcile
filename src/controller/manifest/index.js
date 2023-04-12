@@ -7,7 +7,7 @@ import esQueries from "../../queries/index.js";
 import { buildManifest } from "./buildManifest.js";
 
 // TODO can i return to default export later?
-export const manifest = async (req, res) => {
+export default async function (req, res) {
   const { account, dataset, language } = getParameters(req);
   const accountDataset = await checkAccountDataset(account, dataset, language);
   if (accountDataset.err) {

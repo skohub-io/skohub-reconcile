@@ -1,23 +1,19 @@
-import { jest } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { query } from "./query.js";
 
-jest.mock("./query.js", () => ({
-  query: jest.fn(() => Promise.resolve(4)),
-}));
-
-jest.unstable_mockModule("../elastic/connect.js", () => {
+vi.mock('../elastic/connect.js', async () => {
+  // const actual = await vi.importActual("../elastic/connect.js")
   return {
     esClient: {
-      msearch: jest.fn(() => Promise.resolve(4)),
-    },
-  };
-});
-
-const { query } = await import("./query.js");
-const { esClient } = await import("../elastic/connect.js");
+      connect: vi.fn(),
+      msearch: vi.fn().mockResolvedValue([])
+    }
+  }
+})
 
 describe("query", () => {
   it("should return a result", async () => {
     const result = await query("Test", "test");
-    expect(result).toBe(4);
+    expect(result).toStrictEqual([]);
   });
 });
