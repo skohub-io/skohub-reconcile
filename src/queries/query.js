@@ -20,7 +20,7 @@ const esMultiFields = [
  * @returns {Promise} Elasticsearch query result
  */
 
-export default async function query(account, dataset, reqQueries = {}) {
+const buildQuery = (account, dataset, reqQueries) => {
   const requests = [];
   if (Object.keys(reqQueries).length) {
     for (let key in reqQueries) {
@@ -62,7 +62,12 @@ export default async function query(account, dataset, reqQueries = {}) {
       .size(500);
     requests.push(reqObject);
   }
+  return requests;
+}
 
+export const query = async (account, dataset, reqQueries = {}) => {
+  const requests = buildQuery(account, dataset, reqQueries);
+  
   const searches = requests.flatMap((doc) => [
     { index: index },
     { ...doc.toJSON() }

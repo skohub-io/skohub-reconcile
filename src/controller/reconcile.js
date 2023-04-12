@@ -1,4 +1,4 @@
-import manifest from "./manifest.js";
+import {manifest} from "./manifest/index.js";
 import query from "./query.js";
 
 export default async function reconcile(req, res) {

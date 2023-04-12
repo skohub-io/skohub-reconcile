@@ -79,6 +79,14 @@ export function getQueryParameters(req) {
     throw new Error("Unhandled request method for parsing query parameters.");
   }
 }
+/**
+ * Check if the account and dataset are present in the data
+ * @param {*} account 
+ * @param {*} dataset 
+ * @param {*} prefLang 
+ * @returns 
+ */
+
 
 export async function checkAccountDataset(account, dataset, prefLang) {
   // if account or dataset is nonempty but not in available accounts or datasets, return 404
