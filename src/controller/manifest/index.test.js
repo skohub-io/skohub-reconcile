@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { queryResponse, validManifest } from "../__mocks__/manifest.js";
+import { queryResponse, validManifest } from "./__mocks__/manifest.js";
 import manifest from "./index.js";
 import { NotExistentException } from "../utils.js";
 import * as esQueries from "../../queries/index.js";
