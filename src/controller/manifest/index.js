@@ -9,16 +9,8 @@ import { buildManifest } from "./buildManifest.js";
 
 export default async function (req, res) {
   const { account, dataset, language } = getParameters(req);
-
-  try {
-    await checkAccountDataset(account, dataset);
-  } catch (error) {
-    if (error.name === "NotExistentException") {
-      return knownProblemHandler(res, error.err);
-    } else {
-      return errorHandler(res, error);
-    }
-  }
+  
+  await checkAccountDataset(res, account, dataset);
 
   const qRes = await esQueries.query(account, dataset);
 

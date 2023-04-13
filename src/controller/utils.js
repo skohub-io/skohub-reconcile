@@ -1,4 +1,5 @@
 import esQueries from "../queries/index.js";
+import { config } from "../config.js";
 
 export function knownProblemHandler(res, err) {
   const error = {
@@ -16,9 +17,9 @@ export function errorHandler(res, err) {
   res.status(500);
   return res.json({
     status_code: 500,
-    success: false, 
-    data: [], 
-    message: err 
+    success: false,
+    data: [],
+    message: err,
   });
 }
 
@@ -28,7 +29,10 @@ export function getParameters(req) {
   const dataset = req.query.dataset || "";
   const language = req.query.language;
   const id = req.params.id ? req.params.id : req.query.id ? req.query.id : "";
-  return { account, dataset, id, language };
+  const threshold = req.query.threshold
+    ? req.query.threshold
+    : config.es_threshold;
+  return { account, dataset, id, language, threshold };
 }
 
 export function esToRec(doc, prefLang, threshold) {
@@ -73,7 +77,7 @@ export function getLocalizedString(obj, prefLang) {
  * @param {*} req
  * @returns {object} Object containing the query parameters
  */
-export function getQueryParameters(req) {
+export function getQueries(req) {
   try {
     if (req.method === "GET") {
       return JSON.parse(req.query.queries);
@@ -97,21 +101,30 @@ export function NotExistentException(err) {
  * @returns {Promise} Promise that resolves to true if the account and dataset are present in the data
  * @throws {NotExistentException}
  */
-export async function checkAccountDataset(account, dataset) {
+export async function checkAccountDataset(res, account, dataset) {
   const allAccounts = await esQueries.getAccounts();
   const allDatasets = await esQueries.getDatasets();
 
-  if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
-    throw new NotExistentException({
-      message: `Sorry, nothing at this url. (Nonexistent account '${account}'.)`,
-      code: 404,
-    });
+  try {
+    if (account && allAccounts.indexOf(account) == -1) {
+      throw new NotExistentException({
+        message: `Sorry, nothing at this url. (Nonexistent account '${account}'.)`,
+        code: 404,
+      });
+    }
+    if (dataset && allDatasets.indexOf(dataset) == -1) {
+      throw new NotExistentException({
+        message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
+        code: 404,
+      });
+    }
+  } catch (error) {
+    if (error.name === "NotExistentException") {
+      return knownProblemHandler(res, error.err);
+    } else {
+      return errorHandler(res, error);
+    }
   }
-  if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
-    throw new NotExistentException({
-      message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
-      code: 404,
-    });
-  }
-  return true
+
+  return true;
 }
