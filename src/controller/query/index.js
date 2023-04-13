@@ -1,4 +1,3 @@
-import { config } from "../../config.js";
 import esQueries from "../../queries/index.js";
 import {
   getParameters,
@@ -17,7 +16,7 @@ export default async function query(req, res) {
   await checkAccountDataset(res, account, dataset);
 
   try {
-    const esQuery = await esQueries.query(
+    const queryResponse = await esQueries.query(
       account,
       dataset,
       queries
@@ -25,8 +24,8 @@ export default async function query(req, res) {
 
     const allData = {};
 
-    esQuery.responses.forEach((element, index) => {
-      var qData = [];
+    queryResponse.responses.forEach((element, index) => {
+      const qData = [];
       if (element.hits.hits) {
         element.hits.hits.forEach((doc) => {
           qData.push(esToRec(doc, prefLang, threshold));
@@ -34,6 +33,7 @@ export default async function query(req, res) {
       }
       allData[queryNames[index]] = { result: qData };
     });
+    res.status(200);
     return res.json(allData);
   } catch (error) {
     return errorHandler(res, error);
