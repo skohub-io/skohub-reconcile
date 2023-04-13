@@ -1,4 +1,4 @@
-import flyout from "./flyout.js";
+import flyout from "./flyout/index.js";
 import manifest from "./manifest/index.js";
 import query from "./query.js";
 import preview from "./preview.js";
