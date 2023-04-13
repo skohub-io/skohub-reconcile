@@ -1,7 +1,7 @@
 import flyout from "./flyout/index.js";
 import manifest from "./manifest/index.js";
 import query from "./query.js";
-import preview from "./preview.js";
+import preview from "./preview/index.js";
 import suggest from "./suggest.js";
 import reconcile from "./reconcile.js";
 
