@@ -2,6 +2,7 @@ import {
   getParameters,
   checkAccountDataset,
   knownProblemHandler,
+  errorHandler
 } from "../utils.js";
 import esQueries from "../../queries/index.js";
 import { buildManifest } from "./buildManifest.js";
@@ -13,8 +14,9 @@ export default async function (req, res) {
     await checkAccountDataset(account, dataset);
   } catch (error) {
     if (error.name === "NotExistentException") {
-      console.log(error);
       return knownProblemHandler(res, error.err);
+    } else {
+      return errorHandler(res, error);
     }
   }
 

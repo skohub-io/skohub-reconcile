@@ -21,6 +21,9 @@ vi.mock("../../queries/index.js", async () => {
   };
 });
 
+// assures that the linter correctly identifies the mocked functions
+const mockedUtils = vi.mocked(utils);
+
 describe("Manifest", () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -28,7 +31,6 @@ describe("Manifest", () => {
 
   it("correctly passes requests", async () => {
     esQueries.default.query = vi.fn().mockResolvedValue(queryResponse);
-    // utils.checkAccountDataset.mockResolvedValue({err: null});
     const req = {
       query: {
         account: "dini-ag-kim",
@@ -46,7 +48,6 @@ describe("Manifest", () => {
 
   it("not passing request", async () => {
     esQueries.default.query = vi.fn().mockResolvedValue([]);
-    utils.checkAccountDataset = vi.fn().mockResolvedValue({ err: null });
     const req = {
       query: {
         account: "dini-ag-kim",
@@ -70,11 +71,11 @@ describe("Manifest", () => {
     });
   });
 
-  it("throws error if account is not provided", async () => {
+  it("throws known error if checkAccountDataset fails", async () => {
     esQueries.default.query = vi.fn().mockResolvedValue([]);
-    utils.checkAccountDataset.mockImplementation(() => {
+    mockedUtils.checkAccountDataset.mockImplementation(() => {
       throw new NotExistentException({
-        message: `Sorry, nothing at this url. (Nonexistent 'not-existing'.)`,
+        message: `Sorry, nothing at this url. (Nonexistent account 'not-existing'.)`,
         code: 404,
       });
     });
@@ -95,11 +96,39 @@ describe("Manifest", () => {
     expect(res.status).toBeCalledWith(404);
     expect(res.json).toBeCalledWith({
       data: [],
-      message: "Sorry, nothing at this url. (Nonexistent 'not-existing'.)",
+      message:
+        "Sorry, nothing at this url. (Nonexistent account 'not-existing'.)",
       status_code: 404,
       success: false,
     });
   });
-});
 
-it.todo("should return no manifest since dataset or account is not present");
+  it("throws known error if checkAccountDataset fails", async () => {
+    esQueries.default.query = vi.fn().mockResolvedValue([]);
+    const error = new Error(`Unknown error`);
+    mockedUtils.checkAccountDataset.mockImplementation(() => {
+      throw error;
+    });
+    const req = {
+      query: {
+        account: "dini-ag-kim",
+        dataset: "https://w3id.org/rhonda/polmat/scheme",
+        language: "en",
+      },
+      params: {},
+    };
+    const res = {
+      send: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+    };
+    await manifest(req, res);
+    expect(res.status).toBeCalledWith(500);
+    expect(res.json).toBeCalledWith({
+      data: [],
+      message: error,
+      status_code: 500,
+      success: false,
+    });
+  });
+});

@@ -12,8 +12,14 @@ export function knownProblemHandler(res, err) {
 }
 
 export function errorHandler(res, err) {
-  console.trace(err);
-  return res.json({ status_code: 500, success: false, data: [], message: err });
+  // TODO log error
+  res.status(500);
+  return res.json({
+    status_code: 500,
+    success: false, 
+    data: [], 
+    message: err 
+  });
 }
 
 export function getParameters(req) {
@@ -86,12 +92,12 @@ export function NotExistentException(err) {
 
 /**
  * Check if the account and dataset are present in the data
- * @param {*} account
- * @param {*} dataset
- * @returns
+ * @param {string} account
+ * @param {string} dataset
+ * @returns {Promise} Promise that resolves to true if the account and dataset are present in the data
+ * @throws {NotExistentException}
  */
 export async function checkAccountDataset(account, dataset) {
-  // if account or dataset is nonempty but not in available accounts or datasets, return 404
   const allAccounts = await esQueries.getAccounts();
   const allDatasets = await esQueries.getDatasets();
 
@@ -102,22 +108,10 @@ export async function checkAccountDataset(account, dataset) {
     });
   }
   if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
-    // if dataset fails, try again with a dataset value without the last path component
-    // (maybe that's an id which express router could not extract)
-    var pComponents = dataset.split("/");
-    const id = pComponents.pop();
-    dataset = pComponents.join("/");
-    if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
-      return {
-        err: {
-          message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
-          code: 404,
-        },
-        account,
-        dataset,
-        id,
-      };
-    }
+    throw new NotExistentException({
+      message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
+      code: 404,
+    });
   }
-  return { err: null, account, dataset };
+  return true
 }
