@@ -6,20 +6,27 @@ import {
 import esQueries from "../../queries/index.js";
 import { buildManifest } from "./buildManifest.js";
 
-// TODO can i return to default export later?
 export default async function (req, res) {
   const { account, dataset, language } = getParameters(req);
-  const accountDataset = await checkAccountDataset(account, dataset, language);
-  if (accountDataset.err) {
-    return knownProblemHandler(res, accountDataset.err);
+
+  try {
+    await checkAccountDataset(account, dataset);
+  } catch (error) {
+    if (error.name === "NotExistentException") {
+      console.log(error);
+      return knownProblemHandler(res, error.err);
+    }
   }
+
   const qRes = await esQueries.query(account, dataset);
-  if (qRes.responses[0].hits.total.value == 0) {
+
+  try {
+    const manifest = buildManifest(qRes, account, dataset, language);
+    return res.send(manifest);
+  } catch (error) {
     return knownProblemHandler(res, {
       code: 404,
       message: "Sorry, nothing at this url.",
     });
   }
-  const manifest = buildManifest(qRes, account, dataset, language);
-  return res.send(manifest);
 }

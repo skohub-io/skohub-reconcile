@@ -1,20 +1,19 @@
 import esQueries from "../queries/index.js";
 
 export function knownProblemHandler(res, err) {
-  // console.log(err.message)
   const error = {
     status_code: err.code,
     success: false,
     data: [],
     message: err.message,
   };
-  res.status(err.code).json(error);
-  return { err: error };
+  res.status(err.code);
+  return res.json(error);
 }
 
 export function errorHandler(res, err) {
   console.trace(err);
-  res.json({ status_code: 500, success: false, data: [], message: err });
+  return res.json({ status_code: 500, success: false, data: [], message: err });
 }
 
 export function getParameters(req) {
@@ -79,29 +78,28 @@ export function getQueryParameters(req) {
     throw new Error("Unhandled request method for parsing query parameters.");
   }
 }
+
+export function NotExistentException(err) {
+  this.name = "NotExistentException";
+  this.err = err || {};
+}
+
 /**
  * Check if the account and dataset are present in the data
- * @param {*} account 
- * @param {*} dataset 
- * @param {*} prefLang 
- * @returns 
+ * @param {*} account
+ * @param {*} dataset
+ * @returns
  */
-
-
-export async function checkAccountDataset(account, dataset, prefLang) {
+export async function checkAccountDataset(account, dataset) {
   // if account or dataset is nonempty but not in available accounts or datasets, return 404
   const allAccounts = await esQueries.getAccounts();
   const allDatasets = await esQueries.getDatasets();
 
   if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
-    return {
-      err: {
-        message: `Sorry, nothing at this url. (Nonexistent account '${account}'.)`,
-        code: 404,
-      },
-      account,
-      dataset,
-    };
+    throw new NotExistentException({
+      message: `Sorry, nothing at this url. (Nonexistent account '${account}'.)`,
+      code: 404,
+    });
   }
   if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
     // if dataset fails, try again with a dataset value without the last path component
