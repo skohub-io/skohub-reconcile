@@ -1,12 +1,14 @@
 import { getLocalizedString } from "../utils.js";
 
 function buildAltLabels(item, prefLang) {
+  if (!item.altLabel) return "";
   const altLabels = getLocalizedString(item.altLabel, prefLang);
   const html = "<p>alias: " + altLabels.join(", ") + "</p>";
   return html;
 }
 
 function buildExamples(item, prefLang) {
+  if (!item.example) return "";
   const example = getLocalizedString(item.example, prefLang);
   const head = "<div><head>Examples:</head><ul>";
   const tail = "</ul></div>";
@@ -16,12 +18,14 @@ function buildExamples(item, prefLang) {
 }
 
 function buildScheme(item) {
+  if (!item.inScheme) return "";
   const scheme = item.inScheme ? item.inScheme[0].id : "";
   const html = `in ConceptScheme: <b><a href="${scheme}" target="_blank" style="text-decoration: none;">${scheme}</a></b>`;
   return html;
 }
 
 function buildDefinition(item, prefLang) {
+  if (!item.definition) return "";
   const def = item.definition
     ? getLocalizedString(item.definition, prefLang)
     : "";
@@ -29,16 +33,18 @@ function buildDefinition(item, prefLang) {
 }
 
 function buildImg(item) {
+  if (!item.img) return "";
   const img = item.img;
   const img_url = img ? img.url : "";
   const img_alt = img ? img.alt : "";
   const html = `
-  <div style="width: 100px; text-align: center; margin-right: 9px; float: left">
-  <img src="${img_url}" alt="${img_alt}" style="height: 100px" />
-  </div>`;
+<div style="width: 100px; text-align: center; margin-right: 9px; float: left">
+<img src="${img_url}" alt="${img_alt}" style="height: 100px" />
+</div>`;
   return html;
 }
 function buildScope(item, prefLang) {
+  if (!item.scopeNote) return "";
   const scopeNote = item.scopeNote
     ? getLocalizedString(item.scopeNote, prefLang)
     : "";

@@ -32,6 +32,10 @@ export default {
           example: {
             en: ["Example 1 EN", "Example 2 EN"],
             de: ["Example 1 DE", "Example 2 DE"],
+          },
+          img: {
+            url: "http://test.org/img.png",
+            alt: "Test Image",
           }
         },
       },
