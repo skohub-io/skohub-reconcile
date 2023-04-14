@@ -45,8 +45,26 @@ describe("query", () => {
       json: vi.fn(),
     };
     await query(req, res);
+    expect(res.status).toBeCalledWith(200);
     expect(res.json).toBeCalledWith(allData);
   });
 
-  it.todo("add test for error handling")
+  it("add test for error handling if query result is invalid", async () => {
+    mockedQueries.query = vi.fn().mockReturnValue([]);
+    const req = {
+      query: {
+        account: "dini-ag-kim",
+        dataset: "https://w3id.org/rhonda/polmat/scheme",
+        language: "en",
+      },
+      params: {},
+    };
+    const res = {
+      send: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+    };
+    await query(req, res);
+    expect(res.status).toBeCalledWith(500);
+  });
 });

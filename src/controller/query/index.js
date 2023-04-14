@@ -5,7 +5,6 @@ import {
   getQueries,
   checkAccountDataset,
   errorHandler,
-  knownProblemHandler,
 } from "../utils.js";
 
 export default async function query(req, res) {
@@ -22,21 +21,19 @@ export default async function query(req, res) {
       queries
     );
 
-    const allData = {};
-
-    queryResponse.responses.forEach((element, index) => {
-      const qData = [];
-      if (element.hits.hits) {
-        element.hits.hits.forEach((doc) => {
-          qData.push(esToRec(doc, prefLang, threshold));
-        });
-      }
-      allData[queryNames[index]] = { result: qData };
-    });
+    const allData = queryResponse.responses.reduce((acc, response, index) => {
+      const qData = response.hits.hits
+        ? response.hits.hits.map(doc => esToRec(doc, prefLang, threshold))
+        : [];
+      return {
+        ...acc,
+        [queryNames[index]]: { result: qData }
+      };
+    }, {});
+    
     res.status(200);
     return res.json(allData);
   } catch (error) {
     return errorHandler(res, error);
-    // return _knownProblemHandler(res, resp.err)
   }
 }
