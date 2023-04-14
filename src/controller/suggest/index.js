@@ -1,8 +1,14 @@
 import esQueries from "../../queries/index.js";
-import { errorHandler, getParameters, checkAccountDataset, knownProblemHandler } from "../utils.js";
+import {
+  errorHandler,
+  getParameters,
+  checkAccountDataset,
+  knownProblemHandler,
+} from "../utils.js";
 
 export default async function suggest(req, res, next) {
-  const { account, dataset, language } = getParameters(req);
+  const { account, dataset, language, prefix } = getParameters(req);
+  const cursor = parseCursor(req.query.cursor || 0);
 
   try {
     await checkAccountDataset(res, account, dataset);
@@ -10,8 +16,11 @@ export default async function suggest(req, res, next) {
     return knownProblemHandler(res, error.err);
   }
 
-  const prefix = req.query.prefix;
-  const cursor = parseCursor(req.query.cursor || 0);
+  if (!prefix)
+    return knownProblemHandler(res, {
+      code: 400,
+      message: "No prefix provided",
+    });
 
   try {
     const esQueryResponse = await esQueries.suggest(

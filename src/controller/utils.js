@@ -29,10 +29,11 @@ export function getParameters(req) {
   const dataset = req.query.dataset || "";
   const language = req.query.language;
   const id = req.params.id ? req.params.id : req.query.id ? req.query.id : "";
+  const prefix = req.query.prefix || "";
   const threshold = req.query.threshold
     ? req.query.threshold
     : config.es_threshold;
-  return { account, dataset, id, language, threshold };
+  return { account, dataset, id, language, threshold, prefix };
 }
 
 export function esToRec(doc, prefLang, threshold) {
