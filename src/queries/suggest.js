@@ -42,7 +42,7 @@ export default async function suggest(
               {
                 wildcard: {
                   [`${n}.${language}`]: {
-                    value: `*${prefix}*`,
+                    value: `*${prefix.toLowerCase()}*`,
                     boost: 1.0,
                   },
                 },
