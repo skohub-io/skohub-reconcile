@@ -1,4 +1,4 @@
-import { getParameters, knownProblemHandler } from "../utils.js";
+import { getParameters, knownProblemHandler, checkAccountDataset } from "../utils.js";
 import queryID from "../../queries/queryID.js";
 import { config } from "../../config.js";
 
@@ -22,6 +22,13 @@ const buildHtml = (result, language) => {
 
 export default async function flyout(req, res) {
   const { account, dataset, language, id } = getParameters(req);
+  
+  try {
+    await checkAccountDataset(res, account, dataset);
+  } catch (error) {
+    return knownProblemHandler(res, error.err);
+  }
+
   if (!id) {
     return knownProblemHandler(res, {
       code: 400,

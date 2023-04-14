@@ -5,6 +5,7 @@ import {
   getQueries,
   checkAccountDataset,
   errorHandler,
+  knownProblemHandler,
 } from "../utils.js";
 
 export default async function query(req, res) {
@@ -12,7 +13,11 @@ export default async function query(req, res) {
   const queries = getQueries(req);
   const queryNames = Object.keys(queries);
 
-  await checkAccountDataset(res, account, dataset);
+  try {
+    await checkAccountDataset(res, account, dataset);
+  } catch (error) {
+    return knownProblemHandler(res, error.err);
+  }
 
   try {
     const queryResponse = await esQueries.query(

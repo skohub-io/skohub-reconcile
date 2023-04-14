@@ -3,11 +3,18 @@ import {
   getParameters,
   knownProblemHandler,
   errorHandler,
+  checkAccountDataset
 } from "../utils.js";
 import parseItemToHTML from "./parseItemToHTML.js";
 
 export default async function preview(req, res) {
   const { account, dataset, id, prefLang } = getParameters(req);
+
+  try {
+    await checkAccountDataset(res, account, dataset);
+  } catch (error) {
+    return knownProblemHandler(res, error.err);
+  }
 
   try {
     const queryResult = await queryID(account, dataset, id);

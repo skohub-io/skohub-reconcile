@@ -105,25 +105,21 @@ export async function checkAccountDataset(res, account, dataset) {
   const allAccounts = await esQueries.getAccounts();
   const allDatasets = await esQueries.getDatasets();
 
-  try {
-    if (account && allAccounts.indexOf(account) == -1) {
-      throw new NotExistentException({
+  if (account && allAccounts.indexOf(account) == -1) {
+    return Promise.reject(
+      new NotExistentException({
         message: `Sorry, nothing at this url. (Nonexistent account '${account}'.)`,
         code: 404,
-      });
-    }
-    if (dataset && allDatasets.indexOf(dataset) == -1) {
-      throw new NotExistentException({
+      })
+    );
+  }
+  if (dataset && allDatasets.indexOf(dataset) == -1) {
+    return Promise.reject(
+      new NotExistentException({
         message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
         code: 404,
-      });
-    }
-  } catch (error) {
-    if (error.name === "NotExistentException") {
-      return knownProblemHandler(res, error.err);
-    } else {
-      return errorHandler(res, error);
-    }
+      })
+    );
   }
 
   return true;

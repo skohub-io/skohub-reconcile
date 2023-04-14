@@ -2,7 +2,6 @@ import {
   getParameters,
   checkAccountDataset,
   knownProblemHandler,
-  errorHandler
 } from "../utils.js";
 import esQueries from "../../queries/index.js";
 import { buildManifest } from "./buildManifest.js";
@@ -10,7 +9,11 @@ import { buildManifest } from "./buildManifest.js";
 export default async function (req, res) {
   const { account, dataset, language } = getParameters(req);
   
-  await checkAccountDataset(res, account, dataset);
+  try {
+    await checkAccountDataset(res, account, dataset);
+  } catch (error) {
+    return knownProblemHandler(res, error.err);
+  }
 
   const qRes = await esQueries.query(account, dataset);
 

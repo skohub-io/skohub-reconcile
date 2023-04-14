@@ -1,25 +1,27 @@
-import esQueries from "../queries/index.js";
-import { getParameters, errorHandler } from "./utils.js";
+import esQueries from "../../queries/index.js";
+import { errorHandler, getParameters, checkAccountDataset, knownProblemHandler } from "../utils.js";
 
-export default async function suggest(req, res) {
-  function parseCursor(cursor) {
-    if (cursor < 0) return 0;
-    return parseInt(cursor);
-  }
+export default async function suggest(req, res, next) {
   const { account, dataset, language } = getParameters(req);
-  const service = req.query.service || "";
+
+  try {
+    await checkAccountDataset(res, account, dataset);
+  } catch (error) {
+    return knownProblemHandler(res, error.err);
+  }
+
   const prefix = req.query.prefix;
   const cursor = parseCursor(req.query.cursor || 0);
 
   try {
-    const qRes = await esQueries.suggest(
+    const esQueryResponse = await esQueries.suggest(
       account,
       dataset,
       prefix,
       cursor,
       language
     );
-    const options = qRes.responses.flatMap((r) => {
+    const options = esQueryResponse.responses.flatMap((r) => {
       return r?.hits?.hits ?? [];
     });
     const result = options.map((element, _) => {
@@ -43,4 +45,9 @@ export default async function suggest(req, res) {
   } catch (error) {
     return errorHandler(res, error);
   }
+}
+
+function parseCursor(cursor) {
+  if (cursor < 0) return 0;
+  return parseInt(cursor);
 }

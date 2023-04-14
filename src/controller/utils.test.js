@@ -60,14 +60,10 @@ describe("checkAccountDataset", () => {
       status: vi.fn(),
       json: vi.fn(),
     };
-    await checkAccountDataset(res, req.query.account, req.query.dataset);
-    expect(res.status).toBeCalledWith(404);
-    expect(res.json).toBeCalledWith({
-      data: [],
-      message: `Sorry, nothing at this url. (Nonexistent account '${req.query.account}'.)`,
-      status_code: 404,
-      success: false,
-    });
+    expect(
+      async () =>
+        await checkAccountDataset(res, req.query.account, req.query.dataset)
+    ).rejects.toThrowError(utils.NotExistentException);
   });
 
   it("throws error if checkDataset fails", async () => {
@@ -89,17 +85,13 @@ describe("checkAccountDataset", () => {
       status: vi.fn(),
       json: vi.fn(),
     };
-    await checkAccountDataset(res, req.query.account, req.query.dataset);
-    expect(res.status).toBeCalledWith(404);
-    expect(res.json).toBeCalledWith({
-      data: [],
-      message: `Sorry, nothing at this url. (Nonexistent dataset '${req.query.dataset}'.)`,
-      status_code: 404,
-      success: false,
-    });
+    expect(
+      async () =>
+        await checkAccountDataset(res, req.query.account, req.query.dataset)
+    ).rejects.toThrowError(utils.NotExistentException);
   });
 });
 
 describe("esToReconcile", () => {
-  it.todo("add test for esToReconcile")
+  it.todo("add test for esToReconcile");
 });
