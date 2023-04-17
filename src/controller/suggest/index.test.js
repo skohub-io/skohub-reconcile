@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import suggest from ".";
 import { queryForSuggestions } from "./queryForSuggestions";
 import { suggestions } from "./__mocks__/suggestions";
@@ -20,7 +20,7 @@ vi.mock("./queryForSuggestions.js", () => {
 const mockedQueryForSuggestions = vi.mocked(queryForSuggestions);
 
 describe("suggest controller", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     vi.restoreAllMocks();
   });
 
