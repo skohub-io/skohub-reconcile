@@ -62,10 +62,10 @@ export function esToRec(doc, prefLang, threshold) {
 }
 
 export function getLocalizedString(obj, prefLang) {
- if (obj === undefined) {
-  return "";
+  if (obj === undefined) {
+    return "";
   } else if (typeof obj === "object") {
-    return obj[prefLang] ?? `No label in language ${prefLang} provided`;
+    return obj?.[prefLang] ?? `No label in language ${prefLang} provided`;
   } else if (typeof obj === "string") {
     return obj;
   } else {
@@ -79,15 +79,12 @@ export function getLocalizedString(obj, prefLang) {
  * @returns {object} Object containing the query parameters
  */
 export function getQueries(req) {
-  try {
-    if (req.method === "GET") {
-      return JSON.parse(req.query.queries);
-    } else if (req.method === "POST") {
-      return JSON.parse(req.body.queries);
-    }
-  } catch (error) {
-    throw new Error("Unhandled request method for parsing query parameters.");
+  if (req.method === "GET") {
+    return JSON.parse(req.query.queries);
+  } else if (req.method === "POST") {
+    return JSON.parse(req.body.queries);
   }
+  throw new Error("Unhandled request method for parsing query parameters.");
 }
 
 export function NotExistentException(err) {

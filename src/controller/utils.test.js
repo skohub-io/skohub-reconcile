@@ -165,6 +165,26 @@ describe("getLocalizedString", () => {
     const result = utils.getLocalizedString(obj, "fr");
     expect(result).toEqual("");
   });
+
+  it("returns empty string if obj is null", () => {
+    const obj = null;
+    const result = utils.getLocalizedString(obj, "fr");
+    expect(result).toEqual("No label in language fr provided");
+  });
+
+  it("returns empty string if obj is empty", () => {
+    const obj = {};
+    const result = utils.getLocalizedString(obj, "fr");
+    expect(result).toEqual("No label in language fr provided");
+  });
+
+  it("returns empty string if object is a number", () => {
+    const obj = 1;
+    const result = utils.getLocalizedString(obj, "fr");
+    expect(result).toEqual(
+      "Error: Could not retrieve label from number. No label in language fr provided"
+    );
+  });
 });
 
 describe("get queries from query parameter (getQueries)", () => {
@@ -196,5 +216,17 @@ describe("get queries from query parameter (getQueries)", () => {
     };
     const result = utils.getQueries(req);
     expect(result).toEqual(queries);
+  });
+
+  it("throws error if request method is not 'GET' or 'POST'", () => {
+    const req = {
+      method: "PUT",
+      query: {
+        queries: JSON.stringify(queries),
+      },
+    };
+    expect(() => utils.getQueries(req)).toThrowError(
+      Error("Unhandled request method for parsing query parameters.")
+    );
   });
 });
