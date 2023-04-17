@@ -13,17 +13,17 @@ vi.mock("../../queries/index.js", async () => {
 });
 
 vi.mock("../config.js", () => {
-  const { config } = vi.importActual("../config.js")
+  const { config } = vi.importActual("../config.js");
   return {
     config: {
       ...config,
       es_proto: "http",
       es_host: "localhost",
       es_port: "9200",
-      default_language: "defaultLanguage"
-    }
-  }
-})
+      default_language: "defaultLanguage",
+    },
+  };
+});
 
 describe("checkAccountDataset", () => {
   afterEach(() => {
@@ -244,9 +244,7 @@ describe("get queries from query parameter (getQueries)", () => {
   it("parses queries from query parameter when request method is 'POST'", () => {
     const req = {
       method: "POST",
-      body: {
-        queries: JSON.stringify(queries),
-      },
+      body: { queries: JSON.stringify(queries) },
     };
     const result = utils.getQueries(req);
     expect(result).toEqual(queries);
