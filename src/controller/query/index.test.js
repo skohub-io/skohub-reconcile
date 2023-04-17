@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import esQueries from "../../queries/index.js";
 import * as utils from "../utils.js";
 import allData from "./__mocks__/allData.js";
-import queryResult from "./__mocks__/queryResponse.js";
+import queryResponse from "./__mocks__/queryResponse.js";
 import query from "./index.js";
 
 
@@ -30,7 +30,7 @@ const mockedQueries = vi.mocked(esQueries);
 
 describe("query", () => {
   it("returns a query result", async () => {
-    mockedQueries.query = vi.fn().mockReturnValue(queryResult);
+    mockedQueries.query = vi.fn().mockReturnValue(queryResponse);
     const req = {
       query: {
         account: "dini-ag-kim",

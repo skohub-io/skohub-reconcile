@@ -9,8 +9,8 @@ export default {
         score: undefined,
         type: [
           {
-            id: undefined,
-            name: null,
+            id: "Concept",
+            name: "Concept",
           },
         ],
       },

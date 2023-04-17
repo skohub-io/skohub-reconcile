@@ -9,7 +9,7 @@ import {
 } from "../utils.js";
 
 export default async function query(req, res) {
-  const { account, dataset, prefLang, threshold } = getParameters(req);
+  const { account, dataset, language, threshold } = getParameters(req);
   const queries = getQueries(req);
   const queryNames = Object.keys(queries);
 
@@ -28,7 +28,7 @@ export default async function query(req, res) {
 
     const allData = queryResponse.responses.reduce((acc, response, index) => {
       const qData = response.hits.hits
-        ? response.hits.hits.map(doc => esToRec(doc, prefLang, threshold))
+        ? response.hits.hits.map(doc => esToRec(doc, language, threshold))
         : [];
       return {
         ...acc,

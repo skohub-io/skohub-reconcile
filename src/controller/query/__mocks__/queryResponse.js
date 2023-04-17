@@ -6,6 +6,7 @@ export default {
           {
             _source: {
               id: "http://test.org/1",
+              type: "Concept",
               prefLabel: {
                 en: "Test EN",
                 de: "Test DE",
