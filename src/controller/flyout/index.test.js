@@ -9,6 +9,14 @@ vi.mock("../../queries/queryID.js", async () => {
   };
 });
 
+vi.mock("../utils.js", async () => {
+  const actual = await vi.importActual("../utils.js");
+  return {
+    ...actual,
+    checkAccountDataset: vi.fn().mockReturnValue(true),
+  };
+});
+
 const mockedQueryID = vi.mocked(queryID);
 
 describe("flyout", () => {
