@@ -12,6 +12,19 @@ vi.mock("../../queries/index.js", async () => {
   };
 });
 
+vi.mock("../config.js", () => {
+  const { config } = vi.importActual("../config.js")
+  return {
+    config: {
+      ...config,
+      es_proto: "http",
+      es_host: "localhost",
+      es_port: "9200",
+      default_language: "defaultLanguage"
+    }
+  }
+})
+
 describe("checkAccountDataset", () => {
   afterEach(() => {
     vi.resetAllMocks();
@@ -113,6 +126,27 @@ describe("getParameters", () => {
       account: "dini-ag-kim",
       dataset: "https://w3id.org/rhonda/polmat/scheme",
       language: "en",
+      cursor: 0,
+      prefix: "P",
+      id: "",
+    });
+  });
+
+  it("returns default language if 'language' attribute is missing", () => {
+    const req = {
+      query: {
+        account: "dini-ag-kim",
+        dataset: "https://w3id.org/rhonda/polmat/scheme",
+        cursor: 0,
+        prefix: "P",
+      },
+      params: {},
+    };
+    const result = utils.getParameters(req);
+    expect(result).toEqual({
+      account: "dini-ag-kim",
+      dataset: "https://w3id.org/rhonda/polmat/scheme",
+      language: "defaultLanguage",
       cursor: 0,
       prefix: "P",
       id: "",

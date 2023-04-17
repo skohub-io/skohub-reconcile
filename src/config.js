@@ -14,6 +14,7 @@ export const config = {
   app_baseurl: process.env.APP_BASEURL,
   supported_api_versions: JSON.parse(process.env.SUPPORTED_API_VERSIONS),
   suggest_query_size: process.env.SUGGEST_QUERY_SIZE,
+  default_language: process.env.DEFAULT_LANGUAGE,
 }
 
 if (result.error) {

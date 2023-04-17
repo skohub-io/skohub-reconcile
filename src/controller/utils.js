@@ -27,7 +27,7 @@ export function getParameters(req) {
   // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
   const account = req.query.account || "";
   const dataset = req.query.dataset || "";
-  const language = req.query.language;
+  const language = req.query.language || config.default_language;
   const id = req?.params?.id ? req.params.id : req.query.id ? req.query.id : "";
   const prefix = req.query.prefix || "";
   const threshold = req.query.threshold
@@ -82,7 +82,7 @@ export function getQueries(req) {
   if (req.method === "GET") {
     return JSON.parse(req.query.queries);
   } else if (req.method === "POST") {
-    return JSON.parse(req.body.queries);
+    return req.body
   }
   throw new Error("Unhandled request method for parsing query parameters.");
 }
