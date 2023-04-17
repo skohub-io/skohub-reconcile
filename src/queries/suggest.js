@@ -1,9 +1,10 @@
 import { getAccounts, index } from "./index.js";
 import { esClient } from "../elastic/connect.js";
+import { config } from "../config.js";
 
 
 // Query for autocompletion suggestions for a prefix string
-export default async function suggest(
+export async function suggest(
   account,
   dataset,
   prefix,
@@ -25,7 +26,8 @@ export default async function suggest(
   const suggests = ["prefLabel", "altLabel", "hiddenLabel", "title"].map(
     (n) => {
       return {
-        size: 10 + cursor,
+        size: config.suggest_query_size,
+        from: cursor,
         query: {
           bool: {
             must: [
@@ -37,6 +39,11 @@ export default async function suggest(
               {
                 term: {
                   account: account,
+                },
+              },
+              {
+                term: {
+                  type: "Concept",
                 },
               },
               {
