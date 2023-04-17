@@ -8,7 +8,7 @@ import {
 import parseItemToHTML from "./parseItemToHTML.js";
 
 export default async function preview(req, res) {
-  const { account, dataset, id, prefLang } = getParameters(req);
+  const { account, dataset, id, language } = getParameters(req);
 
   try {
     await checkAccountDataset(res, account, dataset);
@@ -26,7 +26,7 @@ export default async function preview(req, res) {
     }
 
     const item = queryResult.hits.hits[0]._source;
-    const html = parseItemToHTML(item, prefLang);
+    const html = parseItemToHTML(item, language);
 
     res.status(200)
     return res.send(html);

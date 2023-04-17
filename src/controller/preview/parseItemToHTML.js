@@ -60,7 +60,7 @@ export default function parseItemToHTML(item, prefLang) {
   const scheme_html = buildScheme(item);
   const def_html = buildDefinition(item, prefLang);
   const img_html = buildImg(item);
-  const scope_html = buildScope(item);
+  const scope_html = buildScope(item, prefLang);
 
   const html = `
 <html><head><meta charset="utf-8" /></head>
