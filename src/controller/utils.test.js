@@ -95,3 +95,48 @@ describe("checkAccountDataset", () => {
 describe("esToReconcile", () => {
   it.todo("add test for esToReconcile");
 });
+
+describe("getParameters", () => {
+  it("returns parameters", () => {
+    const req = {
+      query: {
+        account: "dini-ag-kim",
+        dataset: "https://w3id.org/rhonda/polmat/scheme",
+        language: "en",
+        cursor: 0,
+        prefix: "P",
+      },
+      params: {},
+    };
+    const result = utils.getParameters(req);
+    expect(result).toEqual({
+      account: "dini-ag-kim",
+      dataset: "https://w3id.org/rhonda/polmat/scheme",
+      language: "en",
+      cursor: 0,
+      prefix: "P",
+      id: ""
+    });
+  });
+
+  it("returns parameters also if 'params' attribute is missing", () => {
+    const req = {
+      query: {
+        account: "dini-ag-kim",
+        dataset: "https://w3id.org/rhonda/polmat/scheme",
+        language: "en",
+        cursor: 0,
+        prefix: "P",
+      },
+    };
+    const result = utils.getParameters(req);
+    expect(result).toEqual({
+      account: "dini-ag-kim",
+      dataset: "https://w3id.org/rhonda/polmat/scheme",
+      language: "en",
+      cursor: 0,
+      prefix: "P",
+      id: ""
+    });
+  });
+});

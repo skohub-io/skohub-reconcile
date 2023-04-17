@@ -28,12 +28,13 @@ export function getParameters(req) {
   const account = req.query.account || "";
   const dataset = req.query.dataset || "";
   const language = req.query.language;
-  const id = req.params.id ? req.params.id : req.query.id ? req.query.id : "";
+  const id = req?.params?.id ? req.params.id : req.query.id ? req.query.id : "";
   const prefix = req.query.prefix || "";
   const threshold = req.query.threshold
     ? req.query.threshold
     : config.es_threshold;
-  return { account, dataset, id, language, threshold, prefix };
+  const cursor = req.query.cursor ? parseInt(req.query.cursor) : 0;
+  return { account, dataset, id, language, threshold, prefix, cursor };
 }
 
 export function esToRec(doc, prefLang, threshold) {
