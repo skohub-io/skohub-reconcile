@@ -62,7 +62,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - ${APP_PORT}:3000
+      - ${APP_PORT}:${APP_PORT_EXPOSED}
     volumes:
       - .env:/app/.env
 
