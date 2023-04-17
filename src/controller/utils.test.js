@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import * as esQueries from "../queries/index.js";
 import * as utils from "./utils.js";
 import { checkAccountDataset } from "./utils.js";
@@ -115,7 +115,7 @@ describe("getParameters", () => {
       language: "en",
       cursor: 0,
       prefix: "P",
-      id: ""
+      id: "",
     });
   });
 
@@ -136,7 +136,65 @@ describe("getParameters", () => {
       language: "en",
       cursor: 0,
       prefix: "P",
-      id: ""
+      id: "",
     });
+  });
+});
+
+describe("getLocalizedString", () => {
+  it("returns localized string", () => {
+    const obj = {
+      en: "test en",
+      de: "test de",
+    };
+    const result = utils.getLocalizedString(obj, "en");
+    expect(result).toEqual("test en");
+  });
+
+  it("returns info if no localized string is available", () => {
+    const obj = {
+      en: "test",
+      de: "test",
+    };
+    const result = utils.getLocalizedString(obj, "fr");
+    expect(result).toEqual("No label in language fr provided");
+  });
+
+  it("returns empty string if obj is undefined", () => {
+    const obj = undefined;
+    const result = utils.getLocalizedString(obj, "fr");
+    expect(result).toEqual("");
+  });
+});
+
+describe("get queries from query parameter (getQueries)", () => {
+  const queries = {
+    q0: {
+      query: "Regelungsmaterie",
+    },
+    q1: {
+      query: "Policeymaterie",
+    },
+  };
+  it("parses queries from query parameter when request method is 'GET'", () => {
+    const req = {
+      method: "GET",
+      query: {
+        queries: JSON.stringify(queries),
+      },
+    };
+    const result = utils.getQueries(req);
+    expect(result).toEqual(queries);
+  });
+
+  it("parses queries from query parameter when request method is 'POST'", () => {
+    const req = {
+      method: "POST",
+      body: {
+        queries: JSON.stringify(queries),
+      },
+    };
+    const result = utils.getQueries(req);
+    expect(result).toEqual(queries);
   });
 });

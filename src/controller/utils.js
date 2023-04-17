@@ -62,20 +62,19 @@ export function esToRec(doc, prefLang, threshold) {
 }
 
 export function getLocalizedString(obj, prefLang) {
-  if (Object.prototype.toString.call(obj) === "[object Object]") {
-    if (prefLang && obj[prefLang] != "") {
-      return obj[prefLang];
-    } else {
-      return Object.values(obj)[0];
-    }
-  } else if (typeof obj === "string" || obj instanceof String) {
+ if (obj === undefined) {
+  return "";
+  } else if (typeof obj === "object") {
+    return obj[prefLang] ?? `No label in language ${prefLang} provided`;
+  } else if (typeof obj === "string") {
     return obj;
+  } else {
+    return `Error: Could not retrieve label from ${typeof obj}. No label in language ${prefLang} provided`;
   }
-  return null;
 }
 
 /**
- *
+ * Get the queries from "queries" query parameter
  * @param {*} req
  * @returns {object} Object containing the query parameters
  */
