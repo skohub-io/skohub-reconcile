@@ -6,7 +6,7 @@ services:
     volumes:
       - esdata01:/usr/share/elasticsearch/data
     ports:
-      - ${ES_PORT}:${ES_PORT_EXPOSED}
+      - ${ES_PORT_EXPOSED}:${ES_PORT}
     environment:
       - discovery.type=single-node
       - node.name=es01
@@ -23,7 +23,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s http://localhost:${ES_PORT}",
+          "curl -s http://localhost:${ES_PORT_EXPOSED}",
         ]
       interval: 10s
       timeout: 10s
@@ -37,7 +37,7 @@ services:
     volumes:
       - kibanadata:/usr/share/kibana/data
     ports:
-      - ${KIBANA_PORT}:${KIBANA_PORT_EXPOSED}
+      - ${KIBANA_PORT_EXPOSED}:${KIBANA_PORT}
     environment:
       - SERVERNAME=kibana
       - ELASTICSEARCH_HOSTS=http://es01:${ES_PORT_EXPOSED}
@@ -48,7 +48,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s -I http://localhost:${KIBANA_PORT} | grep -q 'HTTP/1.1 302 Found'",
+          "curl -s -I http://localhost:${KIBANA_PORT_EXPOSED} | grep -q 'HTTP/1.1 302 Found'",
         ]
       interval: 10s
       timeout: 10s
@@ -62,7 +62,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - ${APP_PORT}:${APP_PORT_EXPOSED}
+      - ${APP_PORT_EXPOSED}:${APP_PORT}
     volumes:
       - .env:/app/.env
 
