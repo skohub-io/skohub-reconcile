@@ -4,7 +4,7 @@ const result = dotenv.config()
 export const config = {
   es_proto: process.env.ES_PROTO,
   es_host: process.env.ES_HOST,
-  es_port: process.env.ES_PORT,
+  es_port: process.env.ES_PORT_EXPOSED,
   es_user: process.env.ES_USERNAME,
   es_pass: process.env.ES_PASSWORD,
   es_index: process.env.ES_INDEX,
