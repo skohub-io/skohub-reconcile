@@ -1,44 +1,20 @@
-import { config } from "../config.js";
-import {
-  getParameters,
-  checkAccountDataset,
-  knownProblemHandler,
-} from "./utils.js";
-import esQueries from "../queries/index.js";
+import { config } from "../../config.js";
 
-const supportedAPIversions = config.supported_api_versions
+const supportedAPIversions = config.supported_api_versions;
 
-export default async function manifest(req, res) {
-  const {account, dataset, language } = getParameters(req);
-
-  const accountDataset = await checkAccountDataset(account, dataset, language);
-  if (accountDataset.err) {
-    return knownProblemHandler(res, accountDataset.err);
-  }
-  const qRes = await esQueries.query(account, dataset);
-  if (qRes.responses[0].hits.total.value == 0) {
-    return knownProblemHandler(res, {
-      code: 404,
-      message: "Sorry, nothing at this url.",
-    });
-  }
-  const manifest = buildManifest(qRes, account, dataset, language)
-  return res.send(manifest);
-}
-
-function buildManifest(qRes, account, dataset, language) {
-  const prefix = parsePrefix(qRes);
+export function buildManifest(qRes, account, dataset, language) {
+  const prefNamespaceOfConceptScheme = parsePrefNamespace(qRes);
   const { dsname, accparam, dsparam, idparam } = buildName(account, dataset);
   return {
     versions: supportedAPIversions,
     name: `SkoHub reconciliation service${dsname}`,
-    identifierSpace: `${prefix}`,
+    identifierSpace: `${prefNamespaceOfConceptScheme}`,
     schemaSpace: "http://www.w3.org/2004/02/skos/core#",
     defaultTypes: [
       { id: "ConceptScheme", name: "ConceptScheme" },
       { id: "Concept", name: "Concept" },
     ],
-    view: { url: `${prefix}{{id}}` },
+    ...(prefNamespaceOfConceptScheme && { view: { url: `${prefNamespaceOfConceptScheme}{{id}}` } }),
     preview: {
       url: `${config.app_baseurl}/_preview?language=${language}&${accparam}&${dsparam}${idparam}`,
       width: 100,
@@ -61,7 +37,7 @@ function buildManifest(qRes, account, dataset, language) {
         flyout_service_path: `/_suggest/_flyout&language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
     },
-  }
+  };
 }
 
 function buildName(account, dataset) {
@@ -74,12 +50,12 @@ function buildName(account, dataset) {
       " for " +
       (account
         ? "account '" +
-        account +
-        "'" +
-        (dataset ? ", dataset '" + dataset + "'" : "")
+          account +
+          "'" +
+          (dataset ? ", dataset '" + dataset + "'" : "")
         : dataset
-          ? ", dataset '" + dataset + "'"
-          : "");
+        ? ", dataset '" + dataset + "'"
+        : "");
   }
   if (dataset) {
     dsparam = `dataset=${dataset}`;
@@ -95,16 +71,12 @@ function buildName(account, dataset) {
   return { dsname, accparam, dsparam, idparam };
 }
 
-function parsePrefix(esQuery) {
-  let prefix = "";
+function parsePrefNamespace(esQuery) {
   const firstHit = esQuery.responses[0].hits.hits[0];
   if (firstHit._source.preferredNamespaceUri) {
-    prefix = firstHit._source.preferredNamespaceUri.id;
+    const prefix = firstHit._source.preferredNamespaceUri.id;
+    return prefix;
   } else {
-    prefix = firstHit._source.id.substring(
-      0,
-      firstHit._source.id.lastIndexOf("/") + 1
-    );
+    return null;
   }
-  return prefix;
 }

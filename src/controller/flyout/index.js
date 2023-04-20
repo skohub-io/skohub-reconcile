@@ -1,6 +1,6 @@
-import { getParameters } from "./utils.js";
-import queryID from "../queries/queryID.js";
-import { config } from "../config.js";
+import { getParameters, knownProblemHandler, checkAccountDataset } from "../utils.js";
+import queryID from "../../queries/queryID.js";
+import { config } from "../../config.js";
 
 const defaultLanguage = config.app_defaultlang ? config.app_defaultlang : "en";
 
@@ -21,11 +21,17 @@ const buildHtml = (result, language) => {
 };
 
 export default async function flyout(req, res) {
-  const { account, dataset, language } = getParameters(req);
-  const id = req.query.id;
+  const { account, dataset, language, id } = getParameters(req);
+  
+  try {
+    await checkAccountDataset(res, account, dataset);
+  } catch (error) {
+    return knownProblemHandler(res, error.err);
+  }
+
   if (!id) {
-    return res.json({
-      status_code: 400,
+    return knownProblemHandler(res, {
+      code: 400,
       success: false,
       message: "Please provide an id as query parameter",
     });
@@ -35,6 +41,7 @@ export default async function flyout(req, res) {
   const result = qRes.hits.hits[0]?._source;
   const html = buildHtml(result, language);
 
+  res.status(200);
   return res.json({
     id: id,
     html: html,

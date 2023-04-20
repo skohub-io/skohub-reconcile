@@ -1,29 +1,40 @@
 import esQueries from "../queries/index.js";
+import { config } from "../config.js";
 
 export function knownProblemHandler(res, err) {
-  // console.log(err.message)
   const error = {
     status_code: err.code,
     success: false,
     data: [],
     message: err.message,
   };
-  res.status(err.code).json(error);
-  return { err: error };
+  res.status(err.code);
+  return res.json(error);
 }
 
 export function errorHandler(res, err) {
-  console.trace(err);
-  res.json({ status_code: 500, success: false, data: [], message: err });
+  // TODO log error
+  res.status(500);
+  return res.json({
+    status_code: 500,
+    success: false,
+    data: [],
+    message: err,
+  });
 }
 
 export function getParameters(req) {
   // Remember that in server.js we have configured query parameter parsing to use standard URLSearchParams
   const account = req.query.account || "";
   const dataset = req.query.dataset || "";
-  const language = req.query.language;
-  const id = req.params.id ? req.params.id : req.query.id ? req.query.id : "";
-  return { account, dataset, id, language };
+  const language = req.query.language || config.default_language;
+  const id = req?.params?.id ? req.params.id : req.query.id ? req.query.id : "";
+  const prefix = req.query.prefix || "";
+  const threshold = req.query.threshold
+    ? req.query.threshold
+    : config.es_threshold;
+  const cursor = req.query.cursor ? parseInt(req.query.cursor) : 0;
+  return { account, dataset, id, language, threshold, prefix, cursor };
 }
 
 export function esToRec(doc, prefLang, threshold) {
@@ -51,67 +62,63 @@ export function esToRec(doc, prefLang, threshold) {
 }
 
 export function getLocalizedString(obj, prefLang) {
-  if (Object.prototype.toString.call(obj) === "[object Object]") {
-    if (prefLang && obj[prefLang] != "") {
-      return obj[prefLang];
-    } else {
-      return Object.values(obj)[0];
-    }
-  } else if (typeof obj === "string" || obj instanceof String) {
+  if (obj === undefined) {
+    return "";
+  } else if (typeof obj === "object") {
+    return obj?.[prefLang] ?? `No label in language ${prefLang} provided`;
+  } else if (typeof obj === "string") {
     return obj;
+  } else {
+    return `Error: Could not retrieve label from ${typeof obj}. No label in language ${prefLang} provided`;
   }
-  return null;
 }
 
 /**
- *
+ * Get the queries from "queries" query parameter
  * @param {*} req
  * @returns {object} Object containing the query parameters
  */
-export function getQueryParameters(req) {
-  try {
-    if (req.method === "GET") {
-      return JSON.parse(req.query.queries);
-    } else if (req.method === "POST") {
-      return JSON.parse(req.body.queries);
-    }
-  } catch (error) {
-    throw new Error("Unhandled request method for parsing query parameters.");
+export function getQueries(req) {
+  if (req.method === "GET") {
+    return JSON.parse(req.query.queries);
+  } else if (req.method === "POST") {
+    return JSON.parse(req.body.queries);
   }
+  throw new Error("Unhandled request method for parsing query parameters.");
 }
 
-export async function checkAccountDataset(account, dataset, prefLang) {
-  // if account or dataset is nonempty but not in available accounts or datasets, return 404
+export function NotExistentException(err) {
+  this.name = "NotExistentException";
+  this.err = err || {};
+}
+
+/**
+ * Check if the account and dataset are present in the data
+ * @param {string} account
+ * @param {string} dataset
+ * @returns {Promise} Promise that resolves to true if the account and dataset are present in the data
+ * @throws {NotExistentException}
+ */
+export async function checkAccountDataset(res, account, dataset) {
   const allAccounts = await esQueries.getAccounts();
   const allDatasets = await esQueries.getDatasets();
 
-  if (account && [].slice.call(allAccounts).indexOf(account) == -1) {
-    return {
-      err: {
+  if (account && allAccounts.indexOf(account) == -1) {
+    return Promise.reject(
+      new NotExistentException({
         message: `Sorry, nothing at this url. (Nonexistent account '${account}'.)`,
         code: 404,
-      },
-      account,
-      dataset,
-    };
+      })
+    );
   }
-  if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
-    // if dataset fails, try again with a dataset value without the last path component
-    // (maybe that's an id which express router could not extract)
-    var pComponents = dataset.split("/");
-    const id = pComponents.pop();
-    dataset = pComponents.join("/");
-    if (dataset && [].slice.call(allDatasets).indexOf(dataset) == -1) {
-      return {
-        err: {
-          message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
-          code: 404,
-        },
-        account,
-        dataset,
-        id,
-      };
-    }
+  if (dataset && allDatasets.indexOf(dataset) == -1) {
+    return Promise.reject(
+      new NotExistentException({
+        message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
+        code: 404,
+      })
+    );
   }
-  return { err: null, account, dataset };
+
+  return true;
 }
