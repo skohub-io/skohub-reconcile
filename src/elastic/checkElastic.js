@@ -13,10 +13,12 @@ const recIndex = config.es_index;
 export async function checkElastic() {
   try {
     await esClient.ping();
+    console.log("elasticsearch server found.");
   } catch (error) {
     console.error(
       "elasticsearch server not found. Please make sure elastic is running. Stopping..."
     );
+    console.log(error);
     process.exit(1);
   }
 
