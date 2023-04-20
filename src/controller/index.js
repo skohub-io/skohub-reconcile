@@ -4,5 +4,6 @@ import query from "./query/index.js";
 import preview from "./preview/index.js";
 import suggest from "./suggest/index.js";
 import reconcile from "./reconcile/index.js";
+import ping from "./ping/index.js";
 
-export default { reconcile, query, preview, suggest, flyout, manifest };
+export default { reconcile, query, preview, suggest, flyout, manifest, ping };
