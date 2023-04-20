@@ -35,13 +35,13 @@ The service uses an external network to communicate with the [SkoHub Reconcile P
 Before you start the service make sure the network `reconcile-backend` exists.
 You can create it with:
 
-    $ docker network create reconcile-backend
+    docker network create reconcile-backend
 
 ### Run the Service
 
 Then, you can run the service with:
 
-    $ docker compose up
+    docker compose up
 
 This will start the Reconciliation service on the port specified with `APP_PORT_EXPOSED` in `.env`. 
 Add `-d` to run the service in the background.
@@ -50,7 +50,7 @@ Note that the Elasticsearch and Kibana services will also be exposed.
 If you start the service for the first time an index with the appropriate mapping will be created automatically.
 If you want to reset the index later, you can use the following command:
 
-    $ docker compose run --rm reconcile npm run reset-index
+    docker compose run --rm reconcile npm run reset-index
 
 ## Development
 
