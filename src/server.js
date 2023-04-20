@@ -40,7 +40,7 @@ app.set("query parser", function (queryString) {
 
 app.listen(app.get("port"), () => {
   console.log(
-    `SkoHub Reconcile server up and listening on port ${app.get("port")}.`
+    `SkoHub Reconcile server up and listening on port ${config.app_port_exposed}.`
   );
 });
 
