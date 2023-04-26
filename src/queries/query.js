@@ -4,23 +4,23 @@ import { config } from '../config.js'
 
 export const index = config.es_index
 
-const esMultiFields = [
-  'prefLabel*^4.0',
-  'altLabel*^2.0',
-  'hiddenLabel*^1.5',
-  'title*^3.0',
-  'description*^1.0',
-  'notation*^1.2'
+const esMultiFields = (language) => [
+  `prefLabel.${language}^4.0`,
+  `altLabel.${language}^2.0`,
+  `hiddenLabel.${language}^1.5`,
+  `title.${language}^3.0`,
+  `description.${language}^1.0`,
+  `notation.${language}^1.2`
 ];
 /**
  * Query for concepts and/or vocabularies
  * @param {string} account
  * @param {string} dataset
  * @param {object} reqQueries Query objects according to [reconciliation spec](https://reconciliation-api.github.io/specs/0.2/#structure-of-a-reconciliation-query).
- * @returns {Promise} Elasticsearch query result
+ * @returns {Array} Elasticsearch query result
  */
 
-const buildQuery = (account, dataset, reqQueries) => {
+const buildQuery = (account, dataset, reqQueries, language) => {
   const requests = [];
   if (Object.keys(reqQueries).length) {
     for (let key in reqQueries) {
@@ -39,7 +39,7 @@ const buildQuery = (account, dataset, reqQueries) => {
             esb.termQuery('dataset', dataset),
             ])] : []),
           ...(!dataset ? [esb.boolQuery().must(esb.queryStringQuery('ConceptScheme').defaultField('type'))] : []),
-          esb.multiMatchQuery(esMultiFields, reqQueries[key].query)
+          esb.multiMatchQuery(esMultiFields(language), reqQueries[key].query)
           ])
           .should(reqQueries[key]['type'] ?
             esb.queryStringQuery(reqQueries[key]['type']).defaultField('type').boost(4) :
@@ -65,8 +65,8 @@ const buildQuery = (account, dataset, reqQueries) => {
   return requests;
 }
 
-export const query = async (account, dataset, reqQueries = {}) => {
-  const requests = buildQuery(account, dataset, reqQueries);
+export const query = async (account, dataset, reqQueries = {}, language) => {
+  const requests = buildQuery(account, dataset, reqQueries, language);
   
   const searches = requests.flatMap((doc) => [
     { index: index },

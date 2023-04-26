@@ -23,7 +23,8 @@ export default async function query(req, res) {
     const queryResponse = await esQueries.query(
       account,
       dataset,
-      queries
+      queries,
+      language
     );
 
     const allData = queryResponse.responses.reduce((acc, response, index) => {
