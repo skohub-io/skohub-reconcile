@@ -16,7 +16,7 @@ export const validManifest = {
 		}
 	],
 	"view": {
-		"url": "https://w3id.org/rhonda/polmat/{{id}}"
+		"url": "{{id}}"
 	},
 	"preview": {
 		"url": "http://localhost:3000/_preview?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id={{id}}",
