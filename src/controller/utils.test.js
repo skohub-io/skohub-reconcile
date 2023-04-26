@@ -191,33 +191,31 @@ describe("getLocalizedString", () => {
       de: "test",
     };
     const result = utils.getLocalizedString(obj, "fr");
-    expect(result).toEqual("No label in language fr provided");
+    expect(result).toEqual(false);
   });
 
   it("returns empty string if obj is undefined", () => {
     const obj = undefined;
     const result = utils.getLocalizedString(obj, "fr");
-    expect(result).toEqual("");
+    expect(result).toEqual(false);
   });
 
   it("returns empty string if obj is null", () => {
     const obj = null;
     const result = utils.getLocalizedString(obj, "fr");
-    expect(result).toEqual("No label in language fr provided");
+    expect(result).toEqual(false);
   });
 
   it("returns empty string if obj is empty", () => {
     const obj = {};
     const result = utils.getLocalizedString(obj, "fr");
-    expect(result).toEqual("No label in language fr provided");
+    expect(result).toEqual(false);
   });
 
   it("returns empty string if object is a number", () => {
     const obj = 1;
     const result = utils.getLocalizedString(obj, "fr");
-    expect(result).toEqual(
-      "Error: Could not retrieve label from number. No label in language fr provided"
-    );
+    expect(result).toEqual(false);
   });
 });
 
