@@ -3,6 +3,8 @@ import { getLocalizedString } from "../utils.js";
 function buildAltLabels(item, prefLang) {
   if (!item.altLabel) return "";
   const altLabels = getLocalizedString(item.altLabel, prefLang);
+  // if altLabels is not an array, return it as is
+  if (!altLabels) return "";;
   const html = "<p>alias: " + altLabels.join(", ") + "</p>";
   return html;
 }
@@ -10,6 +12,7 @@ function buildAltLabels(item, prefLang) {
 function buildExamples(item, prefLang) {
   if (!item.example) return "";
   const example = getLocalizedString(item.example, prefLang);
+  if (!example) return "";
   const head = "<div><head>Examples:</head><ul>";
   const tail = "</ul></div>";
   const examples = example.map((e) => `<li>${e}</li>`);

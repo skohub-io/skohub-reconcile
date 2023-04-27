@@ -1,15 +1,16 @@
-version: "2.2"
+version: "3"
 
 services:
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    # Uncomment the following line to expose the elastic port to the host for debugging or development purposes
+    # ports:
+    #   - 9200:9200
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
-    ports:
-      - ${ES_PORT}:9200
+      - elasticData:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
-      - node.name=es01
+      - node.name=elastic
       - cluster.name=${CLUSTER_NAME}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - xpack.security.enabled=false
@@ -28,46 +29,30 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
-
-  kibana:
-    depends_on:
-      es01:
-        condition: service_healthy
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
-    volumes:
-      - kibanadata:/usr/share/kibana/data
-    ports:
-      - ${KIBANA_PORT}:5601
-    environment:
-      - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=http://es01:9200
-      - ELASTICSEARCH_USERNAME=kibana_system
-      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
-    mem_limit: ${MEM_LIMIT}
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
+    networks:
+      - reconcile-backend
 
   reconcile:
     depends_on:
-      es01:
+      elastic:
         condition: service_healthy
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - ${APP_PORT}:3000
+      - ${APP_PORT_EXPOSED}:${APP_PORT}
     volumes:
       - .env:/app/.env
+    networks:
+      - reconcile-backend
 
 volumes:
-  esdata01:
+  elasticData:
     driver: local
   kibanadata:
     driver: local
+
+networks:
+  reconcile-backend:
+    name: reconcile-backend
+    external: true

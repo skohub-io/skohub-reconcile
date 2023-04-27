@@ -14,7 +14,7 @@ export function buildManifest(qRes, account, dataset, language) {
       { id: "ConceptScheme", name: "ConceptScheme" },
       { id: "Concept", name: "Concept" },
     ],
-    ...(prefNamespaceOfConceptScheme && { view: { url: `${prefNamespaceOfConceptScheme}{{id}}` } }),
+    view: { url: `{{id}}` },
     preview: {
       url: `${config.app_baseurl}/_preview?language=${language}&${accparam}&${dsparam}${idparam}`,
       width: 100,

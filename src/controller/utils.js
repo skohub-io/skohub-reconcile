@@ -63,13 +63,17 @@ export function esToRec(doc, prefLang, threshold) {
 
 export function getLocalizedString(obj, prefLang) {
   if (obj === undefined) {
-    return "";
-  } else if (typeof obj === "object") {
-    return obj?.[prefLang] ?? `No label in language ${prefLang} provided`;
+    return false
+  } else if (obj === null) {
+    return false
   } else if (typeof obj === "string") {
     return obj;
+  } else if (obj.hasOwnProperty(prefLang)) {
+    if (typeof obj[prefLang] === "string") return obj[prefLang];
+    else if (Array.isArray(obj[prefLang]) && obj[prefLang].length !== 0) return obj[prefLang];
+    else return false
   } else {
-    return `Error: Could not retrieve label from ${typeof obj}. No label in language ${prefLang} provided`;
+    return false
   }
 }
 
