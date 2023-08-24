@@ -32,6 +32,34 @@ services:
     networks:
       - reconcile-backend
 
+  kibana:
+    depends_on:
+      elastic:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    volumes:
+      - kibanadata:/usr/share/kibana/data
+    ports:
+      - 5601:5601 
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elastic:${ES_PORT_EXPOSED}
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=
+    mem_limit: ${MEM_LIMIT}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+          "curl -s http://localhost:9200",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+    networks:
+      - reconcile-backend
+
   reconcile:
     depends_on:
       elastic:
