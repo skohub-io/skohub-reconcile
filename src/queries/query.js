@@ -12,14 +12,14 @@ const esMultiFields = (language) => [
   `description.${language}^1.0`,
   `notation.${language}^1.2`
 ];
+
 /**
  * Query for concepts and/or vocabularies
  * @param {string} account
  * @param {string} dataset
- * @param {object} reqQueries Query objects according to [reconciliation spec](https://reconciliation-api.github.io/specs/0.2/#structure-of-a-reconciliation-query).
- * @returns {Array} Elasticsearch query result
+ * @param {Object} reqQueries Received quers according to [reconciliation spec](https://reconciliation-api.github.io/specs/0.2/#structure-of-a-reconciliation-query).
+ * @returns {Array} Elasticsearch query requests
  */
-
 const buildQuery = (account, dataset, reqQueries, language) => {
   const requests = [];
   if (Object.keys(reqQueries).length) {
@@ -31,11 +31,7 @@ const buildQuery = (account, dataset, reqQueries, language) => {
           ...(dataset ? [esb.termQuery('dataset', dataset)] : []),
           ...(dataset ? [esb.boolQuery()
             .should([esb.termQuery('inScheme.id', dataset),
-            // esb.termQuery('inScheme.id', 'http://' + dataset),
-            // esb.termQuery('inScheme.id', 'https://' + dataset),
             esb.termQuery('id', dataset),
-            // esb.termQuery('id', 'http://' + dataset),
-            // esb.termQuery('id', 'https://' + dataset),
             esb.termQuery('dataset', dataset),
             ])] : []),
           ...(!dataset ? [esb.boolQuery().must(esb.queryStringQuery('ConceptScheme').defaultField('type'))] : []),
@@ -67,7 +63,7 @@ const buildQuery = (account, dataset, reqQueries, language) => {
 
 export const query = async (account, dataset, reqQueries = {}, language) => {
   const requests = buildQuery(account, dataset, reqQueries, language);
-  
+
   const searches = requests.flatMap((doc) => [
     { index: index },
     { ...doc.toJSON() }
