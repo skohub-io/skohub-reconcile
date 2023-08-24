@@ -18,7 +18,7 @@ export async function checkElastic() {
     console.error(
       "elasticsearch server not found. Please make sure elastic is running. Stopping..."
     );
-    console.log(error);
+    console.error(error);
     process.exit(1);
   }
 

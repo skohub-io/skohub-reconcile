@@ -1,0 +1,60 @@
+version: "3"
+
+services:
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    # Uncomment the following line to expose the elastic port to the host for debugging or development purposes
+    ports:
+      - 9200:9200
+    volumes:
+      - elasticData:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - node.name=elastic
+      - cluster.name=${CLUSTER_NAME}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=false
+      - xpack.license.self_generated.type=${LICENSE}
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s http://localhost:9200",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+    networks:
+      - reconcile-backend
+
+  reconcile:
+    depends_on:
+      elastic:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    command: npm run dev
+    ports:
+      - ${APP_PORT_EXPOSED}:${APP_PORT}
+    volumes:
+      - .env:/app/.env
+      - ./:/app/
+    networks:
+      - reconcile-backend
+
+volumes:
+  elasticData:
+    driver: local
+  kibanadata:
+    driver: local
+
+networks:
+  reconcile-backend:
+    name: reconcile-backend
+    external: true
