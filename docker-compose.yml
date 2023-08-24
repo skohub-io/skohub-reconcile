@@ -43,6 +43,7 @@ services:
       - ${APP_PORT_EXPOSED}:${APP_PORT}
     volumes:
       - .env:/app/.env
+    restart: on-failure
     networks:
       - reconcile-backend
 
