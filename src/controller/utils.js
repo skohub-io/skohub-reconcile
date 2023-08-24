@@ -1,6 +1,15 @@
 import esQueries from "../queries/index.js";
 import { config } from "../config.js";
+import Ajv from "ajv"
+import queryBatchSchema from "./query/schemas/queryBatchSchema.json" assert { type: "json" }
 
+/**
+ * @param {Object} res - Response Object
+ * @param {Object} err - Error message containing code and message
+ * @param {number} err.code - HTTP Error Code
+ * @param {string} err.message - Error Message to be returned
+ * @returns {Object} res
+ */
 export function knownProblemHandler(res, err) {
   const error = {
     status_code: err.code,
@@ -86,7 +95,7 @@ export function getQueries(req) {
   if (req.method === "GET") {
     return JSON.parse(req.query.queries);
   } else if (req.method === "POST") {
-    return JSON.parse(req.body.queries);
+    return req.body.queries;
   }
   throw new Error("Unhandled request method for parsing query parameters.");
 }
@@ -126,3 +135,21 @@ export async function checkAccountDataset(res, account, dataset) {
 
   return true;
 }
+
+const ajv = new Ajv()
+/**
+ * Check a query against the JSON Schema from the specification (https://reconciliation-api.github.io/specs/draft/#reconciliation-query-batch-json-schema)
+ * @param {Object} query - query to check against
+ * @param {("queryBatch")} schema - schema to validate against
+ * @returns {Boolean}
+ */
+export function validateAgainstSchema(query, schema) {
+  const validateQueryBatch = ajv.compile(queryBatchSchema)
+
+  switch (schema) {
+    case "queryBatch":
+      return validateQueryBatch(query)
+  }
+}
+
+

@@ -6,11 +6,34 @@ import {
   checkAccountDataset,
   errorHandler,
   knownProblemHandler,
+  validateAgainstSchema
 } from "../utils.js";
 
 export default async function query(req, res) {
-  const { account, dataset, language, threshold } = getParameters(req);
+  // check for correct header
+  if (req.headers["content-type"] !== "application/json") {
+    return knownProblemHandler(
+      res,
+      {
+        code: 415,
+        message: "Unsupported Media Type. Use application/json"
+      }
+    )
+  }
+
+  // check queries against schema
+  if (!validateAgainstSchema(req.body, "queryBatch")) {
+    return knownProblemHandler(
+      res,
+      {
+        code: 403,
+        message: "Data is not valid against reconciliation query batch scheme. Consult the spec."
+      }
+    )
+  }
   const queries = getQueries(req);
+  const { account, dataset, language, threshold } = getParameters(req);
+
   const queryNames = Object.keys(queries);
 
   try {
@@ -36,7 +59,7 @@ export default async function query(req, res) {
         [queryNames[index]]: { result: qData }
       };
     }, {});
-    
+
     res.status(200);
     return res.json(allData);
   } catch (error) {
