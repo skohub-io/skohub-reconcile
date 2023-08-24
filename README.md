@@ -54,9 +54,9 @@ If you want to reset the index later, you can use the following command:
 
 ## Development
 
-For development you might want to start the service with `npm run dev`.
-In order to find the elasticsearch, you have to change the `ES_HOST` in the `.env` file to `localhost`.
-Also make sure to expose the ports of the elasticsearch in the `docker-compose.yml` file.
+For development you can start the service with `docker compose -f docker-compose.dev.yml`.
+This will mount the `./src`-folder into the container and the reconcile service will be started with `npm run dev`.
+Nodemon will then listen to file changes in the mounted folder and whenever you change something restart the service.
 
 ## Credits
 

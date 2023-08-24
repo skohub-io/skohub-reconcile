@@ -44,7 +44,7 @@ services:
       - ${APP_PORT_EXPOSED}:${APP_PORT}
     volumes:
       - .env:/app/.env
-      - ./:/app/
+      - ./src:/app/src
     networks:
       - reconcile-backend
 
