@@ -38,7 +38,7 @@ const buildQuery = (account, dataset, reqQueries, language) => {
           esb.multiMatchQuery(esMultiFields(language), reqQueries[key].query)
           ])
           .should(reqQueries[key]['type'] ?
-            esb.queryStringQuery(reqQueries[key]['type']).defaultField('type').boost(4) :
+            esb.queryStringQuery(reqQueries[key]['type']).defaultField('type').boost(10) :
             esb.queryStringQuery('Concept').defaultField('type')
           )
       )
