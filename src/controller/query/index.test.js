@@ -32,10 +32,21 @@ describe("query", () => {
   it("returns a query result", async () => {
     mockedQueries.query = vi.fn().mockReturnValue(queryResponse);
     const req = {
+      headers: {
+        "content-type": "application/json"
+      },
       query: {
         account: "dini-ag-kim",
-        dataset: "https://w3id.org/rhonda/polmat/scheme",
         language: "en",
+        dataset: "https://w3id.org/rhonda/polmat/scheme"
+      },
+      body: {
+        queries: [
+          {
+            query: "dini-ag-kim",
+          }
+
+        ]
       },
       params: {},
     };
@@ -49,15 +60,86 @@ describe("query", () => {
     expect(res.json).toBeCalledWith(allData);
   });
 
+  // test missing content type
+  it("returns a 415, because of invalid header content-type", async () => {
+    const req = {
+      headers: {
+        "content-type": "bla"
+      },
+      query: {
+        account: "dini-ag-kim",
+        dataset: "https://w3id.org/rhonda/polmat/scheme"
+      },
+      body: {
+        queries: [
+          {
+            query: "dini-ag-kim",
+          }
+
+        ]
+      },
+      params: {
+      },
+    };
+    const res = {
+      send: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+    };
+    await query(req, res);
+    expect(res.status).toBeCalledWith(415);
+  });
+
+  // test invalid query
+  it("returns a 403, because of invalid query against query scheme", async () => {
+    const req = {
+      headers: {
+        "content-type": "application/json"
+      },
+      query: {
+        account: "dini-ag-kim",
+        dataset: "https://w3id.org/rhonda/polmat/scheme"
+      },
+      body: {
+        queries: [
+          {
+            querie: "dini-ag-kim",
+          }
+
+        ]
+      },
+      params: {
+      },
+    };
+    const res = {
+      send: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+    };
+    await query(req, res);
+    expect(res.status).toBeCalledWith(403);
+  });
+
   it("add test for error handling if query result is invalid", async () => {
     mockedQueries.query = vi.fn().mockReturnValue([]);
     const req = {
+      headers: {
+        "content-type": "application/json"
+      },
       query: {
         account: "dini-ag-kim",
-        dataset: "https://w3id.org/rhonda/polmat/scheme",
-        language: "en",
+        dataset: "https://w3id.org/rhonda/polmat/scheme"
       },
-      params: {},
+      body: {
+        queries: [
+          {
+            query: "dini-ag-kim",
+          }
+
+        ]
+      },
+      params: {
+      },
     };
     const res = {
       send: vi.fn(),

@@ -242,7 +242,7 @@ describe("get queries from query parameter (getQueries)", () => {
   it("parses queries from query parameter when request method is 'POST'", () => {
     const req = {
       method: "POST",
-      body: { queries: JSON.stringify(queries) },
+      body: { queries },
     };
     const result = utils.getQueries(req);
     expect(result).toEqual(queries);
