@@ -16,25 +16,25 @@ export function buildManifest(qRes, account, dataset, language) {
     ],
     view: { url: `{{id}}` },
     preview: {
-      url: `${config.app_baseurl}/_preview?language=${language}&${accparam}&${dsparam}${idparam}`,
+      url: `${config.app_baseurl}/preview?language=${language}&${accparam}&${dsparam}${idparam}`,
       width: 100,
       height: 320,
     },
     suggest: {
       entity: {
         service_url: `${config.app_baseurl}`,
-        service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=entity`,
-        flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
+        service_path: `/suggest?language=${language}&account=${account}&dataset=${dataset}&service=entity`,
+        flyout_service_path: `/suggest/flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
       property: {
         service_url: `${config.app_baseurl}`,
-        service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
-        flyout_service_path: `/_suggest/_flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
+        service_path: `/suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
+        flyout_service_path: `/suggest/flyout?language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
       type: {
         service_url: `${config.app_baseurl}`,
-        service_path: `/_suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
-        flyout_service_path: `/_suggest/_flyout&language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
+        service_path: `/suggest?language=${language}&account=${account}&dataset=${dataset}&service=property`,
+        flyout_service_path: `/suggest/flyout&language=${language}&account=${account}&dataset=${dataset}&id=$\{id\}`,
       },
     },
   };
@@ -50,12 +50,12 @@ function buildName(account, dataset) {
       " for " +
       (account
         ? "account '" +
-          account +
-          "'" +
-          (dataset ? ", dataset '" + dataset + "'" : "")
+        account +
+        "'" +
+        (dataset ? ", dataset '" + dataset + "'" : "")
         : dataset
-        ? ", dataset '" + dataset + "'"
-        : "");
+          ? ", dataset '" + dataset + "'"
+          : "");
   }
   if (dataset) {
     dsparam = `dataset=${dataset}`;

@@ -1,45 +1,45 @@
 export const validManifest = {
-	"versions": [
-		"0.2"
-	],
-	"name": "SkoHub reconciliation service for account 'dini-ag-kim', dataset 'https://w3id.org/rhonda/polmat/scheme'",
-	"identifierSpace": "https://w3id.org/rhonda/polmat/",
-	"schemaSpace": "http://www.w3.org/2004/02/skos/core#",
-	"defaultTypes": [
-		{
-			"id": "ConceptScheme",
-			"name": "ConceptScheme"
-		},
-		{
-			"id": "Concept",
-			"name": "Concept"
-		}
-	],
-	"view": {
-		"url": "{{id}}"
-	},
-	"preview": {
-		"url": "http://localhost:3000/_preview?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id={{id}}",
-		"width": 100,
-		"height": 320
-	},
-	"suggest": {
-		"entity": {
-			"service_url": "http://localhost:3000",
-			"service_path": "/_suggest?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&service=entity",
-			"flyout_service_path": "/_suggest/_flyout?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id=${id}"
-		},
-		"property": {
-			"service_url": "http://localhost:3000",
-			"service_path": "/_suggest?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&service=property",
-			"flyout_service_path": "/_suggest/_flyout?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id=${id}"
-		},
-		"type": {
-			"service_url": "http://localhost:3000",
-			"service_path": "/_suggest?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&service=property",
-			"flyout_service_path": "/_suggest/_flyout&language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id=${id}"
-		}
-	}
+  "versions": [
+    "0.2"
+  ],
+  "name": "SkoHub reconciliation service for account 'dini-ag-kim', dataset 'https://w3id.org/rhonda/polmat/scheme'",
+  "identifierSpace": "https://w3id.org/rhonda/polmat/",
+  "schemaSpace": "http://www.w3.org/2004/02/skos/core#",
+  "defaultTypes": [
+    {
+      "id": "ConceptScheme",
+      "name": "ConceptScheme"
+    },
+    {
+      "id": "Concept",
+      "name": "Concept"
+    }
+  ],
+  "view": {
+    "url": "{{id}}"
+  },
+  "preview": {
+    "url": "http://localhost:3000/preview?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id={{id}}",
+    "width": 100,
+    "height": 320
+  },
+  "suggest": {
+    "entity": {
+      "service_url": "http://localhost:3000",
+      "service_path": "/suggest?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&service=entity",
+      "flyout_service_path": "/suggest/flyout?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id=${id}"
+    },
+    "property": {
+      "service_url": "http://localhost:3000",
+      "service_path": "/suggest?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&service=property",
+      "flyout_service_path": "/suggest/flyout?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id=${id}"
+    },
+    "type": {
+      "service_url": "http://localhost:3000",
+      "service_path": "/suggest?language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&service=property",
+      "flyout_service_path": "/suggest/flyout&language=en&account=dini-ag-kim&dataset=https://w3id.org/rhonda/polmat/scheme&id=${id}"
+    }
+  }
 }
 
 export const queryResponse = {
