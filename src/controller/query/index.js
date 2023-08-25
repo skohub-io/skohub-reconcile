@@ -10,26 +10,45 @@ import {
 } from "../utils.js";
 
 export default async function query(req, res) {
-  // check for correct header
-  if (req.headers["content-type"] !== "application/json") {
-    return knownProblemHandler(
-      res,
-      {
-        code: 415,
-        message: "Unsupported Media Type. Use application/json"
-      }
-    )
-  }
+  if (req.method === "POST") {
+    // check for correct header
+    if (req.headers["content-type"] !== "application/json") {
+      return knownProblemHandler(
+        res,
+        {
+          code: 415,
+          message: "Unsupported Media Type. Use application/json"
+        }
+      )
+    }
 
-  // check queries against schema
-  if (!validateAgainstSchema(req.body, "queryBatch")) {
-    return knownProblemHandler(
-      res,
-      {
-        code: 403,
-        message: "Data is not valid against reconciliation query batch scheme. Consult the spec."
-      }
+    // check queries against schema
+    if (!validateAgainstSchema(req.body, "queryBatch")) {
+      return knownProblemHandler(
+        res,
+        {
+          code: 403,
+          message: "Data is not valid against reconciliation query batch scheme. Consult the spec."
+        }
+      )
+    }
+  }
+  // GET requests are used by the [Testbench](https://reconciliation-api.github.io/testbench/)
+  if (req.method === "GET") {
+    // we can't validate content type on a get request
+    // check queries against schema
+    const queries = Object.values(
+      JSON.parse(req.query.queries)
     )
+    if (!validateAgainstSchema({ queries }, "queryBatch")) {
+      return knownProblemHandler(
+        res,
+        {
+          code: 403,
+          message: "Data is not valid against reconciliation query batch scheme. Consult the spec."
+        }
+      )
+    }
   }
   const queries = getQueries(req);
   const { account, dataset, language, threshold } = getParameters(req);
