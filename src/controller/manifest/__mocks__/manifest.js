@@ -1,6 +1,6 @@
 export const validManifest = {
   "versions": [
-    "0.2"
+    "0.3-alpha"
   ],
   "name": "SkoHub reconciliation service for account 'dini-ag-kim', dataset 'https://w3id.org/rhonda/polmat/scheme'",
   "identifierSpace": "https://w3id.org/rhonda/polmat/",

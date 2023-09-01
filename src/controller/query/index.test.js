@@ -63,6 +63,7 @@ describe("query", () => {
   // test missing content type
   it("returns a 415, because of invalid header content-type", async () => {
     const req = {
+      method: "POST",
       headers: {
         "content-type": "bla"
       },
@@ -93,6 +94,7 @@ describe("query", () => {
   // test invalid query
   it("returns a 403, because of invalid query against query scheme", async () => {
     const req = {
+      method: "POST",
       headers: {
         "content-type": "application/json"
       },
