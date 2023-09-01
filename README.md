@@ -2,16 +2,15 @@
 
 This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/) for the the [SkoHub](http://skohub.io) core infrastructure.
 
-The module is designed to serve SKOS Vocabularies according to the [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/) specification.
+The module is designed to serve SKOS Vocabularies according to the [Draft of the Reconciliation Service](https://reconciliation-api.github.io/specs/draft/) specification.
 To insert vocabularies to the service, you can use the [SkoHub Reconcile Publish](https://github.com/skohub-io/skohub-reconcile-publish) module.
 
 The Service currently suppports the following reconciliation services of the above mentioned specification:
 
-- [Service Definition](https://reconciliation-api.github.io/specs/0.2/#service-definition)
-- [Reconciliation Queries](https://reconciliation-api.github.io/specs/0.2/#reconciliation-queries)
-- [Preview Service](https://reconciliation-api.github.io/specs/0.2/#preview-service)
-- [Suggest Services](https://reconciliation-api.github.io/specs/0.2/#suggest-services)
-- [Flyout Services](https://reconciliation-api.github.io/specs/0.2/#flyout-services)
+- [Service Definition](https://reconciliation-api.github.io/specs/draft/#service-definition)
+- [Reconciliation Queries](https://reconciliation-api.github.io/specs/draft/#reconciliation-queries)
+- [Preview Service](https://reconciliation-api.github.io/specs/draft/#preview-service)
+- [Suggest Services](https://reconciliation-api.github.io/specs/draft/#suggest-services)
 
 Be aware that this is still in proof-of-concept phase.
 
