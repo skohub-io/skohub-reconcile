@@ -2,7 +2,7 @@
 
 This repository provides a [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/) for the the [SkoHub](http://skohub.io) core infrastructure.
 
-The module is designed to serve SKOS Vocabularies according to the [Reconciliation Service](https://reconciliation-api.github.io/specs/latest/) specification.
+The module is designed to serve SKOS Vocabularies according to the [Draft of the Reconciliation Service](https://reconciliation-api.github.io/specs/draft/) specification.
 To insert vocabularies to the service, you can use the [SkoHub Reconcile Publish](https://github.com/skohub-io/skohub-reconcile-publish) module.
 
 The Service currently suppports the following reconciliation services of the above mentioned specification:
