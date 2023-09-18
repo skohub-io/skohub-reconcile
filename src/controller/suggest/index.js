@@ -11,9 +11,7 @@ export default async function suggest(req, res, next) {
 
   try {
     await checkAccountDataset(res, account, dataset);
-    if (!prefix) {
-      throw new ReconcileError("No prefix provided", 400);
-    }
+    if (!prefix) throw new ReconcileError("No prefix provided", 400);
     const result = await queryForSuggestions(account, dataset, prefix, cursor, language);
     return res.json({
       result: result,
