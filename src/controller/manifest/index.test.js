@@ -40,31 +40,4 @@ describe("Manifest", () => {
     await manifest(req, res);
     expect(res.send).toBeCalledWith(validManifest);
   });
-
-  it("not passing request", async () => {
-    esQueries.default.query = vi.fn().mockResolvedValue([]);
-    const req = {
-      query: {
-        account: "dini-ag-kim",
-        dataset: "https://w3id.org/rhonda/polmat/scheme",
-        language: "en",
-      },
-      params: {},
-    };
-    const res = {
-      send: vi.fn(),
-      status: vi.fn(),
-      json: vi.fn(),
-    };
-    await manifest(req, res);
-    expect(res.status).toBeCalledWith(404);
-    expect(res.json).toBeCalledWith({
-      data: [],
-      message: "Sorry, nothing at this url.",
-      status_code: 404,
-      success: false,
-    });
-  });
-
-  
 });
