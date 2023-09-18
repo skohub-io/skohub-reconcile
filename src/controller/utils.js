@@ -16,24 +16,6 @@ export class ReconcileError extends Error {
   }
 }
 
-/**
- * @param {Object} res - Response Object
- * @param {Object} err - Error message containing code and message
- * @param {number} err.code - HTTP Error Code
- * @param {string} err.message - Error Message to be returned
- * @returns {Object} res
- */
-export function knownProblemHandler(res, err) {
-  const error = {
-    status_code: err?.code || 500,
-    success: false,
-    data: [],
-    message: err?.message,
-  };
-  res.status(err?.code || 500);
-  return res.json(error);
-}
-
 export function errorHandler(res, err) {
   // TODO log error
   res.status(err?.code || 500);
