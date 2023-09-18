@@ -13,8 +13,8 @@ function validateRequest(req) {
   if (req.method === "POST") {
     // check for correct header
     if (
-      !(req.headers["content-type"] === "application/json" || // v3
-        req.headers["content-type"] === "application/x-www-form-urlencoded")  // v2
+      !(req.headers["content-type"].includes("application/json") || // v3
+        req.headers["content-type"].includes("application/x-www-form-urlencoded"))  // v2
     ) {
       throw new ReconcileError("Unsupported Media Type. Use application/json for v3 or application/x-www-form-urlencoded for v2", 415);
     }
@@ -46,7 +46,6 @@ function validQueryBatch(req) {
 async function buildQueryResponse(req) {
   const queries = getQueries(req);
   const { account, dataset, language, threshold } = getParameters(req);
-
   await checkAccountDataset(account, dataset);
 
   const elasticQueryResponse = await esQueries.query(
@@ -55,10 +54,9 @@ async function buildQueryResponse(req) {
     queries,
     language
   );
-
   // v2
   // since v3 spec is not mentioning reconciliation GET queries, we use v2 response batch
-  if (req.headers["content-type"] === "application/x-www-form-urlencoded" || req.method === "GET") {
+  if (req.headers["content-type"].includes("application/x-www-form-urlencoded") || req.method === "GET") {
     const queryNames = Object.keys(queries);
     const allData = elasticQueryResponse.responses.reduce((acc, response, index) => {
       const qData = response.hits.hits
@@ -73,7 +71,7 @@ async function buildQueryResponse(req) {
     const queryResponse = allData
     return queryResponse;
     // v3
-  } else if (req.headers["content-type"] === "application/json") {
+  } else if (req.headers["content-type"].includes("application/json")) {
     const allData = elasticQueryResponse.responses.reduce((acc, response) => {
       const qData = response.hits.hits
         ? response.hits.hits.map(doc => esToRec(doc, language, threshold))
