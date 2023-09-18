@@ -24,7 +24,7 @@ export default async function flyout(req, res) {
   const { account, dataset, language, id } = getParameters(req);
 
   try {
-    await checkAccountDataset(res, account, dataset);
+    await checkAccountDataset(account, dataset);
     if (!id) throw new ReconcileError("Please provide an id as query parameter", 400);
     const qRes = await queryID(account, dataset, id);
     const result = qRes.hits.hits[0]?._source;

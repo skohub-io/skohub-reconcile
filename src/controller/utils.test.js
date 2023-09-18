@@ -69,7 +69,7 @@ describe("checkAccountDataset", () => {
     };
     expect(
       async () =>
-        await checkAccountDataset(res, req.query.account, req.query.dataset)
+        await checkAccountDataset(req.query.account, req.query.dataset)
     ).rejects.toThrowError(utils.ReconcileError);
   });
 
