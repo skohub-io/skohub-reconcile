@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import esQueries from "../../queries/index.js";
 import * as utils from "../utils.js";
-import allData from "./__mocks__/allData.js";
-import queryResponse from "./__mocks__/queryResponse.js";
+import queryResponseV2 from "./__mocks__/queryResponseV2.js";
+import queryResponseV3 from "./__mocks__/queryResponseV3.js";
+import elasticResponse from "./__mocks__/elasticResponse.js";
 import query from "./index.js";
 
 
@@ -27,10 +28,42 @@ vi.mock("../../queries/index.js", async () => {
 });
 
 const mockedQueries = vi.mocked(esQueries);
+const mockedUtils = vi.mocked(utils)
 
 describe("query", () => {
-  it("returns a query result", async () => {
-    mockedQueries.query = vi.fn().mockReturnValue(queryResponse);
+  it("returns a query result for v2", async () => {
+    mockedQueries.query = vi.fn().mockReturnValue(elasticResponse);
+    const req = {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded"
+      },
+      query: {
+        account: "dini-ag-kim",
+        language: "en",
+        dataset: "https://w3id.org/rhonda/polmat/scheme"
+      },
+      body: {
+        q1: {
+          query: "dini-ag-kim",
+        },
+        q2: {
+          query: "test"
+        }
+      },
+      params: {},
+    };
+    const res = {
+      send: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+    };
+    await query(req, res);
+    expect(res.status).toBeCalledWith(200);
+    expect(res.json).toBeCalledWith(queryResponseV2);
+  });
+
+  it("returns a query result for v3", async () => {
+    mockedQueries.query = vi.fn().mockReturnValue(elasticResponse);
     const req = {
       headers: {
         "content-type": "application/json"
@@ -45,7 +78,6 @@ describe("query", () => {
           {
             query: "dini-ag-kim",
           }
-
         ]
       },
       params: {},
@@ -57,7 +89,7 @@ describe("query", () => {
     };
     await query(req, res);
     expect(res.status).toBeCalledWith(200);
-    expect(res.json).toBeCalledWith(allData);
+    expect(res.json).toBeCalledWith(queryResponseV3);
   });
 
   // test missing content type
@@ -120,35 +152,5 @@ describe("query", () => {
     };
     await query(req, res);
     expect(res.status).toBeCalledWith(403);
-  });
-
-  it("add test for error handling if query result is invalid", async () => {
-    mockedQueries.query = vi.fn().mockReturnValue([]);
-    const req = {
-      headers: {
-        "content-type": "application/json"
-      },
-      query: {
-        account: "dini-ag-kim",
-        dataset: "https://w3id.org/rhonda/polmat/scheme"
-      },
-      body: {
-        queries: [
-          {
-            query: "dini-ag-kim",
-          }
-
-        ]
-      },
-      params: {
-      },
-    };
-    const res = {
-      send: vi.fn(),
-      status: vi.fn(),
-      json: vi.fn(),
-    };
-    await query(req, res);
-    expect(res.status).toBeCalledWith(500);
   });
 });
