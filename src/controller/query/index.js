@@ -16,7 +16,6 @@ function validateRequest(req) {
       !(req.headers["content-type"] === "application/json" || // v3
         req.headers["content-type"] === "application/x-www-form-urlencoded")  // v2
     ) {
-      console.log("sth wrong")
       throw new ReconcileError("Unsupported Media Type. Use application/json for v3 or application/x-www-form-urlencoded for v2", 415);
     }
   }
