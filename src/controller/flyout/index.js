@@ -1,4 +1,4 @@
-import { getParameters, knownProblemHandler, checkAccountDataset } from "../utils.js";
+import { getParameters, errorHandler, ReconcileError, checkAccountDataset } from "../utils.js";
 import queryID from "../../queries/queryID.js";
 import { config } from "../../config.js";
 
@@ -22,28 +22,20 @@ const buildHtml = (result, language) => {
 
 export default async function flyout(req, res) {
   const { account, dataset, language, id } = getParameters(req);
-  
+
   try {
     await checkAccountDataset(res, account, dataset);
-  } catch (error) {
-    return knownProblemHandler(res, error.err);
-  }
+    if (!id) throw new ReconcileError("Please provide an id as query parameter", 400);
+    const qRes = await queryID(account, dataset, id);
+    const result = qRes.hits.hits[0]?._source;
+    const html = buildHtml(result, language);
 
-  if (!id) {
-    return knownProblemHandler(res, {
-      code: 400,
-      success: false,
-      message: "Please provide an id as query parameter",
+    res.status(200);
+    return res.json({
+      id: id,
+      html: html,
     });
+  } catch (error) {
+    return errorHandler(res, error);
   }
-
-  const qRes = await queryID(account, dataset, id);
-  const result = qRes.hits.hits[0]?._source;
-  const html = buildHtml(result, language);
-
-  res.status(200);
-  return res.json({
-    id: id,
-    html: html,
-  });
 }
