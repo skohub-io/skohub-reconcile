@@ -1,6 +1,6 @@
 import { config } from "../config.js";
 import esb from "elastic-builder";
-import {esClient} from "../elastic/connect.js";
+import { esClient } from "../elastic/connect.js";
 
 const index = config.es_index;
 
@@ -12,7 +12,7 @@ const index = config.es_index;
  * @param {string} id 
  * @returns {Promise} Elasticsearch query result
  */
-export default async function (
+export default async function(
   account,
   dataset,
   id
@@ -23,14 +23,13 @@ export default async function (
       esb.boolQuery().must([
         ...(account ? [esb.termQuery("account", account)] : []), // add account condition only if account is set
         ...(dataset ? [esb.termQuery("dataset", dataset)] : []), // add dataset condition only if dataset is set
-        ...(id ? [esb.termsQuery("id", id)] : []), // add id condition only if id is set
+        ...(id ? [esb.termQuery("id", id)] : []), // add id condition only if id is set
         ...(!id
           ? [esb.queryStringQuery("ConceptScheme").defaultField("type")]
           : []), // if there's no id, then search for vocabularies
       ])
     )
     .size(100);
-
   const result = await esClient.search({
     index: index,
     ...reqObject.toJSON(),
