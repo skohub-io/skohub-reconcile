@@ -6,7 +6,7 @@ The module is designed to serve SKOS Vocabularies according to the [Reconciliati
 It currently supports:
 
 - [V2 of the Reconciliation Service API](https://www.w3.org/community/reports/reconciliation/CG-FINAL-specs-0.2-20230410/)
-- [Draft of the Reconciliation Service API](https://reconciliation-api.github.io/specs/draft/).
+- [Draft of the Reconciliation Service API](https://reconciliation-api.github.io/specs/draft/)
 
 To insert vocabularies to the service, you can use the [SkoHub Reconcile Publish](https://github.com/skohub-io/skohub-reconcile-publish) module.
 
