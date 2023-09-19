@@ -14,6 +14,8 @@ The Service currently suppports the following reconciliation services of the abo
 
 Be aware that this is still in proof-of-concept phase.
 
+- Additionally there is a `/ping` endpoint to check if the service is up.
+
 ## Setup
 
 This service uses docker and docker compose to run. 
