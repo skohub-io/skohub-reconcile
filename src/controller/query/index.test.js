@@ -62,6 +62,36 @@ describe("query", () => {
     expect(res.json).toBeCalledWith(queryResponseV2);
   });
 
+  it("returns a query result for v2 with additional content type charset=UTF-8 (like send from openrefine)", async () => {
+    mockedQueries.query = vi.fn().mockReturnValue(elasticResponse);
+    const req = {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+      },
+      query: {
+        account: "dini-ag-kim",
+        language: "en",
+        dataset: "https://w3id.org/rhonda/polmat/scheme"
+      },
+      body: {
+        q1: {
+          query: "dini-ag-kim",
+        },
+        q2: {
+          query: "test"
+        }
+      },
+      params: {},
+    };
+    const res = {
+      send: vi.fn(),
+      status: vi.fn(),
+      json: vi.fn(),
+    };
+    await query(req, res);
+    expect(res.status).toBeCalledWith(200);
+    expect(res.json).toBeCalledWith(queryResponseV2);
+  });
   it("returns a query result for v3", async () => {
     mockedQueries.query = vi.fn().mockReturnValue(elasticResponse);
     const req = {
