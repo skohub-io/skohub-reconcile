@@ -1,34 +1,31 @@
 import esQueries from "../queries/index.js";
 import { config } from "../config.js";
 import Ajv from "ajv"
-import queryBatchSchema from "./query/schemas/queryBatchSchema.json" assert { type: "json" }
+import queryBatchSchemaV2 from "./query/schemas/queryBatchSchemaV2.json" assert { type: "json" }
+import queryBatchSchemaV3 from "./query/schemas/queryBatchSchemaV3.json" assert { type: "json" }
+import resultBatchSchemaV2 from "./query/schemas/resultBatchSchemaV2.json" assert { type: "json" }
+import resultBatchSchemaV3 from "./query/schemas/resultBatchSchemaV3.json" assert { type: "json" }
 
-/**
- * @param {Object} res - Response Object
- * @param {Object} err - Error message containing code and message
- * @param {number} err.code - HTTP Error Code
- * @param {string} err.message - Error Message to be returned
- * @returns {Object} res
- */
-export function knownProblemHandler(res, err) {
-  const error = {
-    status_code: err.code,
-    success: false,
-    data: [],
-    message: err.message,
-  };
-  res.status(err.code);
-  return res.json(error);
+
+export class ReconcileError extends Error {
+  constructor(message, code, name, query) {
+    super(message);
+    this.name = name;
+    this.code = code;
+    this.query = query;
+  }
 }
 
 export function errorHandler(res, err) {
   // TODO log error
-  res.status(500);
+  res.status(err?.code || 500);
   return res.json({
-    status_code: 500,
+    status_code: err?.code || 500,
     success: false,
+    error_name: err?.name,
+    query: err?.query,
     data: [],
-    message: err,
+    message: err?.message || err,
   });
 }
 
@@ -95,14 +92,9 @@ export function getQueries(req) {
   if (req.method === "GET") {
     return JSON.parse(req.query.queries);
   } else if (req.method === "POST") {
-    return req.body.queries;
+    return typeof (req.body.queries) === "string" ? JSON.parse(req.body.queries) : req.body.queries;
   }
   throw new Error("Unhandled request method for parsing query parameters.");
-}
-
-export function NotExistentException(err) {
-  this.name = "NotExistentException";
-  this.err = err || {};
 }
 
 /**
@@ -112,25 +104,17 @@ export function NotExistentException(err) {
  * @returns {Promise} Promise that resolves to true if the account and dataset are present in the data
  * @throws {NotExistentException}
  */
-export async function checkAccountDataset(res, account, dataset) {
+export async function checkAccountDataset(account, dataset) {
   const allAccounts = await esQueries.getAccounts();
   const allDatasets = await esQueries.getDatasets();
 
   if (account && allAccounts.indexOf(account) == -1) {
     return Promise.reject(
-      new NotExistentException({
-        message: `Sorry, nothing at this url. (Nonexistent account '${account}'.)`,
-        code: 404,
-      })
-    );
+      new ReconcileError(`Sorry, nothing at this url. (Nonexistent account '${account}'.)`, 404, "Nonexistent Account"));
   }
   if (dataset && allDatasets.indexOf(dataset) == -1) {
     return Promise.reject(
-      new NotExistentException({
-        message: `Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`,
-        code: 404,
-      })
-    );
+      new ReconcileError(`Sorry, nothing at this url. (Nonexistent dataset '${dataset}'.)`, 404, "Nonexistent Dataset"))
   }
 
   return true;
@@ -140,15 +124,24 @@ const ajv = new Ajv()
 /**
  * Check a query against the JSON Schema from the specification (https://reconciliation-api.github.io/specs/draft/#reconciliation-query-batch-json-schema)
  * @param {Object} query - query to check against
- * @param {("queryBatch")} schema - schema to validate against
+ * @param {("queryBatchV2" | "queryBatchV3" | "resultBatchV2" | "resultBatchV3")} schema - schema to validate against
  * @returns {Boolean}
  */
-export function validateAgainstSchema(query, schema) {
-  const validateQueryBatch = ajv.compile(queryBatchSchema)
+export function validateAgainstSchema(toValidate, schema) {
+  const validateQueryBatchV3 = ajv.compile(queryBatchSchemaV3)
+  const validateQueryBatchV2 = ajv.compile(queryBatchSchemaV2)
+  const validateResultBatchV2 = ajv.compile(resultBatchSchemaV2)
+  const validateResultBatchV3 = ajv.compile(resultBatchSchemaV3)
 
   switch (schema) {
-    case "queryBatch":
-      return validateQueryBatch(query)
+    case "queryBatchV2":
+      return validateQueryBatchV2(toValidate)
+    case "queryBatchV3":
+      return validateQueryBatchV3(toValidate)
+    case "resultBatchV2":
+      return validateResultBatchV2(toValidate)
+    case "resultBatchV3":
+      return validateResultBatchV3(toValidate)
   }
 }
 

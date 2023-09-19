@@ -45,13 +45,7 @@ describe("checkAccountDataset", () => {
       },
       params: {},
     };
-    const res = {
-      send: vi.fn(),
-      status: vi.fn(),
-      json: vi.fn(),
-    };
     const result = await checkAccountDataset(
-      res,
       req.query.account,
       req.query.dataset
     );
@@ -75,8 +69,8 @@ describe("checkAccountDataset", () => {
     };
     expect(
       async () =>
-        await checkAccountDataset(res, req.query.account, req.query.dataset)
-    ).rejects.toThrowError(utils.NotExistentException);
+        await checkAccountDataset(req.query.account, req.query.dataset)
+    ).rejects.toThrowError(utils.ReconcileError);
   });
 
   it("throws error if checkDataset fails", async () => {
@@ -100,10 +94,10 @@ describe("checkAccountDataset", () => {
     };
     expect(
       async () =>
-        await checkAccountDataset(res, req.query.account, req.query.dataset)
-    ).rejects.toThrowError(utils.NotExistentException);
-  });
-});
+        await checkAccountDataset(req.query.account, req.query.dataset)
+    ).rejects.toThrowError(utils.ReconcileError);
+  })
+})
 
 describe("esToReconcile", () => {
   it.todo("add test for esToReconcile");
