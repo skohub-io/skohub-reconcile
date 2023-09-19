@@ -35,9 +35,9 @@ describe("Manifest", () => {
       params: {},
     };
     const res = {
-      send: vi.fn(),
+      json: vi.fn(),
     };
     await manifest(req, res);
-    expect(res.send).toBeCalledWith(validManifest);
+    expect(res.json).toBeCalledWith(validManifest);
   });
 });
