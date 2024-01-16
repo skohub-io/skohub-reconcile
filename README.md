@@ -43,6 +43,10 @@ You can create it with:
 
     docker network create reconcile-backend
 
+### Elasticsearch Data Directory
+
+Create the data directory for elasticsearch with `mkdir -p data/elasticsearch/data`
+
 ### Run the Service
 
 Then, you can run the service with:

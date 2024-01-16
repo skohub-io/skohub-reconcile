@@ -3,11 +3,8 @@ version: "3"
 services:
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    # Uncomment the following line to expose the elastic port to the host for debugging or development purposes
-    # ports:
-    #   - 9200:9200
     volumes:
-      - elasticData:/usr/share/elasticsearch/data
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
       - node.name=elastic
@@ -47,12 +44,6 @@ services:
     restart: on-failure
     networks:
       - reconcile-backend
-
-volumes:
-  elasticData:
-    driver: local
-  kibanadata:
-    driver: local
 
 networks:
   reconcile-backend:
