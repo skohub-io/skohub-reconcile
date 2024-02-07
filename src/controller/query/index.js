@@ -47,7 +47,6 @@ async function buildQueryResponse(req) {
   const queries = getQueries(req);
   const { account, dataset, language, threshold } = getParameters(req);
   await checkAccountDataset(account, dataset);
-
   const elasticQueryResponse = await esQueries.query(
     account,
     dataset,
@@ -56,7 +55,7 @@ async function buildQueryResponse(req) {
   );
   // v2
   // since v3 spec is not mentioning reconciliation GET queries, we use v2 response batch
-  if (req.headers["content-type"].includes("application/x-www-form-urlencoded") || req.method === "GET") {
+  if (req.headers?.["content-type"]?.includes("application/x-www-form-urlencoded") || req.method == "GET") {
     const queryNames = Object.keys(queries);
     const allData = elasticQueryResponse.responses.reduce((acc, response, index) => {
       const qData = response.hits.hits
