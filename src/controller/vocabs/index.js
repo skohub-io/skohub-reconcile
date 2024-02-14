@@ -9,9 +9,11 @@ export default async function vocabs(req, res) {
     return {
       account: c.account,
       dataset: c.dataset,
-      manifestUrl: c.languages.map(l => ({
-        [l]: buildReconcileUrl(config.app_baseurl, c.account, c.dataset, l)
-      }))
+      manifestUrl: Object.fromEntries(
+        c.languages.map(l => ([
+          l, buildReconcileUrl(config.app_baseurl, c.account, c.dataset, l)
+        ]))
+      )
 
     }
   })
