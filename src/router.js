@@ -19,4 +19,7 @@ routes.route('/suggest').get(controller.suggest)
 // GET: flyout
 routes.route('/suggest/flyout').get(controller.flyout)
 
+// GET: vocabs
+routes.route('/vocabs').get(controller.vocabs)
+
 export { routes }
