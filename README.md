@@ -19,7 +19,10 @@ The service currently suppports the following reconciliation services of the abo
 
 Be aware that this is still in proof-of-concept phase.
 
-- Additionally there is a `/ping` endpoint to check if the service is up.
+## Additional Endpoints
+
+- `/ping` to check if the service is up
+- `/vocabs` to see all vocabularies and their service manifest urls
 
 ## Setup
 
