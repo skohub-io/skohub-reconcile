@@ -1,10 +1,10 @@
 import esQueries from "../queries/index.js";
 import { config } from "../config.js";
 import Ajv from "ajv"
-import queryBatchSchemaV2 from "./query/schemas/queryBatchSchemaV2.json" assert { type: "json" }
-import queryBatchSchemaV3 from "./query/schemas/queryBatchSchemaV3.json" assert { type: "json" }
-import resultBatchSchemaV2 from "./query/schemas/resultBatchSchemaV2.json" assert { type: "json" }
-import resultBatchSchemaV3 from "./query/schemas/resultBatchSchemaV3.json" assert { type: "json" }
+import queryBatchSchemaV2 from "./query/schemas/queryBatchSchemaV2.json" with { type: "json" }
+import queryBatchSchemaV3 from "./query/schemas/queryBatchSchemaV3.json" with { type: "json" }
+import resultBatchSchemaV2 from "./query/schemas/resultBatchSchemaV2.json" with { type: "json" }
+import resultBatchSchemaV3 from "./query/schemas/resultBatchSchemaV3.json" with { type: "json" }
 
 
 export class ReconcileError extends Error {
