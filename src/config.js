@@ -1,46 +1,25 @@
 import dotenv from 'dotenv'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { buildConfig, findMissingEnvKeys } from './configParsers.js'
 
-const configDir = path.dirname(fileURLToPath(import.meta.url))
-const projectRoot = path.resolve(configDir, '..')
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const envFile = path.join(projectRoot, '.env')
 
-const loadEnvironment = (envFile) => dotenv.config({ path: path.join(projectRoot, envFile) })
-const envResult = loadEnvironment('.env')
-
-if (envResult.error) {
-  const missingEnvMessage = `Missing .env file. Create .env from .sample.env before starting the application.`
-  throw new Error(missingEnvMessage)
+// .env is optional: configuration may also come entirely from the process
+// environment (docker run -e ..., Kubernetes, node --env-file, ...).
+// Values already present in process.env take precedence over .env.
+const envResult = dotenv.config({ path: envFile })
+if (envResult.error && envResult.error.code !== 'ENOENT') {
+  throw new Error(`Failed to load ${envFile}: ${envResult.error.message}`, { cause: envResult.error })
 }
 
-const getEnvValue = (key, fallback = undefined) => process.env[key] ?? fallback
-
-export function parseSupportedApiVersions(value) {
-  if (!value) {
-    return ['0.2', '0.3.0-alpha']
-  }
-
-  try {
-    return JSON.parse(value)
-  } catch {
-    return ['0.2', '0.3.0-alpha']
-  }
+const missing = findMissingEnvKeys(process.env)
+if (missing.length > 0) {
+  throw new Error(
+    `Missing required environment variables: ${missing.join(', ')}. ` +
+      `Set them in the environment or in ${envFile} (see .sample.env).`
+  )
 }
 
-export const config = {
-  es_proto: getEnvValue('ES_PROTO'),
-  es_host: getEnvValue('ES_HOST'),
-  es_port: getEnvValue('ES_PORT'),
-  es_user: getEnvValue('ES_USERNAME'),
-  es_pass: getEnvValue('ES_PASSWORD'),
-  es_index: getEnvValue('ES_INDEX'),
-  es_type: getEnvValue('ES_TYPE'),
-  es_threshold: getEnvValue('ES_THRESH'),
-  app_port: getEnvValue('APP_PORT'),
-  app_port_exposed: getEnvValue('APP_PORT_EXPOSED'),
-  app_baseurl: getEnvValue('APP_BASEURL'),
-  supported_api_versions: parseSupportedApiVersions(getEnvValue('SUPPORTED_API_VERSIONS')),
-  suggest_query_size: getEnvValue('SUGGEST_QUERY_SIZE'),
-  default_language: getEnvValue('DEFAULT_LANGUAGE'),
-}
-
+export const config = buildConfig(process.env)
