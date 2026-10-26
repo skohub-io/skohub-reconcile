@@ -46,9 +46,27 @@ You can create it with:
 
     docker network create reconcile-backend
 
-### Elasticsearch Data Directory
+### Elasticsearch Data
 
-Create the data directory for elasticsearch with `mkdir -p data/elasticsearch/data`
+Elasticsearch stores its index in a named Docker volume (`elastic-data`), which is created automatically on first start.
+No data directory needs to be created manually.
+
+#### Migrating from the bind mount (versions before the Node 22 upgrade)
+
+Earlier versions stored the index in `./data/elasticsearch/data` on the host.
+If you upgrade an existing deployment, copy that directory into the new volume **before** starting the stack, otherwise Elasticsearch starts with an empty index and all published vocabularies are gone until you re-publish them:
+
+    docker compose down
+    docker volume create skohub-reconcile_elastic-data
+    docker run --rm \
+      -v "$PWD/data/elasticsearch/data:/from" \
+      -v skohub-reconcile_elastic-data:/to \
+      alpine sh -c 'cp -a /from/. /to/ && chown -R 1000:0 /to'
+    docker compose up -d
+
+The volume name is prefixed with the compose project name, which defaults to the directory name (`skohub-reconcile`).
+Check with `docker volume ls` if you use a different project name.
+Once the service is up and your vocabularies are available again, the old `data/` directory can be removed.
 
 ### Run the Service
 

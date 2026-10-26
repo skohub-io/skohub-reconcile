@@ -78,11 +78,9 @@ services:
 volumes:
   kibanadata:
     driver: local
+  elastic-data:
 
 networks:
   reconcile-backend:
     name: reconcile-backend
     external: true
-
-volumes:
-  elastic-data:
