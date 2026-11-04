@@ -1,24 +1,25 @@
 import dotenv from 'dotenv'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { buildConfig, findMissingEnvKeys } from './configParsers.js'
 
-const result = dotenv.config()
-export const config = {
-  es_proto: process.env.ES_PROTO,
-  es_host: process.env.ES_HOST,
-  es_port: process.env.ES_PORT,
-  es_user: process.env.ES_USERNAME,
-  es_pass: process.env.ES_PASSWORD,
-  es_index: process.env.ES_INDEX,
-  es_type: process.env.ES_TYPE,
-  es_threshold: process.env.ES_THRESH,
-  app_port: process.env.APP_PORT,
-  app_port_exposed: process.env.APP_PORT_EXPOSED,
-  app_baseurl: process.env.APP_BASEURL,
-  supported_api_versions: JSON.parse(process.env.SUPPORTED_API_VERSIONS),
-  suggest_query_size: process.env.SUGGEST_QUERY_SIZE,
-  default_language: process.env.DEFAULT_LANGUAGE,
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const envFile = path.join(projectRoot, '.env')
+
+// .env is optional: configuration may also come entirely from the process
+// environment (docker run -e ..., Kubernetes, node --env-file, ...).
+// Values already present in process.env take precedence over .env.
+const envResult = dotenv.config({ path: envFile })
+if (envResult.error && envResult.error.code !== 'ENOENT') {
+  throw new Error(`Failed to load ${envFile}: ${envResult.error.message}`, { cause: envResult.error })
 }
 
-if (result.error) {
-  console.log(result.error, '[Error Parsing env variables!]')
-  throw result.error
-};
+const missing = findMissingEnvKeys(process.env)
+if (missing.length > 0) {
+  throw new Error(
+    `Missing required environment variables: ${missing.join(', ')}. ` +
+      `Set them in the environment or in ${envFile} (see .sample.env).`
+  )
+}
+
+export const config = buildConfig(process.env)

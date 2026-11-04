@@ -30,7 +30,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/", router.routes);
-app.set("port", config.app_port || 3000);
+app.set("port", config.app_port);
 
 // We use URLSearchParams parsing rather than express's standard qs.
 // For reasons why, see https://evanhahn.com/gotchas-with-express-query-parsing-and-how-to-avoid-them/

@@ -1,7 +1,7 @@
 {
   "name": "skohub-reconcile",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "version": "0.0.1",
   "description": "Reconciliation API server for SKOS Vocabularies",
@@ -10,7 +10,7 @@
     "start": "node src/server.js",
     "dev": "nodemon --delay 500ms ./src/server.js localhost 3000",
     "reset-index": "node src/elastic/resetIndex.js",
-    "test": "vitest",
+    "test": "vitest run",
     "coverage": "vitest run --coverage"
   },
   "type": "module",

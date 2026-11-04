@@ -6,7 +6,7 @@ services:
     ports:
       - 9200:9200
     volumes:
-      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+      - elastic-data:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
       - node.name=elastic
@@ -78,6 +78,7 @@ services:
 volumes:
   kibanadata:
     driver: local
+  elastic-data:
 
 networks:
   reconcile-backend:
